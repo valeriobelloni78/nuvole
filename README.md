@@ -2,7 +2,7 @@
 
 *Nuvole* è una web-app di musica generativa che gira interamente nel browser, nella scia di **Rada** ma con un motore audio, un'interfaccia e un insieme di funzioni nuovi.
 
-Questo repository contiene il **primo modulo — il cielo**: una **finestra** senza cornice, aperta nella stanza chiara, la cui superficie è una matrice fitta di puntini celesti posati direttamente sulla carta chiara della pagina, senza fondo. Attraverso questa matrice si formano e derivano lentamente delle nuvole: là dove passano, i puntini sbiancano e si assottigliano fino a sciogliersi nel fondo, e la nuvola si legge come una dissolvenza della matrice. Il motore sonoro verrà innestato su questo stesso campo in una fase successiva: la densità delle nuvole che attraversano la finestra è pensata per diventare la sorgente degli eventi generativi.
+Questo repository contiene il **primo modulo — il cielo**: una **finestra** senza cornice, aperta nella stanza chiara, la cui superficie è una matrice fitta di puntini celesti posati direttamente sul cielo della pagina, senza fondo proprio, e segnata soltanto da un contorno bianco finissimo. I puntini del cielo sereno hanno esattamente il colore del cielo: ci sono, ma non si vedono. Si vedono solo quelli che le nuvole hanno sbiancato — la matrice appare unicamente dove c'è nuvola, e la nuvola è l'unica figura. Il motore sonoro verrà innestato su questo stesso campo in una fase successiva: la densità delle nuvole che attraversano la finestra è pensata per diventare la sorgente degli eventi generativi.
 
 ## Controlli
 
@@ -62,7 +62,7 @@ riverbero è una risposta all'impulso generata al momento.
 
 Il cielo non è una sequenza di nuvole pre-disegnate ma un **campo continuo di rumore** (`fBm`, moto browniano frazionario) campionato in ogni punto della matrice. Un termine di deriva sposta il campo nel tempo — il *vento* — mentre una seconda scala, più lenta, decide dove il cielo si addensa e dove resta sereno. Le nuvole così non si ripetono mai: nascono, attraversano e si sciolgono ai bordi.
 
-Ogni puntino interpola il proprio colore fra il celeste del sereno e il bianco della nuvola in funzione della densità locale, e insieme si assottiglia: sul fondo chiaro della pagina la nuvola non è una massa che si posa sopra il cielo, ma il cielo stesso che si dirada e svanisce.
+Ogni puntino interpola il proprio colore fra il celeste del sereno — che è il colore stesso della pagina, e perciò invisibile — e il bianco della nuvola, e insieme cresce di raggio in funzione della densità locale: la nuvola emerge dal nulla come una retinatura che si infittisce, e nel dissolversi torna a confondersi con il cielo.
 
 ## Parametri
 

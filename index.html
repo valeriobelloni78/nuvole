@@ -8,8 +8,11 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: 100%; min-height: 100%; }
   body {
-    background: #f2f2f0;
-    color: #4c525c;
+    /* Il fondo è ESATTAMENTE il colore dei puntini di cielo sereno, e piatto:
+       così la matrice c'è ma non si vede, e affiorano solo i puntini bianchi
+       delle nuvole. Un gradiente, anche lieve, la farebbe riapparire. */
+    background: #5e9bc9;
+    color: #ffffff;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     display: flex;
@@ -46,19 +49,23 @@
     justify-content: space-between;
     gap: 20px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #d9d9d4;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.38);
   }
   .marchio {
     font-weight: 300;
     letter-spacing: 0.5em;
     font-size: 13px;
     text-transform: uppercase;
-    color: #6f767f;
+    color: rgba(255, 255, 255, 0.95);
   }
-  .sigla { color: #a9aaa4; }
+  .sigla { color: rgba(255, 255, 255, 0.7); }
 
   /* La finestra: solo vetro, nessuna cornice */
-  .finestra { line-height: 0; }
+  /* La finestra: un contorno finissimo, il solo segno che la incornicia */
+  .finestra {
+    line-height: 0;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+  }
   #cielo { display: block; width: 100%; }
 
   /* Righello delle bande: una casella per voce, il numero della frase che
@@ -66,12 +73,12 @@
   .righello {
     display: grid;
     gap: 0;
-    border-top: 1px solid #d9d9d4;
+    border-top: 1px solid rgba(255, 255, 255, 0.38);
   }
   .banda {
     padding: 6px 0 0 0;
-    border-right: 1px solid #e4e4df;
-    color: #bcbdb7;
+    border-right: 1px solid rgba(255, 255, 255, 0.22);
+    color: rgba(255, 255, 255, 0.55);
     text-align: center;
     transition: color 0.25s ease;
     position: relative;
@@ -82,10 +89,10 @@
     position: absolute;
     left: 0; top: -1px;
     width: 0; height: 2px;
-    background: #26262a;
+    background: #ffffff;
     transition: width 0.4s ease;
   }
-  .banda.attiva { color: #26262a; }
+  .banda.attiva { color: #ffffff; }
   .banda.attiva::before { width: 100%; }
   .righello.nascosto { display: none; }
 
@@ -93,24 +100,24 @@
   .quadrante {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    border-top: 1px solid #d9d9d4;
-    border-bottom: 1px solid #d9d9d4;
+    border-top: 1px solid rgba(255, 255, 255, 0.38);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.38);
   }
   .dato {
     padding: 12px 16px 12px 0;
-    border-right: 1px solid #e4e4df;
+    border-right: 1px solid rgba(255, 255, 255, 0.22);
   }
   .dato:last-child { border-right: none; }
   .dato .cifra {
     font-size: 26px;
     letter-spacing: 0.02em;
-    color: #26262a;
+    color: #ffffff;
     font-variant-numeric: tabular-nums;
     line-height: 1.05;
     text-transform: none;
   }
-  .dato .cifra .piccolo { font-size: 12px; color: #a9aaa4; }
-  .dato .didascalia { color: #9aa1ab; margin-top: 5px; }
+  .dato .cifra .piccolo { font-size: 12px; color: rgba(255, 255, 255, 0.65); }
+  .dato .didascalia { color: rgba(255, 255, 255, 0.7); margin-top: 5px; }
 
   /* Sezioni di comandi */
   .sezione { display: flex; flex-direction: column; gap: 16px; }
@@ -118,10 +125,10 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #8d949e;
+    color: rgba(255, 255, 255, 0.85);
   }
-  .rubrica .filo { flex: 1; height: 1px; background: #d9d9d4; }
-  .rubrica .codice { color: #bcbdb7; letter-spacing: 0.1em; }
+  .rubrica .filo { flex: 1; height: 1px; background: rgba(255, 255, 255, 0.38); }
+  .rubrica .codice { color: rgba(255, 255, 255, 0.6); letter-spacing: 0.1em; }
 
   .griglia {
     display: grid;
@@ -130,14 +137,14 @@
   }
   .controllo { display: flex; flex-direction: column; gap: 9px; }
   .controllo > label {
-    color: #9aa1ab;
+    color: rgba(255, 255, 255, 0.75);
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     gap: 10px;
   }
   .controllo .valore {
-    color: #4c525c;
+    color: #ffffff;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.06em;
   }
@@ -147,14 +154,14 @@
   .cursore::before {                       /* la traccia */
     content: "";
     position: absolute; left: 0; right: 0; top: 7px;
-    height: 1px; background: #c9c9c4;
+    height: 1px; background: rgba(255, 255, 255, 0.45);
   }
   .cursore::after {                        /* le tacche */
     content: "";
     position: absolute; left: 0; right: 0; top: 8px;
     height: 4px;
     background-image: repeating-linear-gradient(
-      to right, #d9d9d4 0 1px, transparent 1px 10%);
+      to right, rgba(255, 255, 255, 0.35) 0 1px, transparent 1px 10%);
   }
   input[type="range"] {
     -webkit-appearance: none;
@@ -175,7 +182,7 @@
     width: 9px; height: 9px;
     margin-top: 3.5px;
     border-radius: 50%;
-    background: #26262a;
+    background: #ffffff;
     border: none;
     cursor: pointer;
   }
@@ -183,18 +190,18 @@
   input[type="range"]::-moz-range-thumb {
     width: 9px; height: 9px;
     border-radius: 50%;
-    background: #26262a;
+    background: #ffffff;
     border: none;
     cursor: pointer;
   }
-  input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px #dfe7ee; }
+  input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4); }
 
   /* Interruttore: quadretto pieno/vuoto + stato */
   .interruttore {
     font: inherit;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: #4c525c;
+    color: #ffffff;
     background: transparent;
     border: none;
     padding: 0;
@@ -206,14 +213,14 @@
   }
   .interruttore .quadro {
     width: 9px; height: 9px;
-    border: 1px solid #9aa1ab;
+    border: 1px solid rgba(255, 255, 255, 0.75);
     background: transparent;
     transition: background 0.2s ease, border-color 0.2s ease;
   }
-  .interruttore:hover .quadro { border-color: #4c525c; }
-  .interruttore .stato { color: #a9aaa4; }
-  .interruttore.acceso .quadro { background: #26262a; border-color: #26262a; }
-  .interruttore.acceso .stato { color: #26262a; }
+  .interruttore:hover .quadro { border-color: #ffffff; }
+  .interruttore .stato { color: rgba(255, 255, 255, 0.6); }
+  .interruttore.acceso .quadro { background: #ffffff; border-color: #ffffff; }
+  .interruttore.acceso .stato { color: #ffffff; }
 </style>
 </head>
 <body>
@@ -362,13 +369,16 @@ const PARAMS = {
                         // velocita' del vento sono tarate su questo, e vengono
                         // riportate al passo reale, cosi' infittire la matrice
                         // non rimpicciolisce le nuvole ne' le rallenta.
-  raggioBase:   1.25,   // raggio del puntino di cielo sereno
-  raggioNuvola: 0.7,    // raggio del puntino dentro la nuvola: il puntino non
-                        // si gonfia, si assottiglia — la nuvola e' una dissolvenza
+  raggioBase:   1.1,    // raggio del puntino di cielo sereno (invisibile)
+  raggioNuvola: 2.6,    // raggio del puntino dentro la nuvola: cresce, perche'
+                        // ora la nuvola e' la figura e non il vuoto
 
   // I due colori del puntino: cielo sereno -> nuvola.
-  // Il canvas non ha fondo: i puntini stanno direttamente sulla stanza chiara.
-  celeste: { r: 118, g: 172, b: 214 },
+  // ATTENZIONE: `celeste` deve restare identico al fondo della pagina (#5e9bc9),
+  // altrimenti la matrice del cielo sereno riaffiora. Il canvas non ha fondo
+  // proprio: i puntini stanno direttamente sul cielo della stanza, e si vedono
+  // solo quelli che la nuvola ha sbiancato.
+  celeste: { r: 94, g: 155, b: 201 },
   nuvola:  { r: 255, g: 255, b: 255 },
 
   // Campo-nuvole

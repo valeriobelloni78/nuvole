@@ -17,19 +17,21 @@ Nessun build, nessuna dipendenza a runtime: un unico `index.html` autoconsistent
 ## Stato attuale — Modulo 1: il cielo (completato)
 
 
-- **Finestra** senza cornice, in una stanza dal fondo grigio chiarissimo (`#f2f2f0`),
-  con il marchio *Nuvole* allineato a sinistra sopra il vetro; la superficie della
-  finestra è una matrice fitta di puntini celesti (canvas 2D, responsive: la finestra
-  segue la larghezza del contenitore `.stanza`, max 960px).
-- **Nessun fondo**: il canvas è trasparente, i puntini stanno direttamente sulla
-  stanza chiara. Niente palette: un solo cielo.
-- **Campo-nuvole** a deriva animata: le nuvole si formano, attraversano e si sciolgono.
-  I puntini interpolano il colore da celeste (sereno) a bianco (nuvola) in base alla
-  densità locale e insieme **si assottigliano** (`raggioBase` 1.25 → `raggioNuvola` 0.7):
-  senza fondo, sul grigio chiaro della stanza, la nuvola è una **dissolvenza** — la
-  matrice si dirada e svanisce dove la nuvola passa. Scelta voluta da Valerio, contro
-  l'alternativa (nuvola come addensarsi in blu profondo). L'alone (`glow`) è spento:
-  un bagliore bianco su fondo chiaro non aggiunge nulla.
+- **La stanza è il cielo**: fondo piatto `#5e9bc9`, tutte le scritte e tutti i comandi
+  in bianco. La finestra è segnata da un **contorno bianco finissimo** (1px), unico
+  riquadro della pagina; il marchio *Nuvole* è allineato a sinistra sopra il vetro
+  (canvas 2D responsive, largo quanto `.stanza`, max 980px).
+- **Figura e fondo invertiti** (scelta di Valerio, agosto 2026). Il canvas è trasparente
+  e `PARAMS.celeste` è **identico al fondo della pagina**: la matrice del cielo sereno
+  c'è ma non si vede, e affiorano **solo i puntini bianchi**, che sono le nuvole.
+  Nel campo, il puntino interpola verso il bianco e insieme **cresce**
+  (`raggioBase` 1.1 → `raggioNuvola` 2.6), perché ora la nuvola è la figura e non il
+  vuoto — l'inverso della resa precedente su carta chiara, dove il puntino si
+  assottigliava fino a sparire.
+- **Due vincoli da non rompere**: (1) `PARAMS.celeste` e il `background` del `body`
+  devono restare lo stesso colore, altrimenti la matrice del sereno riaffiora;
+  (2) il fondo deve restare **piatto** — anche un gradiente lieve la farebbe riapparire
+  a fasce. L'alone (`glow`) è spento: costa `shadowBlur` su migliaia di puntini.
 - **Pannello di controllo** sotto la finestra, tutto in tempo reale:
   - *Cielo sereno* — soglia delle nuvole (alto = cielo limpido).
   - *Vento* — velocità di attraversamento.
@@ -102,10 +104,14 @@ pallino su filetto). Il registro è **svizzero-tecnico su carta chiara**:
 
 - tutta la parte tecnica è **monospaziata**, maiuscoletta, 10px, `letter-spacing .16em`
   (classe `.tecnico`); il marchio resta in grottesco spaziato;
-- **filetti** da 1px (`#d9d9d4`) al posto di riquadri e ombre: testata, rubriche di
+- **tutto in bianco sul cielo**, con la gerarchia affidata all'opacità: valori e cifre
+  a 1, etichette 0.75, filetti 0.38, separatori interni 0.22. Il contrasto del bianco su
+  `#5e9bc9` è ~3:1 — sotto la soglia WCAG per il testo minuto: è una scelta espressiva,
+  se servisse più leggibilità basta scurire il celeste (e con esso `PARAMS.celeste`);
+- **filetti** da 1px al posto di riquadri e ombre: testata, rubriche di
   sezione con codice a destra (`M1`, `M2`), separatori del quadrante;
 - **cursori**: traccia da 1px con **tacche** ogni 10% (gradiente ripetuto) e pallino
-  pieno nero da 9px; nessun riempimento della parte percorsa;
+  pieno bianco da 9px; nessun riempimento della parte percorsa;
 - **interruttori**: quadretto 9px vuoto/pieno + stato a parole (`SILENZIO`/`IN ASCOLTO`);
 - **quadrante dei dati**: cifre grandi tabellari con didascalia minuta sotto — frase
   dell'insieme, voci in ascolto, regione dell'arco;
