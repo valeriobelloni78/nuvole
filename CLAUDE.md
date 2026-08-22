@@ -91,9 +91,62 @@ leggono ciascuna per conto proprio, sopra un polso condiviso.
   (il `fronte` avanza di una frase per volta); libertà di ciascuna voce dentro un intorno
   ristretto del fronte (`AUDIO.finestra = 3`), così l'insieme resta in una stessa regione
   armonica senza mai ripetere la stessa combinazione.
-- **Comandi aggiunti**: *Suono* (interruttore d'ascolto — il contesto audio nasce al
-  primo clic, lo esigono i browser; l'etichetta mostra il fronte, «frase n/53») e
-  *Volume*.
+- **Comandi**: vedi la sezione «Pannello» qui sotto. Il contesto audio nasce al primo
+  clic sull'interruttore d'ascolto: lo esigono i browser.
+
+## Il pannello — linguaggio visivo
+
+Rifatto sulle reference visuali fornite da Valerio (cartella `~/Downloads/ioreferences`,
+esterna al repo: poster topografici, quadranti HUD, tavole di grafica tecnica, cursori a
+pallino su filetto). Il registro è **svizzero-tecnico su carta chiara**:
+
+- tutta la parte tecnica è **monospaziata**, maiuscoletta, 10px, `letter-spacing .16em`
+  (classe `.tecnico`); il marchio resta in grottesco spaziato;
+- **filetti** da 1px (`#d9d9d4`) al posto di riquadri e ombre: testata, rubriche di
+  sezione con codice a destra (`M1`, `M2`), separatori del quadrante;
+- **cursori**: traccia da 1px con **tacche** ogni 10% (gradiente ripetuto) e pallino
+  pieno nero da 9px; nessun riempimento della parte percorsa;
+- **interruttori**: quadretto 9px vuoto/pieno + stato a parole (`SILENZIO`/`IN ASCOLTO`);
+- **quadrante dei dati**: cifre grandi tabellari con didascalia minuta sotto — frase
+  dell'insieme, voci in ascolto, regione dell'arco;
+- **righello delle bande** sotto la finestra: una casella per voce, il numero della frase
+  che sta leggendo, e un filetto nero che si accende quando la nuvola è sulla sua banda.
+  È il riscontro visivo del legame nuvola→voce (era fra i «prossimi passi»).
+
+## Comandi del pannello
+
+Ognuno scrive in `PARAMS` (cielo) o in `AUDIO` (suono); `Pannello` non conosce né il
+rendering né lo scheduler. Le due funzioni `Pannello.cursore(id, applica)` e
+`Pannello.interruttore(id, acceso, etichette, applica)` fanno tutto il cablaggio:
+l'etichetta del valore è cercata per convenzione in `val<Id>`.
+
+| Comando | Parametro | Corsa | Nota |
+|---|---|---|---|
+| Cielo sereno | `PARAMS.soglia` | 0.10–0.21 | è anche il comando del silenzio |
+| Vento | `PARAMS.ventoX` | 0–2.5 | `ventoY = ventoX * 0.18` |
+| Grana | `PARAMS.passo` | 5–20 px | chiama `Cielo.resize()`; `fattoreGriglia()` tiene ferme le nuvole |
+| Ampiezza nuvole | `PARAMS.scalaForma` | 0.115–0.035 | `scalaMassa` segue (×0.267) |
+| Muta | `PARAMS.morphMassa` | 0–0.030 | quanto in fretta muta la copertura |
+| Bande | — | — | mostra/nasconde il righello |
+| Ascolto | `Suono.avvia/ferma` | — | dissolvenza di 1.2–1.5 s |
+| Polso udibile | `AUDIO.polso` | — | il Do acuto sulla griglia comune |
+| Volume | `AUDIO.volume` | 0–1 | |
+| Tempo | `AUDIO.bpm` | 44–132 | |
+| Voci | `AUDIO.voci` | 1–10 | `Suono.impostaVoci()` ricostruisce bande e righello |
+| Sensibilità | `AUDIO.entra` | 0.28–0.03 | `esce = entra * 0.4` |
+| Dispersione | `AUDIO.finestra` | 1–9 frasi | quanto le voci possono allontanarsi dal fronte |
+| Avanzamento | `AUDIO.attesaFronte` | 60–3.6 s | corsa esponenziale, `60·0.06^v` |
+| Riverbero | `AUDIO.riverbero` | 0–1 | mandata al convolutore |
+| Registro | `AUDIO.registro` | ±12 st | trasporto d'insieme |
+
+Due avvertenze emerse provando:
+
+- **Non allargare la corsa di *Ampiezza nuvole***. Oltre `scalaForma ≈ 0.035` la nuvola
+  diventa più grande della finestra: il campo resta uniforme, il cielo non si copre mai
+  e l'insieme ammutolisce. La corsa attuale si ferma lì apposta.
+- **Grana a 5px su schermo largo** fa ~23.000 puntini: misurati 8,9 ms per fotogramma
+  (contro 2,1 ms alla grana di partenza). Sta dentro i 60 fps ma è il limite; se serve
+  altro margine, il costo è tutto in `Cielo.render`.
 
 ### Taratura del legame cielo→suono (misurata, non a occhio)
 
@@ -112,12 +165,17 @@ sei note simultanee, ~5 note al secondo, 60 fps stabili.
 
 ## Prossimi passi possibili (da discutere con Valerio)
 
-- Timbro: al momento è un oscillatore (seno/triangolo) + un'ottava sopra appena
-  percettibile, filtro passa-basso, riverbero a convoluzione. C'è molto da guadagnare qui.
-- Riscontro visivo: far vedere quale banda sta suonando (per ora la corrispondenza
-  nuvola→voce si intuisce solo dal panorama stereo, che segue la banda).
-- Tempo (`AUDIO.bpm`, ora 88) e numero di voci (`AUDIO.voci`, ora 6) non sono esposti
-  nel pannello: valutare se meritano un comando.
+- **Timbro**: è il punto più debole. Oggi: oscillatore (seno/triangolo) + ottava sopra
+  appena percettibile, passa-basso, riverbero a convoluzione. Non c'è alcun comando di
+  timbro nel pannello ed è probabilmente il prossimo da inventare.
+- **Registri delle voci**: oggi fissi (`[-12, 0, 12, 0, -12, 12]`, ciclati). Si potrebbe
+  legarli alla banda (grave a sinistra, acuto a destra) o renderli mobili.
+- **Memoria dei comandi**: nessuna persistenza. Un `localStorage` conserverebbe la
+  regolazione fra una visita e l'altra.
+- **Ricarica e stato degli slider**: il browser ripristina i valori dei cursori al
+  ricaricamento, che possono non corrispondere ai valori scritti in `PARAMS`/`AUDIO`.
+  In pagina non è un problema (il pannello applica ciò che legge all'avvio), ma in prova
+  conviene ricordarlo.
 
 > Nota: registro linguistico di Valerio = italiano, ambito artistico/curatoriale;
 > cura la qualità della scrittura anche nei testi di progetto (README compreso).

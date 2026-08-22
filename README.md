@@ -6,12 +6,30 @@ Questo repository contiene il **primo modulo — il cielo**: una **finestra** se
 
 ## Controlli
 
-Sotto la finestra un pannello permette di regolare il cielo in tempo reale:
+Sotto la finestra, un righello mostra le bande delle voci — si accende quella su cui sta
+passando una nuvola, con il numero della frase che sta leggendo — e un quadrante riporta
+la frase dell'insieme, le voci in ascolto e la regione dell'arco. Poi il pannello, in due
+sezioni.
 
-- **Cielo sereno** — quanta parte del cielo resta limpida: alzando il valore diradano le nuvole, abbassandolo il cielo si copre.
+**Cielo**
+
+- **Cielo sereno** — quanta parte del cielo resta limpida: alzando il valore diradano le nuvole, abbassandolo il cielo si copre. Essendo le nuvole a chiamare le voci, è anche il comando del silenzio.
 - **Vento** — la velocità con cui le nuvole attraversano la finestra. È una *fase di deriva accumulata*, così cambiare la velocità muta il ritmo del vento senza far saltare le nuvole di posizione.
-- **Suono** — accende e spegne l'ascolto; l'etichetta indica a che punto dell'archivio è arrivato l'insieme.
-- **Volume**.
+- **Grana** — la distanza fra i puntini della matrice. Infittendo o diradando, le nuvole conservano dimensione e andatura: cambia solo la grana con cui sono disegnate.
+- **Ampiezza nuvole** — quanto sono larghe le nuvole rispetto alla finestra.
+- **Muta** — quanto in fretta la copertura del cielo si trasforma.
+- **Bande** — mostra o nasconde il righello delle voci.
+
+**Suono**
+
+- **Ascolto** — accende e spegne il suono (il primo clic crea il contesto audio: lo esigono i browser).
+- **Polso udibile** — rende udibile il battito che tiene insieme le voci, un Do acuto sulla griglia comune.
+- **Volume**, **Tempo** — l'ampiezza e il passo del polso.
+- **Voci** — quante voci, cioè in quante bande è divisa la finestra.
+- **Sensibilità** — quanta nuvola basta perché una voce si svegli.
+- **Dispersione** — di quante frasi le voci possono allontanarsi le une dalle altre.
+- **Avanzamento** — ogni quanto l'insieme può passare alla frase successiva dell'archivio.
+- **Riverbero**, **Registro** — la coda dell'ambiente e il trasporto d'insieme.
 
 ## Il suono
 

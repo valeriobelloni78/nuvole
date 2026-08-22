@@ -23,131 +23,312 @@
   /* La stanza: colonna allineata a sinistra */
   .stanza {
     width: 100%;
-    max-width: 960px;
+    max-width: 980px;
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: clamp(16px, 2.6vh, 30px);
+    gap: clamp(14px, 2.2vh, 24px);
+  }
+
+  /* Tutta la parte tecnica è monospaziata: etichette, valori, quadranti. */
+  .tecnico {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
+                 "Liberation Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
   }
 
   /* Testata */
+  .testata {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #d9d9d4;
+  }
   .marchio {
-    align-self: flex-start;
     font-weight: 300;
     letter-spacing: 0.5em;
     font-size: 13px;
     text-transform: uppercase;
-    color: #8d949e;
+    color: #6f767f;
   }
+  .sigla { color: #a9aaa4; }
 
   /* La finestra: solo vetro, nessuna cornice */
   .finestra { line-height: 0; }
   #cielo { display: block; width: 100%; }
 
-  /* Pannello di controllo */
-  .pannello {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 24px 44px;
-    align-items: flex-start;
-    justify-content: flex-start;
+  /* Righello delle bande: una casella per voce, il numero della frase che
+     sta leggendo. È il riscontro visivo del legame nuvola -> voce. */
+  .righello {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid #d9d9d4;
   }
-  .controllo {
+  .banda {
+    padding: 6px 0 0 0;
+    border-right: 1px solid #e4e4df;
+    color: #bcbdb7;
+    text-align: center;
+    transition: color 0.25s ease;
+    position: relative;
+  }
+  .banda:last-child { border-right: none; }
+  .banda::before {
+    content: "";
+    position: absolute;
+    left: 0; top: -1px;
+    width: 0; height: 2px;
+    background: #26262a;
+    transition: width 0.4s ease;
+  }
+  .banda.attiva { color: #26262a; }
+  .banda.attiva::before { width: 100%; }
+  .righello.nascosto { display: none; }
+
+  /* Quadrante dei dati */
+  .quadrante {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border-top: 1px solid #d9d9d4;
+    border-bottom: 1px solid #d9d9d4;
+  }
+  .dato {
+    padding: 12px 16px 12px 0;
+    border-right: 1px solid #e4e4df;
+  }
+  .dato:last-child { border-right: none; }
+  .dato .cifra {
+    font-size: 26px;
+    letter-spacing: 0.02em;
+    color: #26262a;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.05;
+    text-transform: none;
+  }
+  .dato .cifra .piccolo { font-size: 12px; color: #a9aaa4; }
+  .dato .didascalia { color: #9aa1ab; margin-top: 5px; }
+
+  /* Sezioni di comandi */
+  .sezione { display: flex; flex-direction: column; gap: 16px; }
+  .rubrica {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 12px;
-    min-width: 200px;
-    max-width: 300px;
-    flex: 1 1 200px;
+    color: #8d949e;
   }
+  .rubrica .filo { flex: 1; height: 1px; background: #d9d9d4; }
+  .rubrica .codice { color: #bcbdb7; letter-spacing: 0.1em; }
+
+  .griglia {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(186px, 1fr));
+    gap: 18px 34px;
+  }
+  .controllo { display: flex; flex-direction: column; gap: 9px; }
   .controllo > label {
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
     color: #9aa1ab;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    gap: 10px;
   }
   .controllo .valore {
-    color: #6b727c;
+    color: #4c525c;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
   }
 
-  /* Interruttore d'ascolto */
-  .bottone {
-    align-self: flex-start;
-    font: inherit;
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: #6b727c;
-    background: transparent;
-    border: 1px solid #d7d7d3;
-    border-radius: 2px;
-    padding: 9px 18px;
-    cursor: pointer;
-    transition: border-color 0.2s ease, color 0.2s ease;
+  /* Cursore: filetto con tacche e pallino pieno */
+  .cursore { position: relative; height: 16px; }
+  .cursore::before {                       /* la traccia */
+    content: "";
+    position: absolute; left: 0; right: 0; top: 7px;
+    height: 1px; background: #c9c9c4;
   }
-  .bottone:hover { border-color: #9aa1ab; color: #4c525c; }
-  .bottone.acceso { border-color: #8fb6d4; color: #4a7ea6; }
-
-  /* Slider */
+  .cursore::after {                        /* le tacche */
+    content: "";
+    position: absolute; left: 0; right: 0; top: 8px;
+    height: 4px;
+    background-image: repeating-linear-gradient(
+      to right, #d9d9d4 0 1px, transparent 1px 10%);
+  }
   input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
-    width: 100%;
-    height: 3px;
-    border-radius: 3px;
-    background: #dcdcd8;
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%; height: 16px;
+    background: transparent;
     outline: none;
+    margin: 0;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 16px; background: transparent;
   }
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 15px; height: 15px;
+    width: 9px; height: 9px;
+    margin-top: 3.5px;
     border-radius: 50%;
-    background: #6b727c;
+    background: #26262a;
     border: none;
     cursor: pointer;
   }
+  input[type="range"]::-moz-range-track { height: 16px; background: transparent; }
   input[type="range"]::-moz-range-thumb {
-    width: 15px; height: 15px;
+    width: 9px; height: 9px;
     border-radius: 50%;
-    background: #6b727c;
+    background: #26262a;
     border: none;
     cursor: pointer;
   }
+  input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px #dfe7ee; }
+
+  /* Interruttore: quadretto pieno/vuoto + stato */
+  .interruttore {
+    font: inherit;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #4c525c;
+    background: transparent;
+    border: none;
+    padding: 0;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+  }
+  .interruttore .quadro {
+    width: 9px; height: 9px;
+    border: 1px solid #9aa1ab;
+    background: transparent;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .interruttore:hover .quadro { border-color: #4c525c; }
+  .interruttore .stato { color: #a9aaa4; }
+  .interruttore.acceso .quadro { background: #26262a; border-color: #26262a; }
+  .interruttore.acceso .stato { color: #26262a; }
 </style>
 </head>
 <body>
 
   <div class="stanza">
 
-    <div class="marchio">Nuvole</div>
+    <div class="testata">
+      <div class="marchio">Nuvole</div>
+      <div class="sigla tecnico">53 frasi in Do · A:2</div>
+    </div>
 
     <div class="finestra">
       <canvas id="cielo"></canvas>
     </div>
 
-    <div class="pannello">
-      <div class="controllo">
-        <label>Cielo sereno <span class="valore" id="valSereno"></span></label>
-        <input type="range" id="sereno" min="0" max="100" value="30">
+    <div class="righello tecnico" id="righello"></div>
+
+    <div class="quadrante tecnico">
+      <div class="dato">
+        <div class="cifra" id="datoFrase">—<span class="piccolo">/53</span></div>
+        <div class="didascalia">Frase dell'insieme</div>
       </div>
-      <div class="controllo">
-        <label>Vento <span class="valore" id="valVento"></span></label>
-        <input type="range" id="vento" min="0" max="100" value="36">
+      <div class="dato">
+        <div class="cifra" id="datoVoci">0<span class="piccolo">/6</span></div>
+        <div class="didascalia">Voci in ascolto</div>
       </div>
-      <div class="controllo">
-        <label>Suono <span class="valore" id="valFronte"></span></label>
-        <button class="bottone" id="ascolto" type="button">Ascolta</button>
+      <div class="dato">
+        <div class="cifra" id="datoRegione">Do</div>
+        <div class="didascalia">Regione dell'arco</div>
       </div>
-      <div class="controllo">
-        <label>Volume <span class="valore" id="valVolume"></span></label>
-        <input type="range" id="volume" min="0" max="100" value="55">
+    </div>
+
+    <div class="sezione">
+      <div class="rubrica tecnico">
+        <span>Cielo</span><span class="filo"></span><span class="codice">M1</span>
+      </div>
+      <div class="griglia tecnico">
+        <div class="controllo">
+          <label>Cielo sereno <span class="valore" id="valSereno"></span></label>
+          <div class="cursore"><input type="range" id="sereno" min="0" max="100" value="30"></div>
+        </div>
+        <div class="controllo">
+          <label>Vento <span class="valore" id="valVento"></span></label>
+          <div class="cursore"><input type="range" id="vento" min="0" max="100" value="36"></div>
+        </div>
+        <div class="controllo">
+          <label>Grana <span class="valore" id="valGrana"></span></label>
+          <div class="cursore"><input type="range" id="grana" min="5" max="20" value="9"></div>
+        </div>
+        <div class="controllo">
+          <label>Ampiezza nuvole <span class="valore" id="valAmpiezza"></span></label>
+          <div class="cursore"><input type="range" id="ampiezza" min="0" max="100" value="50"></div>
+        </div>
+        <div class="controllo">
+          <label>Muta <span class="valore" id="valMuta"></span></label>
+          <div class="cursore"><input type="range" id="muta" min="0" max="100" value="40"></div>
+        </div>
+        <div class="controllo">
+          <label>Bande <span class="valore">righello</span></label>
+          <button class="interruttore acceso" id="swBande" type="button" aria-pressed="true">
+            <span class="quadro"></span><span class="stato">Visibili</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sezione">
+      <div class="rubrica tecnico">
+        <span>Suono</span><span class="filo"></span><span class="codice">M2</span>
+      </div>
+      <div class="griglia tecnico">
+        <div class="controllo">
+          <label>Ascolto <span class="valore" id="valAscolto">fermo</span></label>
+          <button class="interruttore" id="swAscolto" type="button" aria-pressed="false">
+            <span class="quadro"></span><span class="stato">Silenzio</span>
+          </button>
+        </div>
+        <div class="controllo">
+          <label>Polso udibile <span class="valore">battito</span></label>
+          <button class="interruttore" id="swPolso" type="button" aria-pressed="false">
+            <span class="quadro"></span><span class="stato">Spento</span>
+          </button>
+        </div>
+        <div class="controllo">
+          <label>Volume <span class="valore" id="valVolume"></span></label>
+          <div class="cursore"><input type="range" id="volume" min="0" max="100" value="55"></div>
+        </div>
+        <div class="controllo">
+          <label>Tempo <span class="valore" id="valTempo"></span></label>
+          <div class="cursore"><input type="range" id="tempo" min="44" max="132" value="88"></div>
+        </div>
+        <div class="controllo">
+          <label>Voci <span class="valore" id="valVoci"></span></label>
+          <div class="cursore"><input type="range" id="voci" min="1" max="10" value="6"></div>
+        </div>
+        <div class="controllo">
+          <label>Sensibilità <span class="valore" id="valSensibilita"></span></label>
+          <div class="cursore"><input type="range" id="sensibilita" min="0" max="100" value="64"></div>
+        </div>
+        <div class="controllo">
+          <label>Dispersione <span class="valore" id="valDispersione"></span></label>
+          <div class="cursore"><input type="range" id="dispersione" min="1" max="9" value="3"></div>
+        </div>
+        <div class="controllo">
+          <label>Avanzamento <span class="valore" id="valAvanzamento"></span></label>
+          <div class="cursore"><input type="range" id="avanzamento" min="0" max="100" value="50"></div>
+        </div>
+        <div class="controllo">
+          <label>Riverbero <span class="valore" id="valRiverbero"></span></label>
+          <div class="cursore"><input type="range" id="riverbero" min="0" max="100" value="38"></div>
+        </div>
+        <div class="controllo">
+          <label>Registro <span class="valore" id="valRegistro"></span></label>
+          <div class="cursore"><input type="range" id="registro" min="-12" max="12" value="0"></div>
+        </div>
       </div>
     </div>
 
@@ -455,6 +636,22 @@ const FRASI = [
   [[12, 0.5], [11, 0.5], [12, 6]],
 ];
 
+/* Le sette regioni dell'arco, per il quadrante dei dati. */
+const REGIONI = [
+  { da:  0, nome: "Do" },
+  { da:  6, nome: "Pentatonica" },
+  { da: 13, nome: "Fa" },
+  { da: 20, nome: "Fa# lidio" },
+  { da: 28, nome: "Dominante" },
+  { da: 36, nome: "Ombra" },
+  { da: 44, nome: "Rientro" },
+];
+function regione(i) {
+  let n = REGIONI[0].nome;
+  for (const r of REGIONI) if (i >= r.da) n = r.nome;
+  return n;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Parametri del suono                                                */
 /* ------------------------------------------------------------------ */
@@ -468,6 +665,8 @@ const AUDIO = {
   lettureMax:      5,    // ripetizioni massime
   lettureFronte:   6,    // letture d'insieme che fanno avanzare il fronte
   attesaFronte:   15,    // ...ma non più spesso di così (secondi)
+  registro:        0,    // trasporto d'insieme, in semitoni
+  polso:       false,    // il battito udibile (in "In C" è ciò che tiene insieme)
   volume:       0.55,
   attacco:      0.09,
   rilascio:     0.85,
@@ -493,7 +692,7 @@ const AUDIO = {
 const Suono = {
   ctx: null, master: null, convolutore: null, invio: null,
   voci: [], timer: null, attivo: false,
-  fronte: 0, letture: 0, ultimoPasso: 0, tDensita: 0,
+  fronte: 0, letture: 0, ultimoPasso: 0, tDensita: 0, tPolso: 0,
 
   battito() { return 60 / AUDIO.bpm; },
 
@@ -548,12 +747,27 @@ const Suono = {
         banda: [a, b],
         ottava: registri[i % registri.length],
         timbro: timbri[i % timbri.length],
-        uscita: uscita,
+        uscita: uscita, pan: pan,
         densita: 0, copertura: 0,
         frase: null, indice: 0, letture: 0, max: 0,
         tProssimo: 0,
       });
     }
+  },
+
+  /* Cambiare il numero di voci ridisegna le bande. I nodi vecchi restano
+     collegati ancora due secondi, il tempo che le note in corso si spengano:
+     staccarli subito darebbe uno scatto. */
+  impostaVoci(n) {
+    AUDIO.voci = n;
+    if (!this.ctx) return;
+    const vecchie = this.voci;
+    this.creaVoci();
+    const t = this.ctx.currentTime + 0.3;
+    this.voci.forEach(v => { v.tProssimo = t; });
+    setTimeout(() => vecchie.forEach(v => {
+      try { v.uscita.disconnect(); if (v.pan) v.pan.disconnect(); } catch (e) {}
+    }), 2000);
   },
 
   /* --- lettura del cielo sulla banda di ciascuna voce ---------------- */
@@ -616,6 +830,33 @@ const Suono = {
     const orizzonte = ora + 0.25;
     this.aggiornaDensita(ora);
     for (const v of this.voci) this.avanza(v, orizzonte, ora);
+    this.avanzaPolso(orizzonte);
+  },
+
+  /* Il battito udibile: un Do acuto, brevissimo, sulla griglia comune.
+     È la sola cosa che tiene insieme le voci; senza, l'insieme resta
+     ugualmente in fase ma nessuno la sente. */
+  avanzaPolso(orizzonte) {
+    if (this.tPolso < this.ctx.currentTime) this.tPolso = this.ctx.currentTime + 0.05;
+    let passi = 0;
+    while (this.tPolso < orizzonte && passi++ < 32) {
+      if (AUDIO.polso) this.battuta(this.tPolso);
+      this.tPolso += this.battito();
+    }
+  },
+
+  battuta(t) {
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 1046.5;            // Do, due ottave sopra
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(0.05, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
+    osc.connect(g); g.connect(this.master);
+    osc.start(t); osc.stop(t + 0.14);
+    osc.onended = () => g.disconnect();
   },
 
   avanza(v, orizzonte, ora) {
@@ -646,7 +887,7 @@ const Suono = {
   /* --- una nota ------------------------------------------------------ */
   nota(v, semitoni, durata, t) {
     const ctx = this.ctx;
-    const freq = 261.626 * Math.pow(2, (semitoni + v.ottava) / 12);
+    const freq = 261.626 * Math.pow(2, (semitoni + v.ottava + AUDIO.registro) / 12);
     const dur = durata * this.battito();
     const tenuta = Math.max(0.12, dur * 0.82);
     const rilascio = AUDIO.rilascio;
@@ -694,6 +935,7 @@ const Suono = {
     this.master.gain.setValueAtTime(this.master.gain.value, t);
     this.master.gain.linearRampToValueAtTime(AUDIO.volume, t + 1.5);
     this.voci.forEach(v => { v.tProssimo = t + 0.3; this.congeda(v); });
+    this.tPolso = t + 0.3;
     this.ultimoPasso = t;
     this.attivo = true;
     this.timer = setInterval(() => this.tick(), 25);
@@ -711,6 +953,11 @@ const Suono = {
     setTimeout(() => { if (!this.attivo) this.ctx.suspend(); }, 1500);
   },
 
+  riverbero(v) {
+    AUDIO.riverbero = v;
+    if (this.invio) this.invio.gain.value = v;
+  },
+
   volume(v) {
     AUDIO.volume = v;
     if (this.ctx && this.attivo) {
@@ -725,63 +972,142 @@ const Suono = {
 /* ------------------------------------------------------------------ */
 /*  Pannello di controllo                                              */
 /* ------------------------------------------------------------------ */
+/* Ogni comando scrive in PARAMS (il cielo) o in AUDIO (il suono), e nient'altro:
+   il pannello non conosce né il rendering né lo scheduler. */
 const Pannello = {
-  init() {
-    // Cielo sereno -> soglia (più alto = più sereno)
-    const sereno = document.getElementById("sereno");
-    const valSereno = document.getElementById("valSereno");
-    const applicaSereno = () => {
-      const v = +sereno.value;
-      PARAMS.soglia = 0.10 + (v / 100) * (0.21 - 0.10);
-      valSereno.textContent = v + "%";
-    };
-    sereno.addEventListener("input", applicaSereno);
-    applicaSereno();
 
-    // Vento -> ventoX / ventoY
-    const vento = document.getElementById("vento");
-    const valVento = document.getElementById("valVento");
-    const applicaVento = () => {
-      const v = +vento.value;
+  /* Un cursore: mappa 0..100 (o il proprio intervallo) sul parametro, e
+     scrive l'etichetta del valore. */
+  cursore(id, applica) {
+    const el = document.getElementById(id);
+    const val = document.getElementById("val" + id[0].toUpperCase() + id.slice(1));
+    const agisci = () => { if (val) val.textContent = applica(+el.value); };
+    el.addEventListener("input", agisci);
+    agisci();
+  },
+
+  /* Un interruttore: quadretto pieno/vuoto, due stati, due etichette. */
+  interruttore(id, acceso, etichette, applica) {
+    const el = document.getElementById(id);
+    const stato = el.querySelector(".stato");
+    let on = acceso;
+    const mostra = () => {
+      el.classList.toggle("acceso", on);
+      el.setAttribute("aria-pressed", on ? "true" : "false");
+      stato.textContent = on ? etichette[1] : etichette[0];
+      applica(on);
+    };
+    el.addEventListener("click", () => { on = !on; mostra(); });
+    mostra();
+    return { leggi: () => on, scrivi: (v) => { on = v; mostra(); } };
+  },
+
+  init() {
+    /* ---- Cielo ---- */
+    this.cursore("sereno", (v) => {
+      PARAMS.soglia = 0.10 + (v / 100) * (0.21 - 0.10);
+      return v + "%";
+    });
+    this.cursore("vento", (v) => {
       PARAMS.ventoX = (v / 100) * 2.5;
       PARAMS.ventoY = PARAMS.ventoX * 0.18;
-      valVento.textContent = v + "%";
-    };
-    vento.addEventListener("input", applicaVento);
-    applicaVento();
-
-    // Ascolto: il contesto audio nasce al primo clic (lo esigono i browser)
-    const ascolto = document.getElementById("ascolto");
-    ascolto.addEventListener("click", () => {
-      if (Suono.attivo) {
-        Suono.ferma();
-        ascolto.textContent = "Ascolta";
-        ascolto.classList.remove("acceso");
-      } else {
-        Suono.avvia();
-        ascolto.textContent = "Silenzio";
-        ascolto.classList.add("acceso");
-      }
+      return v + "%";
+    });
+    this.cursore("grana", (v) => {
+      PARAMS.passo = v;                 // fattoreGriglia() tiene ferme le nuvole
+      Cielo.resize();
+      return v + " px";
+    });
+    this.cursore("ampiezza", (v) => {
+      // Più alto = nuvole più larghe: la scala del rumore diminuisce. La corsa
+      // si ferma a 0.035 perché più in là la nuvola supera la finestra: il campo
+      // resta uniforme, il cielo non si copre mai e l'insieme ammutolisce.
+      PARAMS.scalaForma = 0.115 - (v / 100) * 0.080;
+      PARAMS.scalaMassa = PARAMS.scalaForma * 0.267;   // la massa segue la forma
+      return v + "%";
+    });
+    this.cursore("muta", (v) => {
+      PARAMS.morphMassa = (v / 100) * 0.030;
+      return v + "%";
     });
 
-    // Volume
-    const volume = document.getElementById("volume");
-    const valVolume = document.getElementById("valVolume");
-    const applicaVolume = () => {
-      const v = +volume.value;
-      Suono.volume(v / 100);
-      valVolume.textContent = v + "%";
-    };
-    volume.addEventListener("input", applicaVolume);
-    applicaVolume();
+    /* ---- Suono ---- */
+    const valAscolto = document.getElementById("valAscolto");
+    this.interruttore("swAscolto", false, ["Silenzio", "In ascolto"], (on) => {
+      if (on === Suono.attivo) return;
+      if (on) Suono.avvia(); else Suono.ferma();
+      valAscolto.textContent = on ? "attivo" : "fermo";
+    });
+    this.interruttore("swPolso", false, ["Spento", "Acceso"], (on) => {
+      AUDIO.polso = on;
+    });
+    this.interruttore("swBande", true, ["Nascoste", "Visibili"], (on) => {
+      document.getElementById("righello").classList.toggle("nascosto", !on);
+    });
 
-    // A che punto dell'archivio è arrivato l'insieme
-    const valFronte = document.getElementById("valFronte");
-    setInterval(() => {
-      valFronte.textContent = Suono.attivo
-        ? "frase " + (Suono.fronte + 1) + "/" + FRASI.length : "";
-    }, 500);
-  }
+    this.cursore("volume", (v) => { Suono.volume(v / 100); return v + "%"; });
+    this.cursore("tempo", (v) => { AUDIO.bpm = v; return v + " bpm"; });
+    this.cursore("voci", (v) => {
+      if (v !== AUDIO.voci) { Suono.impostaVoci(v); this.righello(); }
+      return v;
+    });
+    this.cursore("sensibilita", (v) => {
+      // Più alta = basta poca nuvola per svegliare una voce.
+      AUDIO.entra = 0.28 - (v / 100) * 0.25;
+      AUDIO.esce  = AUDIO.entra * 0.4;
+      return v + "%";
+    });
+    this.cursore("dispersione", (v) => {
+      AUDIO.finestra = v;               // quante frasi attorno al fronte
+      return v + (v === 1 ? " frase" : " frasi");
+    });
+    this.cursore("avanzamento", (v) => {
+      // Ogni quanto l'insieme può passare alla frase successiva.
+      AUDIO.attesaFronte = 60 * Math.pow(0.06, v / 100);
+      return Math.round(AUDIO.attesaFronte) + " s";
+    });
+    this.cursore("riverbero", (v) => { Suono.riverbero(v / 100); return v + "%"; });
+    this.cursore("registro", (v) => {
+      AUDIO.registro = v;
+      return (v > 0 ? "+" : "") + v + " st";
+    });
+
+    this.righello();
+    setInterval(() => this.aggiornaQuadrante(), 250);
+  },
+
+  /* Il righello: una casella per voce. Mostra la frase che la voce sta
+     leggendo, e si accende quando la nuvola è sulla sua banda. */
+  righello() {
+    const cont = document.getElementById("righello");
+    cont.style.gridTemplateColumns = "repeat(" + AUDIO.voci + ", 1fr)";
+    cont.innerHTML = "";
+    for (let i = 0; i < AUDIO.voci; i++) {
+      const c = document.createElement("div");
+      c.className = "banda";
+      c.textContent = "·";
+      cont.appendChild(c);
+    }
+  },
+
+  aggiornaQuadrante() {
+    const caselle = document.getElementById("righello").children;
+    let inAscolto = 0;
+    for (let i = 0; i < caselle.length; i++) {
+      const v = Suono.voci[i];
+      const viva = !!(v && v.frase && Suono.attivo);
+      if (viva) inAscolto++;
+      caselle[i].textContent = viva ? String(v.iFrase + 1).padStart(2, "0") : "·";
+      caselle[i].classList.toggle("attiva", viva);
+    }
+    const frase = document.getElementById("datoFrase");
+    frase.innerHTML = (Suono.attivo ? String(Suono.fronte + 1).padStart(2, "0") : "—") +
+      '<span class="piccolo">/' + FRASI.length + "</span>";
+    document.getElementById("datoVoci").innerHTML =
+      inAscolto + '<span class="piccolo">/' + AUDIO.voci + "</span>";
+    document.getElementById("datoRegione").textContent =
+      Suono.attivo ? regione(Suono.fronte) : "—";
+  },
 };
 
 Cielo.init();
