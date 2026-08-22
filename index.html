@@ -2,88 +2,215 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nuvole</title>
 <style>
-  :root {
-    /* Palette cielo — modificabile in un solo punto */
-    --sky-top:    #08192f;
-    --sky-bottom: #103458;
-  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body {
-    width: 100%; height: 100%;
-    overflow: hidden;
-    background: var(--sky-bottom);
-  }
-  #cielo {
-    display: block;
-    width: 100vw; height: 100vh;
-    background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-bottom) 100%);
-    cursor: default;
-  }
-  /* Marchio discreto, si dissolve dopo l'avvio */
-  #marchio {
-    position: fixed;
-    left: 24px; bottom: 20px;
+  html, body { width: 100%; min-height: 100%; }
+  body {
+    background: #f2f2f0;
+    color: #4c525c;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6vh 5vw;
+    min-height: 100vh;
+  }
+
+  /* La stanza: colonna allineata a sinistra */
+  .stanza {
+    width: 100%;
+    max-width: 960px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: clamp(16px, 2.6vh, 30px);
+  }
+
+  /* Testata */
+  .marchio {
+    align-self: flex-start;
     font-weight: 300;
-    letter-spacing: 0.42em;
+    letter-spacing: 0.5em;
     font-size: 13px;
     text-transform: uppercase;
-    color: rgba(200, 226, 248, 0.75);
-    pointer-events: none;
-    user-select: none;
-    transition: opacity 2.4s ease 3s;
+    color: #8d949e;
   }
-  #marchio.svanito { opacity: 0; }
+
+  /* La finestra: solo vetro, nessuna cornice */
+  .finestra { line-height: 0; }
+  #cielo { display: block; width: 100%; }
+
+  /* Pannello di controllo */
+  .pannello {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px 44px;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .controllo {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 200px;
+    max-width: 300px;
+    flex: 1 1 200px;
+  }
+  .controllo > label {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #9aa1ab;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .controllo .valore {
+    color: #6b727c;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+
+  /* Interruttore d'ascolto */
+  .bottone {
+    align-self: flex-start;
+    font: inherit;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #6b727c;
+    background: transparent;
+    border: 1px solid #d7d7d3;
+    border-radius: 2px;
+    padding: 9px 18px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .bottone:hover { border-color: #9aa1ab; color: #4c525c; }
+  .bottone.acceso { border-color: #8fb6d4; color: #4a7ea6; }
+
+  /* Slider */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 3px;
+    border-radius: 3px;
+    background: #dcdcd8;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    background: #6b727c;
+    border: none;
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    background: #6b727c;
+    border: none;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
-  <canvas id="cielo"></canvas>
-  <div id="marchio">Nuvole</div>
+
+  <div class="stanza">
+
+    <div class="marchio">Nuvole</div>
+
+    <div class="finestra">
+      <canvas id="cielo"></canvas>
+    </div>
+
+    <div class="pannello">
+      <div class="controllo">
+        <label>Cielo sereno <span class="valore" id="valSereno"></span></label>
+        <input type="range" id="sereno" min="0" max="100" value="30">
+      </div>
+      <div class="controllo">
+        <label>Vento <span class="valore" id="valVento"></span></label>
+        <input type="range" id="vento" min="0" max="100" value="36">
+      </div>
+      <div class="controllo">
+        <label>Suono <span class="valore" id="valFronte"></span></label>
+        <button class="bottone" id="ascolto" type="button">Ascolta</button>
+      </div>
+      <div class="controllo">
+        <label>Volume <span class="valore" id="valVolume"></span></label>
+        <input type="range" id="volume" min="0" max="100" value="55">
+      </div>
+    </div>
+
+  </div>
 
 <script>
 "use strict";
 
 /* =========================================================================
    NUVOLE — web-app di musica generativa (nella scia di Rada)
-   Modulo 1 · Il cielo: matrice di puntini + campo-nuvole a deriva animata.
+   Modulo 1 · Il cielo:  finestra con matrice di puntini + campo-nuvole a deriva.
+   Modulo 2 · Il suono:  53 frasi in Do scelte dalle nuvole che attraversano.
 
    Architettura pensata per l'estensione futura:
-   - PARAMS  : tutti i parametri di resa e di comportamento in un solo luogo.
-   - CampoNuvole : il modello del cielo (rumore fBm con vento). È qui che, in
-                   seguito, la densità delle nuvole potrà pilotare il motore
-                   audio generativo (una nuvola che attraversa = un evento).
-   - Cielo   : la matrice di puntini e il loop di rendering.
+   - PARAMS       : parametri di resa e comportamento, modificabili a runtime.
+   - CampoNuvole  : il modello del cielo (rumore fBm con vento). Lo stesso campo
+                    che disegna la finestra è letto dal motore audio come
+                    partitura: una nuvola che attraversa una banda = una voce.
+   - Cielo        : la matrice di puntini e il loop di rendering nella finestra.
+   - FRASI        : l'archivio delle 53 frasi in Do.
+   - Suono        : il motore generativo (Web Audio, nessuna libreria).
    ========================================================================= */
 
+/* ------------------------------------------------------------------ */
+/*  Parametri (alcuni pilotati dal pannello)                          */
+/* ------------------------------------------------------------------ */
 const PARAMS = {
   // Griglia
-  passo:        22,     // distanza fra i puntini (px, in coordinate CSS)
-  raggioBase:   2.4,    // raggio del puntino di cielo sereno
-  raggioNuvola: 4.6,    // raggio massimo del puntino "nuvola"
+  passo:        9,      // distanza fra i puntini (px, coordinate CSS)
+  passoRif:     22,     // passo di riferimento: le scale del rumore e la
+                        // velocita' del vento sono tarate su questo, e vengono
+                        // riportate al passo reale, cosi' infittire la matrice
+                        // non rimpicciolisce le nuvole ne' le rallenta.
+  raggioBase:   1.25,   // raggio del puntino di cielo sereno
+  raggioNuvola: 0.7,    // raggio del puntino dentro la nuvola: il puntino non
+                        // si gonfia, si assottiglia — la nuvola e' una dissolvenza
 
-  // Colori (cielo sereno -> nuvola)
-  celeste: { r: 96,  g: 176, b: 232 },
-  bianco:  { r: 255, g: 255, b: 255 },
+  // I due colori del puntino: cielo sereno -> nuvola.
+  // Il canvas non ha fondo: i puntini stanno direttamente sulla stanza chiara.
+  celeste: { r: 118, g: 172, b: 214 },
+  nuvola:  { r: 255, g: 255, b: 255 },
 
   // Campo-nuvole
-  scalaForma:   0.075,  // dettaglio delle nuvole (più alto = nuvole più piccole)
-  scalaMassa:   0.020,  // scala della copertura d'insieme (dove il cielo è nuvoloso)
-  soglia:       0.150,  // sotto questa densità: cielo sereno (tarata sul campo)
+  scalaForma:   0.075,  // dettaglio delle nuvole
+  scalaMassa:   0.020,  // scala della copertura d'insieme
+  soglia:       0.150,  // sotto questa densità: cielo sereno  (<- "cielo sereno")
   ampiezza:     0.065,  // ampiezza della transizione sereno -> nuvola
 
   // Deriva (vento)
-  ventoX:       0.9,    // velocità orizzontale del vento (px equivalenti / s)
+  ventoX:       0.9,    // velocità orizzontale               (<- "vento")
   ventoY:       0.16,   // lieve deriva verticale
-  morphMassa:   0.012,  // lentezza con cui la copertura d'insieme muta
+  morphMassa:   0.012,  // lentezza con cui la copertura muta
 
-  glow:         true,   // alone luminoso sui puntini-nuvola
+  glow:         false,  // su fondo chiaro un alone bianco non aggiunge nulla
 };
 
+/* Quanto vale un passo di griglia rispetto al passo di riferimento:
+   converte scale del rumore e velocita' del vento da "unita' di riferimento"
+   a colonne/righe della matrice reale. */
+function fattoreGriglia() { return PARAMS.passo / PARAMS.passoRif; }
+
 /* ------------------------------------------------------------------ */
-/*  Rumore: value-noise 2D + fBm (frazionario browniano)              */
+/*  Rumore: value-noise 2D + fBm                                       */
 /* ------------------------------------------------------------------ */
 function hash2(x, y) {
   let n = (x * 374761393 + y * 668265263) | 0;
@@ -115,7 +242,7 @@ function fbm(x, y) {
     amp  *= 0.5;
     freq *= 2;
   }
-  return sum / norm; // 0..1
+  return sum / norm;
 }
 
 function smoothstep(a, b, x) {
@@ -124,100 +251,105 @@ function smoothstep(a, b, x) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Campo-nuvole: densità della nuvola in ogni punto, nel tempo       */
+/*  Campo-nuvole                                                       */
 /* ------------------------------------------------------------------ */
 const CampoNuvole = {
-  // Restituisce la "quantità di nuvola" in (col,row) al tempo t (secondi): 0..1
-  densita(col, row, t) {
-    // Deriva: il campo scorre nel tempo -> le nuvole attraversano il cielo
-    const dx = t * PARAMS.ventoX;
-    const dy = t * PARAMS.ventoY;
-
-    // Forma di dettaglio delle nuvole
+  // dx, dy: fase di deriva accumulata (non tempo assoluto, così il vento
+  // ne cambia il ritmo e non fa saltare le nuvole); tm: tempo per la muta.
+  densita(col, row, dx, dy, tm) {
+    const k = fattoreGriglia();
+    const sForma = PARAMS.scalaForma * k;
+    const sMassa = PARAMS.scalaMassa * k;
     const forma = fbm(
-      (col - dx) * PARAMS.scalaForma,
-      (row - dy) * PARAMS.scalaForma
+      (col - dx) * sForma,
+      (row - dy) * sForma
     );
-
-    // Copertura d'insieme: modula dove, nel cielo, ci sono nuvole (muta lenta)
     const massa = fbm(
-      (col - dx * 0.35) * PARAMS.scalaMassa + 100,
-      (row) * PARAMS.scalaMassa + t * PARAMS.morphMassa + 100
+      (col - dx * 0.35) * sMassa + 100,
+      (row) * sMassa + tm * PARAMS.morphMassa + 100
     );
 
-    // Le due scale si moltiplicano: nuvole nette dentro grandi banchi
     const densita = forma * (0.35 + massa * 0.95);
-
     return smoothstep(PARAMS.soglia, PARAMS.soglia + PARAMS.ampiezza, densita);
   }
 };
 
 /* ------------------------------------------------------------------ */
-/*  Cielo: matrice di puntini + rendering                             */
+/*  Cielo: matrice + rendering nella finestra                         */
 /* ------------------------------------------------------------------ */
 const Cielo = {
-  canvas: null, ctx: null,
+  canvas: null, ctx: null, cornice: null,
   dpr: 1, w: 0, h: 0,
   cols: 0, rows: 0, offX: 0, offY: 0,
-  t0: 0,
+  lastTs: 0, phaseX: 0, phaseY: 0, tempo: 0,
 
   init() {
     this.canvas = document.getElementById("cielo");
     this.ctx = this.canvas.getContext("2d");
+    this.cornice = document.querySelector(".finestra");
     this.resize();
     window.addEventListener("resize", () => this.resize());
-    this.t0 = performance.now();
+    this.lastTs = performance.now();
     requestAnimationFrame((ts) => this.loop(ts));
-
-    // Dissolvenza del marchio
-    setTimeout(() => document.getElementById("marchio").classList.add("svanito"), 100);
   },
 
+  // Dimensiona la finestra in modo responsive, lasciando spazio ai controlli
   resize() {
     this.dpr = Math.min(window.devicePixelRatio || 1, 2);
-    this.w = window.innerWidth;
-    this.h = window.innerHeight;
-    this.canvas.width  = Math.floor(this.w * this.dpr);
-    this.canvas.height = Math.floor(this.h * this.dpr);
+
+    const maxW = this.cornice.clientWidth || window.innerWidth;
+    const maxH = window.innerHeight * 0.60;
+    let cw = maxW, ch = cw * 0.62;
+    if (ch > maxH) { ch = maxH; }
+    cw = Math.round(cw); ch = Math.round(ch);
+
+    this.w = cw; this.h = ch;
+    this.canvas.style.width  = cw + "px";
+    this.canvas.style.height = ch + "px";
+    this.canvas.width  = Math.floor(cw * this.dpr);
+    this.canvas.height = Math.floor(ch * this.dpr);
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
 
-    // Numero di puntini e centratura della matrice
-    this.cols = Math.ceil(this.w / PARAMS.passo) + 1;
-    this.rows = Math.ceil(this.h / PARAMS.passo) + 1;
+    this.cols = Math.floor((cw - PARAMS.passo) / PARAMS.passo) + 1;
+    this.rows = Math.floor((ch - PARAMS.passo) / PARAMS.passo) + 1;
     const larghGriglia = (this.cols - 1) * PARAMS.passo;
     const altGriglia   = (this.rows - 1) * PARAMS.passo;
-    this.offX = (this.w - larghGriglia) / 2;
-    this.offY = (this.h - altGriglia) / 2;
+    this.offX = (cw - larghGriglia) / 2;
+    this.offY = (ch - altGriglia) / 2;
   },
 
   loop(ts) {
-    const t = (ts - this.t0) / 1000; // secondi
-    this.render(t);
+    let dt = (ts - this.lastTs) / 1000;
+    this.lastTs = ts;
+    if (!(dt >= 0) || dt > 0.25) dt = 0.016; // clamp (tab in background / primo frame)
+    const k = 1 / fattoreGriglia();   // colonne al secondo alla densita' reale
+    this.phaseX += PARAMS.ventoX * k * dt;
+    this.phaseY += PARAMS.ventoY * k * dt;
+    this.tempo  += dt;
+    this.render();
     requestAnimationFrame((ts2) => this.loop(ts2));
   },
 
-  render(t) {
+  render() {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.w, this.h);
 
-    const { celeste, bianco, passo, raggioBase, raggioNuvola } = PARAMS;
+    const { celeste, nuvola, passo, raggioBase, raggioNuvola } = PARAMS;
+    const dx = this.phaseX, dy = this.phaseY, tm = this.tempo;
 
     for (let r = 0; r < this.rows; r++) {
       const py = this.offY + r * passo;
       for (let c = 0; c < this.cols; c++) {
         const px = this.offX + c * passo;
+        const q = CampoNuvole.densita(c, r, dx, dy, tm);
 
-        const q = CampoNuvole.densita(c, r, t); // 0..1
-
-        // Colore: interpolazione celeste -> bianco
-        const cr = Math.round(celeste.r + (bianco.r - celeste.r) * q);
-        const cg = Math.round(celeste.g + (bianco.g - celeste.g) * q);
-        const cb = Math.round(celeste.b + (bianco.b - celeste.b) * q);
-
+        const cr = Math.round(celeste.r + (nuvola.r - celeste.r) * q);
+        const cg = Math.round(celeste.g + (nuvola.g - celeste.g) * q);
+        const cb = Math.round(celeste.b + (nuvola.b - celeste.b) * q);
         const raggio = raggioBase + (raggioNuvola - raggioBase) * q;
 
-        if (PARAMS.glow && q > 0.05) {
-          ctx.shadowBlur = 6 * q;
+        if (PARAMS.glow && q > 0.45) {
+          ctx.shadowBlur = 4 * q;
           ctx.shadowColor = "rgba(255,255,255," + (0.55 * q).toFixed(3) + ")";
         } else {
           ctx.shadowBlur = 0;
@@ -233,7 +365,427 @@ const Cielo = {
   }
 };
 
+/* ------------------------------------------------------------------ */
+/*  Archivio: 53 frasi in Do                                           */
+/* ------------------------------------------------------------------ */
+/* Ogni frase è una sequenza di eventi [semitoni da Do, durata in battiti];
+   nota null = silenzio. Le frasi sono brevi, ripetibili, tutte in Do.
+
+   NOTA. Questo archivio è ORIGINALE. Non riproduce le 53 cellule di "In C"
+   di Terry Riley (1964), che sono opera sotto diritto d'autore: ne adotta
+   il principio — cellule minime che ogni voce ripete a piacere, e un arco
+   armonico che si sposta lentamente da una regione all'altra.
+
+   L'arco, in sette regioni:
+     1-6    Do puro (Do-Mi-Sol)
+     7-13   apertura pentatonica (Re, La)
+     14-20  entra il Fa: ambiguità Do/Fa
+     21-28  entra il Fa#: la luce lidia
+     29-36  regione di dominante (Si, Re)
+     37-44  l'ombra (Mi bemolle, Si bemolle)
+     45-53  rientro: ampiezza, Si -> Do
+   La frase 53 chiude su un Do lungo, e il fronte torna alla 1: l'arco si
+   richiude dove è cominciato. */
+const FRASI = [
+  /* I · Do puro ------------------------------------------------- */
+  [[4, 0.5], [null, 1.5]],
+  [[4, 0.5], [7, 0.5], [null, 1]],
+  [[0, 1], [4, 1]],
+  [[7, 0.5], [4, 0.5], [0, 1]],
+  [[4, 0.25], [7, 0.25], [4, 0.5], [null, 1]],
+  [[0, 0.5], [4, 0.5], [7, 0.5], [12, 0.5]],
+
+  /* II · apertura pentatonica ----------------------------------- */
+  [[9, 0.5], [7, 0.5], [4, 1]],
+  [[2, 0.5], [4, 0.5], [7, 1]],
+  [[12, 0.5], [9, 0.5], [7, 0.5], [4, 0.5]],
+  [[7, 2], [9, 1]],
+  [[4, 0.25], [2, 0.25], [0, 0.5], [null, 1]],
+  [[9, 1], [12, 1]],
+  [[0, 3]],
+
+  /* III · entra il Fa ------------------------------------------- */
+  [[5, 0.5], [4, 0.5], [null, 1]],
+  [[5, 1], [7, 1]],
+  [[0, 0.5], [5, 0.5], [9, 1]],
+  [[17, 0.5], [16, 0.5], [12, 1]],
+  [[5, 0.25], [7, 0.25], [9, 0.5], [7, 1]],
+  [[9, 2], [5, 2]],
+  [[12, 0.5], [9, 0.5], [5, 0.5], [4, 0.5]],
+
+  /* IV · la luce lidia (Fa#) ------------------------------------ */
+  [[6, 0.5], [7, 0.5], [null, 1]],
+  [[7, 0.5], [6, 0.5], [4, 1]],
+  [[2, 0.5], [6, 0.5], [7, 1]],
+  [[14, 0.5], [12, 0.5], [7, 1]],
+  [[6, 0.25], [7, 0.25], [9, 0.25], [7, 0.25], [null, 1]],
+  [[19, 1], [18, 1]],
+  [[7, 2]],
+  [[6, 1], [9, 1], [7, 2]],
+
+  /* V · regione di dominante ------------------------------------ */
+  [[11, 0.5], [12, 0.5], [null, 1]],
+  [[7, 0.5], [11, 0.5], [14, 1]],
+  [[11, 0.25], [9, 0.25], [7, 0.5], [null, 1]],
+  [[14, 1], [11, 1]],
+  [[2, 0.5], [7, 0.5], [11, 0.5], [14, 0.5]],
+  [[19, 0.5], [16, 0.5], [14, 1]],
+  [[11, 3]],
+  [[7, 0.25], [9, 0.25], [11, 0.25], [12, 0.25], [14, 1]],
+
+  /* VI · l'ombra (Mi bemolle, Si bemolle) ----------------------- */
+  [[10, 0.5], [9, 0.5], [null, 1]],
+  [[3, 1], [5, 1]],
+  [[10, 0.5], [7, 0.5], [3, 1]],
+  [[15, 0.5], [14, 0.5], [10, 1]],
+  [[3, 0.25], [5, 0.25], [7, 0.5], [10, 1]],
+  [[10, 2], [7, 2]],
+  [[0, 0.5], [3, 0.5], [7, 0.5], [10, 0.5]],
+  [[5, 1], [3, 1], [0, 2]],
+
+  /* VII · rientro ----------------------------------------------- */
+  [[0, 2], [4, 2]],
+  [[7, 1], [11, 1], [12, 2]],
+  [[12, 0.5], [11, 0.5], [12, 1]],
+  [[16, 2], [12, 2]],
+  [[11, 1], [12, 3]],
+  [[0, 4]],
+  [[7, 0.5], [12, 0.5], [16, 1], [19, 2]],
+  [[11, 2], [12, 4]],
+  [[12, 0.5], [11, 0.5], [12, 6]],
+];
+
+/* ------------------------------------------------------------------ */
+/*  Parametri del suono                                                */
+/* ------------------------------------------------------------------ */
+const AUDIO = {
+  bpm:            88,    // il polso: tutte le voci condividono questa griglia
+  voci:            6,    // quante voci (bande verticali della finestra)
+  entra:        0.12,    // copertura di nuvola oltre cui una voce si sveglia
+  esce:         0.05,    // copertura sotto cui la voce si congeda
+  finestra:        3,    // quante frasi attorno al fronte sono scegliibili
+  lettureMin:      2,    // ripetizioni minime di una frase
+  lettureMax:      5,    // ripetizioni massime
+  lettureFronte:   6,    // letture d'insieme che fanno avanzare il fronte
+  attesaFronte:   15,    // ...ma non più spesso di così (secondi)
+  volume:       0.55,
+  attacco:      0.09,
+  rilascio:     0.85,
+  riverbero:    0.38,
+};
+
+/* ------------------------------------------------------------------ */
+/*  Suono: le nuvole scelgono le frasi                                 */
+/* ------------------------------------------------------------------ */
+/* Ogni voce presidia una banda verticale della finestra. Quando una nuvola
+   entra nella sua banda la voce si sveglia, sceglie a caso una frase nella
+   finestra corrente dell'archivio e la ripete; quando la nuvola esce, la
+   voce finisce la lettura e tace. Poiché le nuvole attraversano le bande in
+   momenti diversi, le voci entrano e escono senza accordarsi: le
+   sovrapposizioni non sono scritte da nessuna parte.
+
+   Dell'"In C" restano tre regole: il polso condiviso (le frasi partono tutte
+   su un battito, ma hanno lunghezze diverse e quindi sfasano), l'archivio
+   percorso in avanti e mai a salti (il "fronte" avanza di una frase alla
+   volta), e la libertà di ciascuna voce dentro un intorno ristretto del
+   fronte — così l'insieme resta in una stessa regione armonica senza mai
+   ripetere la stessa combinazione. */
+const Suono = {
+  ctx: null, master: null, convolutore: null, invio: null,
+  voci: [], timer: null, attivo: false,
+  fronte: 0, letture: 0, ultimoPasso: 0, tDensita: 0,
+
+  battito() { return 60 / AUDIO.bpm; },
+
+  /* --- catena audio ------------------------------------------------ */
+  creaContesto() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AC();
+
+    this.master = this.ctx.createGain();
+    this.master.gain.value = 0;               // si apre in dissolvenza
+    this.master.connect(this.ctx.destination);
+
+    // Riverbero: risposta all'impulso generata, nessun file esterno.
+    this.convolutore = this.ctx.createConvolver();
+    this.convolutore.buffer = this.rispostaImpulso(3.4, 2.4);
+    this.invio = this.ctx.createGain();
+    this.invio.gain.value = AUDIO.riverbero;
+    this.invio.connect(this.convolutore);
+    this.convolutore.connect(this.master);
+  },
+
+  rispostaImpulso(secondi, decadimento) {
+    const sr = this.ctx.sampleRate;
+    const n = Math.floor(sr * secondi);
+    const buf = this.ctx.createBuffer(2, n, sr);
+    for (let ch = 0; ch < 2; ch++) {
+      const dati = buf.getChannelData(ch);
+      for (let i = 0; i < n; i++) {
+        dati[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, decadimento);
+      }
+    }
+    return buf;
+  },
+
+  /* --- le voci ----------------------------------------------------- */
+  creaVoci() {
+    const registri = [-12, 0, 12, 0, -12, 12];
+    const timbri   = ["sine", "triangle"];
+    this.voci = [];
+    for (let i = 0; i < AUDIO.voci; i++) {
+      const a = i / AUDIO.voci, b = (i + 1) / AUDIO.voci;
+      const pan = this.ctx.createStereoPanner
+        ? this.ctx.createStereoPanner() : null;
+      if (pan) pan.pan.value = ((a + b) / 2) * 2 - 1;   // la banda dà la posizione
+      const uscita = this.ctx.createGain();
+      uscita.gain.value = 1;
+      uscita.connect(pan || this.master);
+      if (pan) { pan.connect(this.master); pan.connect(this.invio); }
+      else uscita.connect(this.invio);
+
+      this.voci.push({
+        banda: [a, b],
+        ottava: registri[i % registri.length],
+        timbro: timbri[i % timbri.length],
+        uscita: uscita,
+        densita: 0, copertura: 0,
+        frase: null, indice: 0, letture: 0, max: 0,
+        tProssimo: 0,
+      });
+    }
+  },
+
+  /* --- lettura del cielo sulla banda di ciascuna voce ---------------- */
+  /* Il campo che disegna la finestra è letto qui come partitura, a grana
+     grossa e non più di dieci volte al secondo. Se ne ricavano due misure:
+       copertura — quanta parte della banda sta dentro una nuvola: è il
+                   segnale di attacco e di congedo (la nuvola che arriva);
+       densita   — la media, che governa dinamica e apertura del filtro.
+     La copertura è preferita alla media perché la media di una banda alta e
+     stretta resta sempre bassa, e al massimo perché il massimo satura a 1
+     appena un solo punto è dentro una nuvola. Distribuzioni misurate sul
+     campo reale (18 s, cielo al 45%): copertura p50 0-0.19, picchi 0.47. */
+  aggiornaDensita(ora) {
+    if (ora - this.tDensita < 0.1) return;
+    this.tDensita = ora;
+    const dx = Cielo.phaseX, dy = Cielo.phaseY, tm = Cielo.tempo;
+    for (const v of this.voci) {
+      const c0 = Math.floor(v.banda[0] * Cielo.cols);
+      const c1 = Math.max(c0 + 1, Math.floor(v.banda[1] * Cielo.cols));
+      let somma = 0, dentro = 0, n = 0;
+      for (let c = c0; c < c1; c += 3) {
+        for (let r = 0; r < Cielo.rows; r += 5) {
+          const q = CampoNuvole.densita(c, r, dx, dy, tm);
+          somma += q;
+          if (q > 0.5) dentro++;
+          n++;
+        }
+      }
+      v.densita   = n ? somma / n : 0;
+      v.copertura = n ? dentro / n : 0;
+    }
+  },
+
+  /* --- l'archivio: fronte e scelta ---------------------------------- */
+  avanzaFronte(ora) {
+    if (ora - this.ultimoPasso < AUDIO.attesaFronte) return;
+    this.ultimoPasso = ora;
+    this.fronte = (this.fronte + 1) % FRASI.length;
+  },
+
+  sveglia(v) {
+    const scarto = Math.floor(Math.random() * AUDIO.finestra);
+    v.iFrase = (this.fronte + scarto) % FRASI.length;
+    v.frase = FRASI[v.iFrase];
+    v.indice = 0;
+    v.letture = 0;
+    v.max = AUDIO.lettureMin +
+            Math.floor(Math.random() * (AUDIO.lettureMax - AUDIO.lettureMin + 1));
+  },
+
+  congeda(v) {
+    v.frase = null;
+    v.indice = 0;
+    v.letture = 0;
+  },
+
+  /* --- scheduler ---------------------------------------------------- */
+  tick() {
+    const ora = this.ctx.currentTime;
+    const orizzonte = ora + 0.25;
+    this.aggiornaDensita(ora);
+    for (const v of this.voci) this.avanza(v, orizzonte, ora);
+  },
+
+  avanza(v, orizzonte, ora) {
+    let passi = 0;
+    while (v.tProssimo < orizzonte && passi++ < 64) {
+      if (v.frase === null) {
+        // In attesa: la voce resta sulla griglia del polso, in silenzio,
+        // finché la nuvola non arriva sulla sua banda.
+        if (v.copertura >= AUDIO.entra) this.sveglia(v);
+        else { v.tProssimo += this.battito(); continue; }
+      }
+
+      const ev = v.frase[v.indice];
+      if (ev[0] !== null) this.nota(v, ev[0], ev[1], v.tProssimo);
+      v.tProssimo += ev[1] * this.battito();
+      v.indice++;
+
+      if (v.indice >= v.frase.length) {
+        v.indice = 0;
+        v.letture++;
+        this.letture++;
+        if (this.letture % AUDIO.lettureFronte === 0) this.avanzaFronte(ora);
+        if (v.copertura < AUDIO.esce || v.letture >= v.max) this.congeda(v);
+      }
+    }
+  },
+
+  /* --- una nota ------------------------------------------------------ */
+  nota(v, semitoni, durata, t) {
+    const ctx = this.ctx;
+    const freq = 261.626 * Math.pow(2, (semitoni + v.ottava) / 12);
+    const dur = durata * this.battito();
+    const tenuta = Math.max(0.12, dur * 0.82);
+    const rilascio = AUDIO.rilascio;
+    const amp = 0.13 * Math.min(1, 0.45 + v.densita * 1.8);
+
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(amp, t + AUDIO.attacco);
+    g.gain.setValueAtTime(amp, t + tenuta);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + tenuta + rilascio);
+
+    const filtro = ctx.createBiquadFilter();
+    filtro.type = "lowpass";
+    filtro.frequency.value = 900 + 4000 * v.densita;
+    filtro.Q.value = 0.4;
+
+    const osc = ctx.createOscillator();
+    osc.type = v.timbro;
+    osc.frequency.value = freq;
+
+    // Un'ottava sopra, appena percettibile: dà corpo senza durezza.
+    const armonico = ctx.createOscillator();
+    armonico.type = "sine";
+    armonico.frequency.value = freq * 2;
+    const gArm = ctx.createGain();
+    gArm.gain.value = 0.14;
+
+    osc.connect(filtro);
+    armonico.connect(gArm); gArm.connect(filtro);
+    filtro.connect(g);
+    g.connect(v.uscita);
+
+    const fine = t + tenuta + rilascio + 0.05;
+    osc.start(t); osc.stop(fine);
+    armonico.start(t); armonico.stop(fine);
+    osc.onended = () => { g.disconnect(); filtro.disconnect(); };
+  },
+
+  /* --- accensione e spegnimento -------------------------------------- */
+  avvia() {
+    if (!this.ctx) { this.creaContesto(); this.creaVoci(); }
+    this.ctx.resume();
+    const t = this.ctx.currentTime;
+    this.master.gain.cancelScheduledValues(t);
+    this.master.gain.setValueAtTime(this.master.gain.value, t);
+    this.master.gain.linearRampToValueAtTime(AUDIO.volume, t + 1.5);
+    this.voci.forEach(v => { v.tProssimo = t + 0.3; this.congeda(v); });
+    this.ultimoPasso = t;
+    this.attivo = true;
+    this.timer = setInterval(() => this.tick(), 25);
+  },
+
+  ferma() {
+    if (!this.ctx) return;
+    this.attivo = false;
+    clearInterval(this.timer);
+    this.timer = null;
+    const t = this.ctx.currentTime;
+    this.master.gain.cancelScheduledValues(t);
+    this.master.gain.setValueAtTime(this.master.gain.value, t);
+    this.master.gain.linearRampToValueAtTime(0, t + 1.2);
+    setTimeout(() => { if (!this.attivo) this.ctx.suspend(); }, 1500);
+  },
+
+  volume(v) {
+    AUDIO.volume = v;
+    if (this.ctx && this.attivo) {
+      const t = this.ctx.currentTime;
+      this.master.gain.cancelScheduledValues(t);
+      this.master.gain.setValueAtTime(this.master.gain.value, t);
+      this.master.gain.linearRampToValueAtTime(v, t + 0.15);
+    }
+  },
+};
+
+/* ------------------------------------------------------------------ */
+/*  Pannello di controllo                                              */
+/* ------------------------------------------------------------------ */
+const Pannello = {
+  init() {
+    // Cielo sereno -> soglia (più alto = più sereno)
+    const sereno = document.getElementById("sereno");
+    const valSereno = document.getElementById("valSereno");
+    const applicaSereno = () => {
+      const v = +sereno.value;
+      PARAMS.soglia = 0.10 + (v / 100) * (0.21 - 0.10);
+      valSereno.textContent = v + "%";
+    };
+    sereno.addEventListener("input", applicaSereno);
+    applicaSereno();
+
+    // Vento -> ventoX / ventoY
+    const vento = document.getElementById("vento");
+    const valVento = document.getElementById("valVento");
+    const applicaVento = () => {
+      const v = +vento.value;
+      PARAMS.ventoX = (v / 100) * 2.5;
+      PARAMS.ventoY = PARAMS.ventoX * 0.18;
+      valVento.textContent = v + "%";
+    };
+    vento.addEventListener("input", applicaVento);
+    applicaVento();
+
+    // Ascolto: il contesto audio nasce al primo clic (lo esigono i browser)
+    const ascolto = document.getElementById("ascolto");
+    ascolto.addEventListener("click", () => {
+      if (Suono.attivo) {
+        Suono.ferma();
+        ascolto.textContent = "Ascolta";
+        ascolto.classList.remove("acceso");
+      } else {
+        Suono.avvia();
+        ascolto.textContent = "Silenzio";
+        ascolto.classList.add("acceso");
+      }
+    });
+
+    // Volume
+    const volume = document.getElementById("volume");
+    const valVolume = document.getElementById("valVolume");
+    const applicaVolume = () => {
+      const v = +volume.value;
+      Suono.volume(v / 100);
+      valVolume.textContent = v + "%";
+    };
+    volume.addEventListener("input", applicaVolume);
+    applicaVolume();
+
+    // A che punto dell'archivio è arrivato l'insieme
+    const valFronte = document.getElementById("valFronte");
+    setInterval(() => {
+      valFronte.textContent = Suono.attivo
+        ? "frase " + (Suono.fronte + 1) + "/" + FRASI.length : "";
+    }, 500);
+  }
+};
+
 Cielo.init();
+Pannello.init();
 </script>
 </body>
 </html>
