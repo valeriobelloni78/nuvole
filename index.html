@@ -149,6 +149,40 @@
     letter-spacing: 0.06em;
   }
 
+  /* Quadrante ad arco: tacche in cerchio, pallino pieno, targa sotto.
+     Sotto il disegno resta un input[range] nativo, celato ma non rimosso:
+     è lui a tenere il valore, e con lui restano tastiera e accessibilità. */
+  .griglia.archi {
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+    gap: 10px 24px;
+  }
+  .controllo.arco { align-items: center; gap: 2px; position: relative; }
+  .disco { width: 100%; max-width: 152px; }
+  .disco svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .disco .tacca { stroke: rgba(255, 255, 255, 0.5); stroke-width: 1.1; }
+  .disco .pallino { fill: #ffffff; }
+  .targa { text-align: center; }
+  .targa .nome { color: rgba(255, 255, 255, 0.75); }
+  .targa .lettura {
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    color: #ffffff;
+    font-variant-numeric: tabular-nums;
+    text-transform: none;
+    line-height: 1.2;
+    margin-top: 3px;
+  }
+  .celato {
+    position: absolute;
+    width: 1px; height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .controllo.arco:focus-within .pallino {
+    stroke: rgba(255, 255, 255, 0.55);
+    stroke-width: 4;
+  }
+
   /* Cursore: filetto con tacche e pallino pieno */
   .cursore { position: relative; height: 16px; }
   .cursore::before {                       /* la traccia */
@@ -257,15 +291,27 @@
       <div class="rubrica tecnico">
         <span>Cielo</span><span class="filo"></span><span class="codice">M1</span>
       </div>
+
+      <div class="griglia archi tecnico">
+        <div class="controllo arco">
+          <div class="disco" id="discoSereno"></div>
+          <div class="targa">
+            <div class="nome">Cielo sereno</div>
+            <div class="lettura" id="valSereno"></div>
+          </div>
+          <input type="range" id="sereno" min="0" max="100" value="30" class="celato">
+        </div>
+        <div class="controllo arco">
+          <div class="disco" id="discoVento"></div>
+          <div class="targa">
+            <div class="nome">Vento</div>
+            <div class="lettura" id="valVento"></div>
+          </div>
+          <input type="range" id="vento" min="0" max="100" value="36" class="celato">
+        </div>
+      </div>
+
       <div class="griglia tecnico">
-        <div class="controllo">
-          <label>Cielo sereno <span class="valore" id="valSereno"></span></label>
-          <div class="cursore"><input type="range" id="sereno" min="0" max="100" value="30"></div>
-        </div>
-        <div class="controllo">
-          <label>Vento <span class="valore" id="valVento"></span></label>
-          <div class="cursore"><input type="range" id="vento" min="0" max="100" value="36"></div>
-        </div>
         <div class="controllo">
           <label>Grana <span class="valore" id="valGrana"></span></label>
           <div class="cursore"><input type="range" id="grana" min="5" max="20" value="9"></div>
@@ -291,6 +337,7 @@
       <div class="rubrica tecnico">
         <span>Suono</span><span class="filo"></span><span class="codice">M2</span>
       </div>
+
       <div class="griglia tecnico">
         <div class="controllo">
           <label>Ascolto <span class="valore" id="valAscolto">fermo</span></label>
@@ -304,22 +351,44 @@
             <span class="quadro"></span><span class="stato">Spento</span>
           </button>
         </div>
-        <div class="controllo">
-          <label>Volume <span class="valore" id="valVolume"></span></label>
-          <div class="cursore"><input type="range" id="volume" min="0" max="100" value="55"></div>
+      </div>
+
+      <div class="griglia archi tecnico">
+        <div class="controllo arco">
+          <div class="disco" id="discoVolume"></div>
+          <div class="targa">
+            <div class="nome">Volume</div>
+            <div class="lettura" id="valVolume"></div>
+          </div>
+          <input type="range" id="volume" min="0" max="100" value="55" class="celato">
         </div>
-        <div class="controllo">
-          <label>Tempo <span class="valore" id="valTempo"></span></label>
-          <div class="cursore"><input type="range" id="tempo" min="44" max="132" value="88"></div>
+        <div class="controllo arco">
+          <div class="disco" id="discoTempo"></div>
+          <div class="targa">
+            <div class="nome">Tempo</div>
+            <div class="lettura" id="valTempo"></div>
+          </div>
+          <input type="range" id="tempo" min="44" max="132" value="88" class="celato">
         </div>
-        <div class="controllo">
-          <label>Voci <span class="valore" id="valVoci"></span></label>
-          <div class="cursore"><input type="range" id="voci" min="1" max="10" value="6"></div>
+        <div class="controllo arco">
+          <div class="disco" id="discoVoci"></div>
+          <div class="targa">
+            <div class="nome">Voci</div>
+            <div class="lettura" id="valVoci"></div>
+          </div>
+          <input type="range" id="voci" min="1" max="10" value="6" class="celato">
         </div>
-        <div class="controllo">
-          <label>Sensibilità <span class="valore" id="valSensibilita"></span></label>
-          <div class="cursore"><input type="range" id="sensibilita" min="0" max="100" value="64"></div>
+        <div class="controllo arco">
+          <div class="disco" id="discoSensibilita"></div>
+          <div class="targa">
+            <div class="nome">Sensibilità</div>
+            <div class="lettura" id="valSensibilita"></div>
+          </div>
+          <input type="range" id="sensibilita" min="0" max="100" value="64" class="celato">
         </div>
+      </div>
+
+      <div class="griglia tecnico">
         <div class="controllo">
           <label>Dispersione <span class="valore" id="valDispersione"></span></label>
           <div class="cursore"><input type="range" id="dispersione" min="1" max="4" value="3"></div>
@@ -1041,6 +1110,87 @@ const Pannello = {
     agisci();
   },
 
+  /* Un quadrante ad arco. Disegna le tacche e il pallino, e traduce il
+     puntatore in valore dell'input nativo che gli sta sotto (`celato`), il
+     quale resta la sorgente di verità: `cursore()` non sa che esiste l'arco.
+     Geometria: centro (70,70), arco da 195° a -15°, tacche fra r=58 e r=66,
+     pallino su r=46 — come nelle reference, il pallino corre dentro le tacche. */
+  arco(id) {
+    const NS = "http://www.w3.org/2000/svg";
+    const CX = 70, CY = 70, A0 = 195, A1 = -15;
+    const R_INT = 58, R_EST = 66, R_PAL = 46;
+
+    const input = document.getElementById(id);
+    const disco = document.getElementById("disco" + id[0].toUpperCase() + id.slice(1));
+    const min = +input.min, max = +input.max;
+    // Se la corsa è breve, una tacca per ogni scatto; altrimenti ventiquattro.
+    const passi = (max - min) <= 12 ? (max - min) : 24;
+
+    const punto = (t, r) => {
+      const a = (A0 + (A1 - A0) * t) * Math.PI / 180;
+      return [CX + r * Math.cos(a), CY - r * Math.sin(a)];
+    };
+
+    const svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", "0 0 140 92");
+    svg.setAttribute("aria-hidden", "true");
+    for (let i = 0; i <= passi; i++) {
+      const t = i / passi;
+      const [x1, y1] = punto(t, R_INT), [x2, y2] = punto(t, R_EST);
+      const l = document.createElementNS(NS, "line");
+      l.setAttribute("class", "tacca");
+      l.setAttribute("x1", x1.toFixed(2)); l.setAttribute("y1", y1.toFixed(2));
+      l.setAttribute("x2", x2.toFixed(2)); l.setAttribute("y2", y2.toFixed(2));
+      svg.appendChild(l);
+    }
+    const pallino = document.createElementNS(NS, "circle");
+    pallino.setAttribute("class", "pallino");
+    pallino.setAttribute("r", "4.6");
+    svg.appendChild(pallino);
+    disco.appendChild(svg);
+
+    const disegna = () => {
+      const t = (+input.value - min) / (max - min);
+      const [x, y] = punto(t, R_PAL);
+      pallino.setAttribute("cx", x.toFixed(2));
+      pallino.setAttribute("cy", y.toFixed(2));
+    };
+
+    // Dal puntatore all'angolo, e dall'angolo al valore. Sotto l'arco c'è un
+    // settore morto di 150°: lì il puntatore va al capo più vicino.
+    const daPuntatore = (ev) => {
+      const r = svg.getBoundingClientRect();
+      const x = (ev.clientX - r.left) / r.width * 140;
+      const y = (ev.clientY - r.top) / r.height * 92;
+      let a = Math.atan2(CY - y, x - CX) * 180 / Math.PI;
+      if (a < A0 - 360) a += 360;
+      if (a < A1) a = (a > -90) ? A1 : A0;
+      const t = Math.min(1, Math.max(0, (A0 - a) / (A0 - A1)));
+      const v = Math.round(min + t * (max - min));
+      if (v !== +input.value) {
+        input.value = v;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    };
+
+    svg.style.cursor = "pointer";
+    svg.addEventListener("pointerdown", (ev) => {
+      daPuntatore(ev);                 // prima il valore: se la cattura fallisce
+      ev.preventDefault();             // (puntatore sintetico, browser vecchio),
+      try {                            // il clic deve comunque valere
+        svg.setPointerCapture(ev.pointerId);
+        input.focus({ preventScroll: true });
+      } catch (e) { /* si trascina lo stesso, senza cattura */ }
+    });
+    svg.addEventListener("pointermove", (ev) => {
+      if (svg.hasPointerCapture(ev.pointerId)) daPuntatore(ev);
+    });
+    svg.addEventListener("pointerup", (ev) => svg.releasePointerCapture(ev.pointerId));
+
+    input.addEventListener("input", disegna);
+    disegna();
+  },
+
   /* Un interruttore: quadretto pieno/vuoto, due stati, due etichette. */
   interruttore(id, acceso, etichette, applica) {
     const el = document.getElementById(id);
@@ -1128,6 +1278,9 @@ const Pannello = {
       AUDIO.registro = v;
       return (v > 0 ? "+" : "") + v + " st";
     });
+
+    ["sereno", "vento", "volume", "tempo", "voci", "sensibilita"]
+      .forEach((id) => this.arco(id));
 
     this.righello();
     setInterval(() => this.aggiornaQuadrante(), 250);

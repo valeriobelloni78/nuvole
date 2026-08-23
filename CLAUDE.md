@@ -149,8 +149,17 @@ pallino su filetto). Il registro è **svizzero-tecnico su carta chiara**:
   se servisse più leggibilità basta scurire il celeste (e con esso `PARAMS.celeste`);
 - **filetti** da 1px al posto di riquadri e ombre: testata, rubriche di
   sezione con codice a destra (`M1`, `M2`), separatori del quadrante;
-- **cursori**: traccia da 1px con **tacche** ogni 10% (gradiente ripetuto) e pallino
-  pieno bianco da 9px; nessun riempimento della parte percorsa;
+- **due strumenti diversi, in due file distinte per sezione**:
+  - **quadranti ad arco** (`Pannello.arco`) per i sei comandi principali — *Cielo sereno*
+    e *Vento* nel Cielo, *Volume*, *Tempo*, *Voci* e *Sensibilità* nel Suono: arco di
+    tacche, pallino pieno che corre dentro l'arco, e sotto la targa con nome minuto e
+    valore grande. Geometria: centro (70,70), arco da 195° a −15°, tacche fra r=58 e
+    r=66, pallino su r=46, `viewBox 0 0 140 92`. Se la corsa è breve (≤12 scatti) c'è
+    **una tacca per scatto** — la *Voci* ne ha dieci, e si legge a colpo d'occhio;
+    altrimenti ventiquattro intervalli.
+  - **cursori a filetto** per i comandi secondari: traccia da 1px con tacche ogni 10%
+    (gradiente ripetuto) e pallino pieno bianco da 9px; nessun riempimento della parte
+    percorsa;
 - **interruttori**: quadretto 9px vuoto/pieno + stato a parole (`SILENZIO`/`IN ASCOLTO`);
 - **quadrante dei dati**: cifre grandi tabellari con didascalia minuta sotto — frase
   dell'insieme, voci in ascolto, regione dell'arco;
@@ -161,9 +170,21 @@ pallino su filetto). Il registro è **svizzero-tecnico su carta chiara**:
 ## Comandi del pannello
 
 Ognuno scrive in `PARAMS` (cielo) o in `AUDIO` (suono); `Pannello` non conosce né il
-rendering né lo scheduler. Le due funzioni `Pannello.cursore(id, applica)` e
-`Pannello.interruttore(id, acceso, etichette, applica)` fanno tutto il cablaggio:
-l'etichetta del valore è cercata per convenzione in `val<Id>`.
+rendering né lo scheduler. Le tre funzioni `Pannello.cursore(id, applica)`,
+`Pannello.interruttore(id, acceso, etichette, applica)` e `Pannello.arco(id)` fanno tutto
+il cablaggio: l'etichetta del valore è cercata per convenzione in `val<Id>`, il disco
+dell'arco in `disco<Id>`.
+
+**Come funziona l'arco.** Sotto il disegno resta un `input[type=range]` nativo, celato
+(1px, opacità 0) ma **non rimosso**: è lui a tenere il valore e a portare tastiera e
+accessibilità, e `cursore()` non sa nemmeno che esista un arco sopra di sé. L'SVG traduce
+il puntatore in angolo e l'angolo in valore, poi scrive nell'input ed emette `input`;
+l'input, a sua volta, ridisegna il pallino. Chi aggiunge un arco a un comando esistente
+deve solo: dare all'input la classe `celato`, mettergli accanto un `<div class="disco"
+id="disco<Id>">`, e aggiungere l'id all'elenco in `Pannello.init`. Due dettagli non
+ovvi: sotto l'arco c'è un **settore morto di 150°** e il puntatore che ci finisce va al
+capo più vicino; e il valore si applica **prima** di `setPointerCapture`, che su certi
+puntatori può fallire — se fallisse dopo, il clic andrebbe perso.
 
 | Comando | Parametro | Corsa | Nota |
 |---|---|---|---|

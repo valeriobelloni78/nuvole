@@ -6,6 +6,10 @@ Questo repository contiene il **primo modulo — il cielo**: una **finestra** se
 
 ## Controlli
 
+I comandi principali — *Cielo sereno* e *Vento*, *Volume*, *Tempo*, *Voci* e
+*Sensibilità* — sono quadranti ad arco: una scala di tacche in cerchio, un pallino che vi
+corre dentro, e sotto il nome e il valore. Gli altri restano cursori a filetto.
+
 Sotto la finestra, un righello mostra le bande delle voci — si accende quella su cui sta
 passando una nuvola, con il numero della frase che sta leggendo — e un quadrante riporta
 la frase dell'insieme, le voci in ascolto e la regione dell'arco. Poi il pannello, in due
