@@ -49,8 +49,13 @@ ma hanno lunghezze diverse e perciò sfasano lentamente l'una rispetto all'altra
 L'**archivio percorso in avanti**: l'insieme avanza di una frase per volta, mai a salti,
 così l'armonia deriva per gradi — dal Do puro alla pentatonica, al Fa, alla luce del Fa#,
 alla regione di dominante, all'ombra del Si bemolle, e infine al rientro su Do, dove
-l'arco si richiude. La **libertà di ciascuna voce** dentro un intorno ristretto di quel
-fronte: da qui l'imprevedibilità, senza che l'insieme si sfaldi.
+l'arco si richiude. Fra una regione e l'altra l'archivio ha una **cerniera**: quattro
+frasi costruite sui soli suoni comuni, dove il grado vecchio si ritira prima che entri il
+nuovo. Senza, il Fa e il Fa# — o il Si e il Si bemolle — finirebbero per sovrapporsi, e
+basta questo perché tutto suoni stonato. La **libertà di ciascuna voce** dentro un intorno
+ristretto del fronte: da qui l'imprevedibilità, senza che l'insieme si sfaldi. E infine la
+regola che tiene: **nessuno resta indietro**. Il fronte aspetta chi sta ancora leggendo, e
+una voce lasciata indietro finisce la sua frase e ne prende una aggiornata.
 
 Ne segue che **Cielo sereno è anche il comando del silenzio**: un cielo limpido è quasi
 muto, un cielo coperto è un insieme fitto.

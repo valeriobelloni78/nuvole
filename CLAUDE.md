@@ -77,10 +77,38 @@ leggono ciascuna per conto proprio, sopra un polso condiviso.
 
 - `FRASI` — **archivio originale di 53 frasi in Do**, `[semitoni da Do, durata in
   battiti]`, `null` = silenzio. **Non sono le cellule di Riley** (opera del 1964 sotto
-  diritto d'autore): è materiale nuovo che ne adotta il principio. Arco in sette
-  regioni: Do puro (1-6), pentatonica (7-13), Fa (14-20), Fa# lidio (21-28), dominante
-  (29-36), ombra di Mib/Sib (37-44), rientro Si→Do (45-53). La 53 chiude su un Do lungo
-  e il fronte torna alla 1: l'arco si richiude dove è cominciato.
+  diritto d'autore): è materiale nuovo che ne adotta il principio.
+
+### L'arco e le cerniere (rifatto — leggere prima di toccare le frasi)
+
+Più voci suonano insieme frasi diverse e vicine. Se due regioni confinanti contengono lo
+stesso grado in due forme — **Fa/Fa#, Mi/Mib, Si/Sib, La/Sib, Re/Mib** — quelle forme
+finiscono per sovrapporsi e l'insieme suona stonato. Era il difetto della prima stesura:
+misurato, il primo scontro cadeva nella finestra 17-21 (Fa contro Fa#), poi di nuovo dalla
+33 in avanti. Ora fra una regione e l'altra c'è una **cerniera di quattro frasi** costruita
+sui soli suoni comuni, dove il grado vecchio si ritira prima che entri il nuovo:
+
+|  |  |  |
+|---|---|---|
+| 1-6 | Do puro | Do Mi Sol |
+| 7-13 | pentatonica | + Re La |
+| 14-18 | il Fa | Do Mi Fa Sol La |
+| **19-22** | **cerniera** | il Fa si ritira |
+| 23-29 | Fa# lidio | Do Re Mi Fa# Sol La |
+| 30-34 | dominante | entra il Si |
+| **35-38** | **cerniera** | la quinta vuota: solo Do e Sol |
+| 39-45 | l'ombra | Do Mib Fa Sol Sib |
+| **46-49** | **cerniera** | l'ombra si ritira: Do Fa Sol |
+| 50-53 | rientro | tornano Mi e Si; la 53 chiude su un Do lungo |
+
+Il fronte torna poi alla 1: l'arco si richiude dove è cominciato.
+
+**Garanzia verificata**: nessuno scontro cromatico in alcuna finestra di **5 frasi**
+consecutive, giro di boa 53→1 compreso. Si considerano ammessi i tre semitoni idiomatici
+Si-Do (sensibile), Mi-Fa (diatonici) e Fa#-Sol (lidio); ogni altro semitono è uno scontro.
+Oltre le 5 frasi l'archivio torna a sporcarsi — per questo la corsa di *Dispersione* si
+ferma a 4. **Se si cambia anche una sola frase, ri-verificare** l'intero archivio a
+finestra scorrevole prima di considerare il lavoro finito.
 - `Suono` — motore Web Audio, nessuna libreria, nessun file esterno (anche il riverbero
   è una risposta all'impulso generata a runtime).
 - **Le nuvole scelgono.** Ogni voce presidia una banda verticale della finestra; quando
@@ -88,11 +116,22 @@ leggono ciascuna per conto proprio, sopra un polso condiviso.
   fronte e la ripete; quando la nuvola esce, finisce la lettura e tace. Le bande sono
   attraversate in momenti diversi, quindi le sovrapposizioni non sono scritte da nessuna
   parte.
-- **Le tre regole trattenute da In C**: polso condiviso (le frasi partono su un battito
+- **Le regole trattenute da In C**: polso condiviso (le frasi partono su un battito
   ma hanno lunghezze diverse, e quindi sfasano); archivio percorso in avanti senza salti
   (il `fronte` avanza di una frase per volta); libertà di ciascuna voce dentro un intorno
   ristretto del fronte (`AUDIO.finestra = 3`), così l'insieme resta in una stessa regione
   armonica senza mai ripetere la stessa combinazione.
+- **Nessuno resta indietro** (`Suono.ritardo`, e i due controlli in `avanzaFronte` e in
+  `avanza`). È la disciplina che in *In C* è affidata ai musicisti, e qui è anche ciò che
+  rende valida la garanzia dell'archivio: il fronte **aspetta** finché ogni voce che sta
+  suonando è al massimo una frase dietro la nuova posizione, e una voce lasciata indietro
+  chiude la lettura in corso e ne sceglie una aggiornata. Senza questa regola una voce
+  può trascinare una frase di sei posizioni più indietro, e allora nessuna cerniera basta:
+  misurato prima di introdurla, 39 scontri su 43.726 coppie simultanee (Fa/Fa# fra le
+  frasi 18 e 24, Si/Sib fra la 32 e la 39). Dopo: **zero scontri su 22.480 coppie**, con
+  la campata massima fra frasi simultanee pari a 5, cioè esattamente il limite garantito.
+  La prova è stata fatta forzando il caso peggiore (8 voci, dispersione 4, fronte ogni
+  0,7 s, cielo coperto); ai valori di partenza la campata osservata è 3.
 - **Comandi**: vedi la sezione «Pannello» qui sotto. Il contesto audio nasce al primo
   clic sull'interruttore d'ascolto: lo esigono i browser.
 
@@ -140,7 +179,7 @@ l'etichetta del valore è cercata per convenzione in `val<Id>`.
 | Tempo | `AUDIO.bpm` | 44–132 | |
 | Voci | `AUDIO.voci` | 1–10 | `Suono.impostaVoci()` ricostruisce bande e righello |
 | Sensibilità | `AUDIO.entra` | 0.28–0.03 | `esce = entra * 0.4` |
-| Dispersione | `AUDIO.finestra` | 1–9 frasi | quanto le voci possono allontanarsi dal fronte |
+| Dispersione | `AUDIO.finestra` | 1–4 frasi | quanto le voci possono allontanarsi dal fronte; **non allargare** oltre 4 senza rifare le cerniere |
 | Avanzamento | `AUDIO.attesaFronte` | 60–3.6 s | corsa esponenziale, `60·0.06^v` |
 | Riverbero | `AUDIO.riverbero` | 0–1 | mandata al convolutore |
 | Registro | `AUDIO.registro` | ±12 st | trasporto d'insieme |

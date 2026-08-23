@@ -322,7 +322,7 @@
         </div>
         <div class="controllo">
           <label>Dispersione <span class="valore" id="valDispersione"></span></label>
-          <div class="cursore"><input type="range" id="dispersione" min="1" max="9" value="3"></div>
+          <div class="cursore"><input type="range" id="dispersione" min="1" max="4" value="3"></div>
         </div>
         <div class="controllo">
           <label>Avanzamento <span class="valore" id="valAvanzamento"></span></label>
@@ -567,18 +567,31 @@ const Cielo = {
    il principio — cellule minime che ogni voce ripete a piacere, e un arco
    armonico che si sposta lentamente da una regione all'altra.
 
-   L'arco, in sette regioni:
-     1-6    Do puro (Do-Mi-Sol)
-     7-13   apertura pentatonica (Re, La)
-     14-20  entra il Fa: ambiguità Do/Fa
-     21-28  entra il Fa#: la luce lidia
-     29-36  regione di dominante (Si, Re)
-     37-44  l'ombra (Mi bemolle, Si bemolle)
-     45-53  rientro: ampiezza, Si -> Do
-   La frase 53 chiude su un Do lungo, e il fronte torna alla 1: l'arco si
-   richiude dove è cominciato. */
+   LE CERNIERE. Più voci suonano insieme frasi diverse e vicine: la campata
+   effettiva è la finestra di scelta (AUDIO.finestra) più una frase, perché
+   una voce può star finendo la frase presa prima che il fronte avanzasse.
+   Perciò due regioni confinanti non possono contenere lo stesso grado in due
+   forme (Fa/Fa#, Mi/Mib, Si/Sib, La/Sib, Re/Mib): si scontrerebbero. Fra una
+   regione e l'altra c'è quindi una CERNIERA di quattro frasi costruita sui
+   soli suoni comuni, dove il grado vecchio si ritira prima che entri il nuovo.
+   Verificato: nessuno scontro cromatico in alcuna finestra di 5 frasi
+   consecutive, giro di boa 53->1 compreso. Se si cambia una frase, ricontrollare.
+
+   L'arco, in dieci tratti:
+      1-6    Do puro (Do-Mi-Sol)
+      7-13   apertura pentatonica (Re, La)
+     14-18   entra il Fa
+     19-22   cerniera: il Fa si ritira
+     23-29   il Fa#: la luce lidia
+     30-34   regione di dominante (Si)
+     35-38   cerniera: la quinta vuota, restano Do e Sol
+     39-45   l'ombra (Mi bemolle, Si bemolle)
+     46-49   cerniera: l'ombra si ritira (Do, Fa, Sol)
+     50-53   rientro: tornano Mi e Si
+   La 53 chiude su un Do lungo e il fronte torna alla 1: l'arco si richiude
+   dove è cominciato. */
 const FRASI = [
-  /* I · Do puro ------------------------------------------------- */
+  /* I · Do puro — Do Mi Sol (1-6) ------------------------------- */
   [[4, 0.5], [null, 1.5]],
   [[4, 0.5], [7, 0.5], [null, 1]],
   [[0, 1], [4, 1]],
@@ -586,7 +599,7 @@ const FRASI = [
   [[4, 0.25], [7, 0.25], [4, 0.5], [null, 1]],
   [[0, 0.5], [4, 0.5], [7, 0.5], [12, 0.5]],
 
-  /* II · apertura pentatonica ----------------------------------- */
+  /* II · apertura pentatonica — entrano Re e La (7-13) ---------- */
   [[9, 0.5], [7, 0.5], [4, 1]],
   [[2, 0.5], [4, 0.5], [7, 1]],
   [[12, 0.5], [9, 0.5], [7, 0.5], [4, 0.5]],
@@ -595,54 +608,61 @@ const FRASI = [
   [[9, 1], [12, 1]],
   [[0, 3]],
 
-  /* III · entra il Fa ------------------------------------------- */
+  /* III · il Fa (14-18) ----------------------------------------- */
   [[5, 0.5], [4, 0.5], [null, 1]],
   [[5, 1], [7, 1]],
   [[0, 0.5], [5, 0.5], [9, 1]],
   [[17, 0.5], [16, 0.5], [12, 1]],
   [[5, 0.25], [7, 0.25], [9, 0.5], [7, 1]],
-  [[9, 2], [5, 2]],
-  [[12, 0.5], [9, 0.5], [5, 0.5], [4, 0.5]],
 
-  /* IV · la luce lidia (Fa#) ------------------------------------ */
+  /* IV · cerniera — il Fa si ritira, resta la pentatonica (19-22) */
+  [[12, 1], [9, 1], [7, 2]],
+  [[2, 0.5], [4, 0.5], [2, 0.5], [0, 0.5]],
+  [[7, 0.25], [9, 0.25], [12, 0.5], [null, 1]],
+  [[14, 2], [12, 2]],
+
+  /* V · il Fa# — la luce lidia (23-29) -------------------------- */
   [[6, 0.5], [7, 0.5], [null, 1]],
   [[7, 0.5], [6, 0.5], [4, 1]],
   [[2, 0.5], [6, 0.5], [7, 1]],
   [[14, 0.5], [12, 0.5], [7, 1]],
   [[6, 0.25], [7, 0.25], [9, 0.25], [7, 0.25], [null, 1]],
   [[19, 1], [18, 1]],
-  [[7, 2]],
   [[6, 1], [9, 1], [7, 2]],
 
-  /* V · regione di dominante ------------------------------------ */
+  /* VI · regione di dominante — entra il Si (30-34) ------------- */
   [[11, 0.5], [12, 0.5], [null, 1]],
   [[7, 0.5], [11, 0.5], [14, 1]],
   [[11, 0.25], [9, 0.25], [7, 0.5], [null, 1]],
-  [[14, 1], [11, 1]],
-  [[2, 0.5], [7, 0.5], [11, 0.5], [14, 0.5]],
-  [[19, 0.5], [16, 0.5], [14, 1]],
-  [[11, 3]],
   [[7, 0.25], [9, 0.25], [11, 0.25], [12, 0.25], [14, 1]],
+  [[11, 3]],
 
-  /* VI · l'ombra (Mi bemolle, Si bemolle) ----------------------- */
-  [[10, 0.5], [9, 0.5], [null, 1]],
+  /* VII · cerniera — la quinta vuota: restano solo Do e Sol,
+     il cielo si svuota prima dell'ombra (35-38) ----------------- */
+  [[7, 2]],
+  [[0, 1], [7, 1]],
+  [[12, 0.5], [7, 0.5], [0, 1]],
+  [[0, 3], [null, 1]],
+
+  /* VIII · l'ombra — Mi bemolle e Si bemolle (39-45) ------------ */
+  [[10, 0.5], [7, 0.5], [null, 1]],
   [[3, 1], [5, 1]],
   [[10, 0.5], [7, 0.5], [3, 1]],
-  [[15, 0.5], [14, 0.5], [10, 1]],
+  [[15, 0.5], [12, 0.5], [10, 1]],
   [[3, 0.25], [5, 0.25], [7, 0.5], [10, 1]],
   [[10, 2], [7, 2]],
-  [[0, 0.5], [3, 0.5], [7, 0.5], [10, 0.5]],
   [[5, 1], [3, 1], [0, 2]],
 
-  /* VII · rientro ----------------------------------------------- */
-  [[0, 2], [4, 2]],
-  [[7, 1], [11, 1], [12, 2]],
-  [[12, 0.5], [11, 0.5], [12, 1]],
-  [[16, 2], [12, 2]],
-  [[11, 1], [12, 3]],
+  /* IX · cerniera — l'ombra si ritira: Do, Fa, Sol (46-49) ------ */
+  [[5, 1], [7, 1]],
+  [[12, 0.5], [7, 0.5], [5, 1]],
+  [[0, 2], [7, 2]],
   [[0, 4]],
-  [[7, 0.5], [12, 0.5], [16, 1], [19, 2]],
-  [[11, 2], [12, 4]],
+
+  /* X · rientro — tornano Mi e Si, e l'arco si chiude (50-53) --- */
+  [[7, 1], [11, 1], [12, 2]],
+  [[16, 2], [12, 2]],
+  [[2, 0.5], [4, 0.5], [7, 1], [12, 2]],
   [[12, 0.5], [11, 0.5], [12, 6]],
 ];
 
@@ -651,10 +671,13 @@ const REGIONI = [
   { da:  0, nome: "Do" },
   { da:  6, nome: "Pentatonica" },
   { da: 13, nome: "Fa" },
-  { da: 20, nome: "Fa# lidio" },
-  { da: 28, nome: "Dominante" },
-  { da: 36, nome: "Ombra" },
-  { da: 44, nome: "Rientro" },
+  { da: 18, nome: "Cerniera" },
+  { da: 22, nome: "Fa# lidio" },
+  { da: 29, nome: "Dominante" },
+  { da: 34, nome: "Quinta vuota" },
+  { da: 38, nome: "Ombra" },
+  { da: 45, nome: "Cerniera" },
+  { da: 49, nome: "Rientro" },
 ];
 function regione(i) {
   let n = REGIONI[0].nome;
@@ -812,10 +835,28 @@ const Suono = {
   },
 
   /* --- l'archivio: fronte e scelta ---------------------------------- */
+
+  /* Di quanto una voce è rimasta indietro rispetto al fronte (distanza
+     circolare con segno: positiva = indietro, negativa = avanti). */
+  ritardo(iFrase, fronte) {
+    let d = (fronte - iFrase + FRASI.length) % FRASI.length;
+    if (d > FRASI.length / 2) d -= FRASI.length;
+    return d;
+  },
+
+  /* L'insieme non lascia indietro nessuno: il fronte avanza solo quando ogni
+     voce che sta suonando è al massimo una frase dietro la nuova posizione.
+     È la disciplina che in "In C" è affidata ai musicisti, ed è anche ciò che
+     rende valida la garanzia dell'archivio: senza, una voce può trascinare una
+     frase di sei posizioni più indietro e far scontrare Fa e Fa#. */
   avanzaFronte(ora) {
     if (ora - this.ultimoPasso < AUDIO.attesaFronte) return;
+    const nuovo = (this.fronte + 1) % FRASI.length;
+    for (const v of this.voci) {
+      if (v.frase && this.ritardo(v.iFrase, nuovo) > 1) return;   // aspetta
+    }
     this.ultimoPasso = ora;
-    this.fronte = (this.fronte + 1) % FRASI.length;
+    this.fronte = nuovo;
   },
 
   sveglia(v) {
@@ -889,7 +930,11 @@ const Suono = {
         v.letture++;
         this.letture++;
         if (this.letture % AUDIO.lettureFronte === 0) this.avanzaFronte(ora);
-        if (v.copertura < AUDIO.esce || v.letture >= v.max) this.congeda(v);
+        // Si congeda se la nuvola è passata, se ha finito le sue ripetizioni,
+        // o se il fronte l'ha lasciata indietro (in tal caso, se la nuvola è
+        // ancora sulla banda, al battito seguente sceglie una frase aggiornata).
+        if (v.copertura < AUDIO.esce || v.letture >= v.max ||
+            this.ritardo(v.iFrase, this.fronte) > 0) this.congeda(v);
       }
     }
   },
@@ -1068,7 +1113,9 @@ const Pannello = {
       return v + "%";
     });
     this.cursore("dispersione", (v) => {
-      AUDIO.finestra = v;               // quante frasi attorno al fronte
+      // La corsa si ferma a 4 perché l'archivio garantisce l'assenza di scontri
+      // cromatici solo entro una campata di 5 frasi (4 di scelta + 1 di coda).
+      AUDIO.finestra = v;
       return v + (v === 1 ? " frase" : " frasi");
     });
     this.cursore("avanzamento", (v) => {
