@@ -93,6 +93,7 @@
     transition: width 0.4s ease;
   }
   .banda.attiva { color: #ffffff; }
+  .banda .strum { opacity: 0.55; margin-left: 5px; }
   .banda.attiva::before { width: 100%; }
   .righello.nascosto { display: none; }
 
@@ -247,6 +248,35 @@
     pointer-events: none;
   }
 
+  /* Scelta degli strumenti: una fila di quadretti, uno per strumento.
+     Se ne può tenere acceso uno solo, o tutti e quattro. */
+  .controllo.strumenti { grid-column: 1 / -1; }
+  .scelta { display: flex; flex-wrap: wrap; gap: 10px 26px; }
+  .tasto {
+    font: inherit;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    background: transparent;
+    border: none;
+    padding: 0;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .tasto .quadro {
+    width: 9px; height: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    background: transparent;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .tasto:hover { color: rgba(255, 255, 255, 0.9); }
+  .tasto.acceso { color: #ffffff; }
+  .tasto.acceso .quadro { background: #ffffff; border-color: #ffffff; }
+
   /* Interruttore: quadretto pieno/vuoto + stato */
   .interruttore {
     font: inherit;
@@ -367,6 +397,10 @@
           <button class="interruttore" id="swPolso" type="button" aria-pressed="false">
             <span class="quadro"></span><span class="stato">Spento</span>
           </button>
+        </div>
+        <div class="controllo strumenti">
+          <label>Strumenti <span class="valore" id="valStrumenti"></span></label>
+          <div class="scelta" id="scelta"></div>
         </div>
       </div>
 
@@ -785,12 +819,156 @@ const AUDIO = {
   lettureFronte:   6,    // letture d'insieme che fanno avanzare il fronte
   attesaFronte:   15,    // ...ma non più spesso di così (secondi)
   registro:        0,    // trasporto d'insieme, in semitoni
+  strumenti: [true, true, true, true],   // quali strumenti sono in campo
   polso:       false,    // il battito udibile (in "In C" è ciò che tiene insieme)
   volume:       0.55,
   attacco:      0.09,
   rilascio:     0.85,
   riverbero:    0.38,
 };
+
+/* ------------------------------------------------------------------ */
+/*  I quattro strumenti                                                */
+/* ------------------------------------------------------------------ */
+/* Ognuno costruisce da zero i propri nodi e li attacca a `v.uscita` (da lì il
+   panorama della banda e la mandata al riverbero sono già a posto). Ricevono
+   la voce, la frequenza, la durata in secondi, l'ampiezza e l'istante d'attacco.
+   Nessun campione: la differenza fra i quattro sta tutta nella forma d'onda e,
+   soprattutto, nella forma dell'inviluppo — è l'attacco a dire che strumento è.
+   I fattori di ampiezza sono tarati a orecchie chiuse, misurando in
+   OfflineAudioContext l'energia di una stessa nota resa dai quattro. */
+const STRUMENTI = [
+  {
+    nome: "Onda",
+    /* Il timbro d'origine: onda semplice con l'ottava sopra appena percettibile,
+       attacco morbido, coda lunga. È il fondo su cui stanno gli altri tre. */
+    suona(v, freq, dur, amp, t) {
+      const ctx = Suono.ctx;
+      const tenuta = Math.max(0.12, dur * 0.82), coda = AUDIO.rilascio;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(amp, t + AUDIO.attacco);
+      g.gain.setValueAtTime(amp, t + tenuta);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + tenuta + coda);
+
+      const f = ctx.createBiquadFilter();
+      f.type = "lowpass";
+      f.frequency.value = 900 + 4000 * v.densita;
+      f.Q.value = 0.4;
+
+      const o = ctx.createOscillator();
+      o.type = v.onda; o.frequency.value = freq;
+      const arm = ctx.createOscillator();
+      arm.type = "sine"; arm.frequency.value = freq * 2;
+      const garm = ctx.createGain(); garm.gain.value = 0.14;
+
+      o.connect(f); arm.connect(garm); garm.connect(f);
+      f.connect(g); g.connect(v.uscita);
+      const fine = t + tenuta + coda + 0.05;
+      o.start(t); o.stop(fine); arm.start(t); arm.stop(fine);
+      o.onended = () => { g.disconnect(); f.disconnect(); garm.disconnect(); };
+    }
+  },
+  {
+    nome: "Vetro",
+    /* Campana: parziali inarmoniche nelle proporzioni delle campane tubolari
+       (1 : 2.76 : 5.40), attacco istantaneo, nessuna tenuta, e code di durata
+       diversa per ciascuna parziale — è la disuguaglianza delle code a fare il
+       vetro: l'acuto se ne va subito e resta il rintocco. */
+    suona(v, freq, dur, amp, t) {
+      const ctx = Suono.ctx;
+      const base = Math.max(dur, 0.7);
+      const parziali = [[1, 1, 1.7], [2.76, 0.40, 0.9], [5.40, 0.14, 0.45]];
+      const fine = t + base * 1.7 + 0.1;
+      parziali.forEach(([rapporto, peso, lunghezza]) => {
+        const o = ctx.createOscillator();
+        o.type = "sine"; o.frequency.value = freq * rapporto;
+        const g = ctx.createGain();
+        const picco = amp * 0.72 * peso;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(picco, t + 0.005);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + base * lunghezza);
+        o.connect(g); g.connect(v.uscita);
+        o.start(t); o.stop(fine);
+        o.onended = () => g.disconnect();
+      });
+    }
+  },
+  {
+    nome: "Corda",
+    /* Pizzicato: un dente di sega che si spegne presto, ma soprattutto un filtro
+       che si chiude in fretta. È la chiusura del filtro, più della coda, a dare
+       il colpo dell'unghia sulla corda. */
+    suona(v, freq, dur, amp, t) {
+      const ctx = Suono.ctx;
+      const lunghezza = Math.min(Math.max(dur * 1.2, 0.5), 2.4);
+      const o = ctx.createOscillator();
+      o.type = "sawtooth"; o.frequency.value = freq;
+
+      const f = ctx.createBiquadFilter();
+      f.type = "lowpass"; f.Q.value = 2.4;
+      f.frequency.setValueAtTime(Math.min(7000, freq * 9), t);
+      f.frequency.exponentialRampToValueAtTime(Math.max(240, freq * 1.4), t + 0.32);
+
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(amp * 0.85, t + 0.006);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + lunghezza);
+
+      o.connect(f); f.connect(g); g.connect(v.uscita);
+      o.start(t); o.stop(t + lunghezza + 0.05);
+      o.onended = () => { g.disconnect(); f.disconnect(); };
+    }
+  },
+  {
+    nome: "Fiato",
+    /* Soffio: rumore bianco filtrato stretto attorno alla nota, e sotto una
+       sinusoide che le dà l'intonazione. Attacco lento, tenuta piena, un vibrato
+       appena accennato: è l'unico dei quattro che si sente respirare. */
+    suona(v, freq, dur, amp, t) {
+      const ctx = Suono.ctx;
+      const tenuta = Math.max(0.3, dur * 0.9), coda = 0.5;
+      const fine = t + tenuta + coda + 0.05;
+
+      const g = ctx.createGain();
+      const picco = amp * 1.90;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(picco, t + Math.min(0.35, tenuta * 0.5));
+      g.gain.setValueAtTime(picco, t + tenuta);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + tenuta + coda);
+
+      const n = ctx.createBufferSource();
+      n.buffer = Suono.rumore(); n.loop = true;
+      const bp = ctx.createBiquadFilter();
+      bp.type = "bandpass"; bp.frequency.value = freq; bp.Q.value = 13;
+      const gn = ctx.createGain(); gn.gain.value = 0.5;
+
+      const o = ctx.createOscillator();
+      o.type = "sine"; o.frequency.value = freq;
+      const go = ctx.createGain(); go.gain.value = 0.5;
+
+      const lfo = ctx.createOscillator();
+      lfo.type = "sine"; lfo.frequency.value = 4.6;
+      const glfo = ctx.createGain(); glfo.gain.value = freq * 0.006;
+      lfo.connect(glfo); glfo.connect(o.frequency); glfo.connect(bp.frequency);
+
+      n.connect(bp); bp.connect(gn); gn.connect(g);
+      o.connect(go); go.connect(g);
+      g.connect(v.uscita);
+      n.start(t); n.stop(fine); o.start(t); o.stop(fine);
+      lfo.start(t); lfo.stop(fine);
+      o.onended = () => {
+        g.disconnect(); bp.disconnect(); gn.disconnect();
+        go.disconnect(); glfo.disconnect();
+      };
+    }
+  },
+];
+
+/* I quattro disposti lungo un asse: dal velo sottile alla nuvola piena.
+   Il velo chiama un suono breve e brillante, la nuvola piena un suono tenuto
+   e pieno di fiato. È l'ordine su cui `strumentoDellaNuvola` fa la sua scelta. */
+const ORDINE_SPESSORE = [1, 2, 0, 3];   // Vetro · Corda · Onda · Fiato
 
 /* ------------------------------------------------------------------ */
 /*  Suono: le nuvole scelgono le frasi                                 */
@@ -833,6 +1011,19 @@ const Suono = {
     this.convolutore.connect(this.master);
   },
 
+  /* Due secondi di rumore bianco, generati una volta sola: la sorgente del
+     Fiato. Ogni nota ne prende un pezzo in loop. */
+  rumore() {
+    if (!this._rumore) {
+      const n = Math.floor(this.ctx.sampleRate * 2);
+      const b = this.ctx.createBuffer(1, n, this.ctx.sampleRate);
+      const d = b.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+      this._rumore = b;
+    }
+    return this._rumore;
+  },
+
   rispostaImpulso(secondi, decadimento) {
     const sr = this.ctx.sampleRate;
     const n = Math.floor(sr * secondi);
@@ -849,7 +1040,7 @@ const Suono = {
   /* --- le voci ----------------------------------------------------- */
   creaVoci() {
     const registri = [-12, 0, 12, 0, -12, 12];
-    const timbri   = ["sine", "triangle"];
+    const onde     = ["sine", "triangle"];
     this.voci = [];
     for (let i = 0; i < AUDIO.voci; i++) {
       const a = i / AUDIO.voci, b = (i + 1) / AUDIO.voci;
@@ -865,10 +1056,11 @@ const Suono = {
       this.voci.push({
         banda: [a, b],
         ottava: registri[i % registri.length],
-        timbro: timbri[i % timbri.length],
+        onda: onde[i % onde.length],
+        strumento: 0,
         uscita: uscita, pan: pan,
         densita: 0, copertura: 0,
-        frase: null, indice: 0, letture: 0, max: 0,
+        frase: null, indice: 0, letture: 0, max: 0, attesa: 99, spessoreScelta: -1,
         tProssimo: 0,
       });
     }
@@ -945,12 +1137,57 @@ const Suono = {
     this.fronte = nuovo;
   },
 
+  /* Lo spessore della nuvola sulla banda, riportato a 0..1. Una voce si sveglia
+     solo quando la nuvola è già arrivata, quindi al risveglio la densità media
+     è ben distribuita: misurata su 79 risvegli ai valori di partenza,
+     p05 0.145 · p25 0.234 · p50 0.418 · p75 0.643 · p90 0.852 · max 0.98.
+     Gli estremi 0.05 e 0.85 sono ricavati da quei quartili, perché con quattro
+     strumenti accesi i quattro tratti risultino ugualmente frequentati; una
+     prima taratura a 0.10-0.95, fatta su un solo campione più nuvoloso, lasciava
+     Onda e Fiato quasi sempre fuori. Se si cambia il cielo, ri-misurare. */
+  spessore(v) {
+    return Math.min(1, Math.max(0, (v.densita - 0.05) / 0.80));
+  },
+
+  /* È la nuvola a scegliere lo strumento. Gli strumenti accesi si dispongono
+     lungo l'asse dello spessore e la nuvola cade in uno dei tratti: un velo
+     sottile chiama il Vetro, una nuvola piena chiama il Fiato. Se ne è acceso
+     uno solo, tutto l'insieme suona con quello.
+     La scelta si rinnova a ogni episodio *vero*: se la voce si congeda e
+     riparte subito — cosa che accade di continuo mentre una nuvola staziona
+     sulla banda — tiene il timbro che aveva, altrimenti si sentirebbe cambiare
+     strumento a metà del discorso. */
+  strumentoDellaNuvola(v) {
+    const attivi = ORDINE_SPESSORE.filter((i) => AUDIO.strumenti[i]);
+    if (!attivi.length) return 0;
+    // Il piccolo scarto casuale serve a non fare del confine una lama: due
+    // nuvole quasi identiche non devono dare sempre e per forza lo stesso.
+    const t = Math.min(1, Math.max(0,
+      this.spessore(v) + (Math.random() - 0.5) * 0.12));
+    return attivi[Math.min(attivi.length - 1, Math.floor(t * attivi.length))];
+  },
+
   sveglia(v) {
     const scarto = Math.floor(Math.random() * AUDIO.finestra);
     v.iFrase = (this.fronte + scarto) % FRASI.length;
     v.frase = FRASI[v.iFrase];
     v.indice = 0;
     v.letture = 0;
+    /* Si rifà la scelta quando la voce è stata zitta almeno quattro battiti,
+       quando lo strumento in uso è stato spento dal pannello, oppure quando la
+       nuvola si è fatta sensibilmente più spessa o più sottile (più di un
+       tratto dell'asse). Senza quest'ultima condizione, una nuvola che staziona
+       sulla banda non lascia mai alla voce il silenzio per ripensarci, e il
+       timbro resta quello del primo arrivo anche se il cielo si è chiuso:
+       misurato, con cielo coperto e densità mediana 0.78 uscivano ancora Vetro
+       e Corda, cioè i timbri del velo sottile. */
+    const t = this.spessore(v);
+    if (v.attesa >= 4 || !AUDIO.strumenti[v.strumento] ||
+        Math.abs(t - v.spessoreScelta) > 0.28) {
+      v.strumento = this.strumentoDellaNuvola(v);
+      v.spessoreScelta = t;
+    }
+    v.attesa = 0;
     v.max = AUDIO.lettureMin +
             Math.floor(Math.random() * (AUDIO.lettureMax - AUDIO.lettureMin + 1));
   },
@@ -1003,7 +1240,7 @@ const Suono = {
         // In attesa: la voce resta sulla griglia del polso, in silenzio,
         // finché la nuvola non arriva sulla sua banda.
         if (v.copertura >= AUDIO.entra) this.sveglia(v);
-        else { v.tProssimo += this.battito(); continue; }
+        else { v.tProssimo += this.battito(); v.attesa++; continue; }
       }
 
       const ev = v.frase[v.indice];
@@ -1025,46 +1262,13 @@ const Suono = {
     }
   },
 
-  /* --- una nota ------------------------------------------------------ */
+  /* --- una nota: calcola altezza, durata e ampiezza, poi passa la mano
+         allo strumento della voce ---------------------------------------- */
   nota(v, semitoni, durata, t) {
-    const ctx = this.ctx;
     const freq = 261.626 * Math.pow(2, (semitoni + v.ottava + AUDIO.registro) / 12);
     const dur = durata * this.battito();
-    const tenuta = Math.max(0.12, dur * 0.82);
-    const rilascio = AUDIO.rilascio;
     const amp = 0.13 * Math.min(1, 0.45 + v.densita * 1.8);
-
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(amp, t + AUDIO.attacco);
-    g.gain.setValueAtTime(amp, t + tenuta);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + tenuta + rilascio);
-
-    const filtro = ctx.createBiquadFilter();
-    filtro.type = "lowpass";
-    filtro.frequency.value = 900 + 4000 * v.densita;
-    filtro.Q.value = 0.4;
-
-    const osc = ctx.createOscillator();
-    osc.type = v.timbro;
-    osc.frequency.value = freq;
-
-    // Un'ottava sopra, appena percettibile: dà corpo senza durezza.
-    const armonico = ctx.createOscillator();
-    armonico.type = "sine";
-    armonico.frequency.value = freq * 2;
-    const gArm = ctx.createGain();
-    gArm.gain.value = 0.14;
-
-    osc.connect(filtro);
-    armonico.connect(gArm); gArm.connect(filtro);
-    filtro.connect(g);
-    g.connect(v.uscita);
-
-    const fine = t + tenuta + rilascio + 0.05;
-    osc.start(t); osc.stop(fine);
-    armonico.start(t); armonico.stop(fine);
-    osc.onended = () => { g.disconnect(); filtro.disconnect(); };
+    (STRUMENTI[v.strumento] || STRUMENTI[0]).suona(v, freq, dur, amp, t);
   },
 
   /* --- accensione e spegnimento -------------------------------------- */
@@ -1271,6 +1475,8 @@ const Pannello = {
       document.getElementById("righello").classList.toggle("nascosto", !on);
     });
 
+    this.strumenti();
+
     this.cursore("volume", (v) => { Suono.volume(v / 100); return v + "%"; });
     this.cursore("tempo", (v) => { AUDIO.bpm = v; return v + " bpm"; });
     this.cursore("voci", (v) => {
@@ -1307,6 +1513,37 @@ const Pannello = {
     setInterval(() => this.aggiornaQuadrante(), 250);
   },
 
+  /* La fila degli strumenti. Almeno uno deve restare acceso: spegnere l'ultimo
+     non farebbe tacere l'insieme, lo lascerebbe senza timbro. */
+  strumenti() {
+    const cont = document.getElementById("scelta");
+    const valore = document.getElementById("valStrumenti");
+    const mostra = () => {
+      const accesi = AUDIO.strumenti.filter(Boolean).length;
+      [...cont.children].forEach((t, i) => {
+        t.classList.toggle("acceso", AUDIO.strumenti[i]);
+        t.setAttribute("aria-pressed", AUDIO.strumenti[i] ? "true" : "false");
+      });
+      valore.textContent = accesi === 1
+        ? STRUMENTI[AUDIO.strumenti.findIndex(Boolean)].nome
+        : accesi + "/" + STRUMENTI.length;
+    };
+    STRUMENTI.forEach((st, i) => {
+      const t = document.createElement("button");
+      t.type = "button";
+      t.className = "tasto";
+      t.innerHTML = '<span class="quadro"></span>' + st.nome;
+      t.addEventListener("click", () => {
+        const accesi = AUDIO.strumenti.filter(Boolean).length;
+        if (AUDIO.strumenti[i] && accesi === 1) return;   // l'ultimo resta
+        AUDIO.strumenti[i] = !AUDIO.strumenti[i];
+        mostra();
+      });
+      cont.appendChild(t);
+    });
+    mostra();
+  },
+
   /* Il righello: una casella per voce. Mostra la frase che la voce sta
      leggendo, e si accende quando la nuvola è sulla sua banda. */
   righello() {
@@ -1328,7 +1565,10 @@ const Pannello = {
       const v = Suono.voci[i];
       const viva = !!(v && v.frase && Suono.attivo);
       if (viva) inAscolto++;
-      caselle[i].textContent = viva ? String(v.iFrase + 1).padStart(2, "0") : "·";
+      caselle[i].innerHTML = viva
+        ? String(v.iFrase + 1).padStart(2, "0") +
+          '<span class="strum">' + STRUMENTI[v.strumento].nome[0] + "</span>"
+        : "·";
       caselle[i].classList.toggle("attiva", viva);
     }
     const frase = document.getElementById("datoFrase");

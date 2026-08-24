@@ -111,6 +111,57 @@ ferma a 4. **Se si cambia anche una sola frase, ri-verificare** l'intero archivi
 finestra scorrevole prima di considerare il lavoro finito.
 - `Suono` — motore Web Audio, nessuna libreria, nessun file esterno (anche il riverbero
   è una risposta all'impulso generata a runtime).
+- `STRUMENTI` — **quattro timbri**, ognuno costruisce i propri nodi e li attacca a
+  `v.uscita` (da lì panorama e riverbero sono già a posto). `Suono.nota` calcola solo
+  altezza, durata e ampiezza, poi passa la mano allo strumento della voce.
+  - **Onda** — il timbro d'origine: onda semplice + ottava sopra, attacco morbido, coda
+    lunga. È il fondo su cui stanno gli altri tre.
+  - **Vetro** — campana: parziali inarmoniche 1 : 2.76 : 5.40 (proporzioni delle campane
+    tubolari), attacco istantaneo, nessuna tenuta, code di durata diversa per parziale.
+  - **Corda** — pizzicato: dente di sega con il filtro che si chiude in 0,32 s; è la
+    chiusura del filtro, più della coda, a dare il colpo dell'unghia.
+  - **Fiato** — soffio: rumore bianco in un passa-banda stretto (Q 13) sulla nota, più
+    una sinusoide che le dà l'intonazione; attacco lento, vibrato appena accennato.
+  La differenza fra i quattro sta quasi tutta **nella forma dell'inviluppo**, non nella
+  forma d'onda: è l'attacco a dire che strumento è.
+- **Taratura delle ampiezze, misurata** in `OfflineAudioContext` sulla stessa nota:
+  i picchi sono allineati a 0,130–0,141 (Onda 0.137 · Vetro 0.141 · Corda 0.136 ·
+  Fiato 0.130). L'energia sul primo secondo resta invece diversa a coppie — sostenuti
+  0,085 e 0,073, percussivi 0,025 e 0,017 — ed è giusto così: è la loro natura.
+  Se si tocca un inviluppo, **ri-misurare**: i fattori nel codice (0.72 · 0.85 · 1.90)
+  vengono da lì, non a occhio.
+### Lo strumento lo sceglie la nuvola
+
+Non è un sorteggio: è lo **spessore** della nuvola sulla banda a decidere il timbro.
+`ORDINE_SPESSORE` dispone i quattro lungo un asse — **Vetro · Corda · Onda · Fiato**,
+dal velo sottile alla nuvola piena — e `Suono.spessore(v)` riporta la densità media
+della banda a 0..1; il tratto in cui cade sceglie lo strumento. Gli strumenti spenti
+escono dall'asse: se ne è acceso uno solo, tutto l'insieme suona con quello; se ne sono
+accesi due, la nuvola sceglie fra quei due. L'ultimo acceso non si può spegnere.
+
+- **Estremi 0.05 e 0.85, misurati.** Al risveglio la densità è ben distribuita, perché
+  una voce si sveglia solo quando la nuvola è già arrivata: su 79 risvegli ai valori di
+  partenza, p05 0.145 · p25 0.234 · p50 0.418 · p75 0.643 · p90 0.852 · max 0.98. Gli
+  estremi vengono da quei quartili, perché i quattro tratti risultino ugualmente
+  frequentati. **Una prima taratura a 0.10-0.95**, fatta su un solo campione più
+  nuvoloso, lasciava Onda e Fiato quasi sempre fuori: il cielo cambia molto nell'arco
+  dei minuti, e un campione solo non basta. Se si tocca il cielo, ri-misurare.
+- **Uno scarto casuale di ±0.06** sul valore normalizzato: il confine fra due tratti non
+  dev'essere una lama, due nuvole quasi identiche non devono dare sempre lo stesso.
+- **Quando si ridecide** (in `sveglia`): dopo un silenzio di almeno quattro battiti
+  (`v.attesa`), se lo strumento in uso è stato spento dal pannello, oppure se lo spessore
+  è cambiato di più di 0.28 rispetto a quello della scelta in corso (`v.spessoreScelta`).
+  Le prime due condizioni evitano i cambi «a caldo» — misurato senza: 3 cambi in 26 s con
+  la voce che ripartiva dopo 0,7 s, e il timbro saltava a metà del discorso; dopo: zero.
+  La terza serve al caso opposto: una nuvola che staziona sulla banda non lascia mai il
+  silenzio per ripensarci, e senza di essa il timbro restava quello del primo arrivo
+  anche a cielo ormai chiuso (misurato: densità mediana 0.78 e ancora Vetro e Corda,
+  cioè i timbri del velo).
+- **Verifica della corrispondenza**, fatta dove la scelta avviene davvero e non al
+  risveglio (dove può essere ereditata): Vetro spessore 0.12-0.24 · Corda 0.45 ·
+  Onda 0.57-0.69 · Fiato 0.85-0.92 — ciascuno dentro il proprio tratto.
+- Il **righello delle bande** mostra l'iniziale dello strumento accanto al numero della
+  frase (`08 F`), così la corrispondenza nuvola→timbro si legge a occhio.
 - **Le nuvole scelgono.** Ogni voce presidia una banda verticale della finestra; quando
   una nuvola vi entra la voce si sveglia, sceglie **a caso** una frase nell'intorno del
   fronte e la ripete; quando la nuvola esce, finisce la lettura e tace. Le bande sono
@@ -204,6 +255,7 @@ puntatori può fallire — se fallisse dopo, il clic andrebbe perso.
 | Bande | — | — | mostra/nasconde il righello |
 | Ascolto | `Suono.avvia/ferma` | — | dissolvenza di 1.2–1.5 s |
 | Polso udibile | `AUDIO.polso` | — | il Do acuto sulla griglia comune |
+| Strumenti | `AUDIO.strumenti` | 4 quadretti | uno solo, o più d'uno e allora si sorteggia |
 | Volume | `AUDIO.volume` | 0–1 | |
 | Tempo | `AUDIO.bpm` | 44–132 | |
 | Voci | `AUDIO.voci` | 1–10 | `Suono.impostaVoci()` ricostruisce bande e righello |

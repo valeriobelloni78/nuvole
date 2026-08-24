@@ -28,6 +28,7 @@ sezioni.
 
 - **Ascolto** — accende e spegne il suono (il primo clic crea il contesto audio: lo esigono i browser).
 - **Polso udibile** — rende udibile il battito che tiene insieme le voci, un Do acuto sulla griglia comune.
+- **Strumenti** — quali dei quattro timbri sono in campo. Uno solo, o più d'uno: in tal caso ogni voce ne sorteggia uno a ogni risveglio.
 - **Volume**, **Tempo** — l'ampiezza e il passo del polso.
 - **Voci** — quante voci, cioè in quante bande è divisa la finestra.
 - **Sensibilità** — quanta nuvola basta perché una voce si svegli.
@@ -63,6 +64,26 @@ una voce lasciata indietro finisce la sua frase e ne prende una aggiornata.
 
 Ne segue che **Cielo sereno è anche il comando del silenzio**: un cielo limpido è quasi
 muto, un cielo coperto è un insieme fitto.
+
+### Quattro strumenti
+
+Le frasi non sono più eseguite da un timbro solo. **Onda** è un suono semplice e tenuto,
+il fondo dell'insieme; **Vetro** è una campana, con parziali inarmoniche e code di durata
+diversa; **Corda** è un pizzicato, dove il colpo viene dalla rapidità con cui si chiude il
+filtro; **Fiato** è un soffio — rumore filtrato stretto attorno alla nota, con una
+sinusoide sotto che le dà l'intonazione. La differenza sta quasi tutta nella forma
+dell'attacco, non nella forma d'onda: è l'attacco a dire che strumento è.
+
+**A scegliere lo strumento è la nuvola stessa.** I quattro stanno su un asse che va dal
+velo sottile alla nuvola piena — Vetro, Corda, Onda, Fiato — e lo spessore della nuvola
+sulla banda decide quale suona: un velo che passa chiama la campana, un banco fitto
+chiama il fiato. Non è una metafora aggiunta dopo: è la stessa densità che disegna i
+puntini bianchi a decidere il timbro, e nel righello sotto la finestra si legge
+l'iniziale dello strumento accanto al numero della frase.
+
+Si possono tenere accesi tutti e quattro, oppure due, oppure uno solo — e allora
+l'insieme intero suona con quello. Quando ne sono accesi meno di quattro, l'asse si
+ridistribuisce fra quelli rimasti.
 
 Tutto è Web Audio API: nessuna libreria, nessun campione, nessun file esterno — anche il
 riverbero è una risposta all'impulso generata al momento.
