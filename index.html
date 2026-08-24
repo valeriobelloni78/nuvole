@@ -158,7 +158,12 @@
   }
   .controllo.arco { align-items: center; gap: 2px; position: relative; }
   .disco { width: 100%; max-width: 152px; }
-  .disco svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .disco svg {
+    display: block; width: 100%; height: auto; overflow: visible;
+    touch-action: none;                 /* il trascinamento muove il pallino,
+                                           non fa scorrere la pagina */
+    -webkit-tap-highlight-color: transparent;
+  }
   .disco .tacca { stroke: rgba(255, 255, 255, 0.5); stroke-width: 1.1; }
   .disco .pallino { fill: #ffffff; }
   .targa { text-align: center; }
@@ -172,55 +177,53 @@
     line-height: 1.2;
     margin-top: 3px;
   }
-  .celato {
-    position: absolute;
-    width: 1px; height: 1px;
-    opacity: 0;
-    pointer-events: none;
-  }
   .controllo.arco:focus-within .pallino {
     stroke: rgba(255, 255, 255, 0.55);
     stroke-width: 4;
   }
 
-  /* Cursore: filetto con tacche e pallino pieno */
-  .cursore { position: relative; height: 16px; }
-  .cursore::before {                       /* la traccia */
-    content: "";
-    position: absolute; left: 0; right: 0; top: 7px;
-    height: 1px; background: rgba(255, 255, 255, 0.45);
-  }
-  .cursore::after {                        /* le tacche */
-    content: "";
-    position: absolute; left: 0; right: 0; top: 8px;
-    height: 4px;
-    background-image: repeating-linear-gradient(
-      to right, rgba(255, 255, 255, 0.35) 0 1px, transparent 1px 10%);
-  }
+  /* Cursore: filetto con tacche e pallino pieno.
+     La linea e le tacche sono SFONDI DELL'INPUT (due gradienti), non elementi
+     disegnati sopra di esso — come in Rada. È la differenza fra un comando che
+     risponde e uno che non risponde: con gli pseudo-elementi in `position:
+     absolute` sul contenitore, `::after` viene dipinto dopo il contenuto e
+     copre la metà inferiore del cursore, pallino compreso, intercettando il
+     puntatore. Misurato: `elementFromPoint` non trovava più l'input da metà
+     altezza in giù. Qui non c'è nulla sopra l'input, e tutta l'area risponde. */
+  .cursore { position: relative; }
   input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
-    position: absolute;
-    left: 0; top: 0;
-    width: 100%; height: 16px;
-    background: transparent;
-    outline: none;
+    display: block;
+    width: 100%;
+    height: 18px;
     margin: 0;
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45))
+        0 8px / 100% 1px no-repeat,
+      repeating-linear-gradient(90deg,
+        rgba(255, 255, 255, 0.35) 0 1px, transparent 1px 10%)
+        0 9px / 100% 4px no-repeat;
+    outline: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
   input[type="range"]::-webkit-slider-runnable-track {
-    height: 16px; background: transparent;
+    height: 18px; background: transparent; border: none;
   }
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 9px; height: 9px;
-    margin-top: 3.5px;
+    margin-top: 4.5px;
     border-radius: 50%;
     background: #ffffff;
     border: none;
     cursor: pointer;
   }
-  input[type="range"]::-moz-range-track { height: 16px; background: transparent; }
+  input[type="range"]::-moz-range-track {
+    height: 18px; background: transparent; border: none;
+  }
   input[type="range"]::-moz-range-thumb {
     width: 9px; height: 9px;
     border-radius: 50%;
@@ -228,7 +231,21 @@
     border: none;
     cursor: pointer;
   }
-  input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4); }
+  input[type="range"]:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
+  }
+
+  /* L'input che sta sotto un quadrante ad arco: resta nel DOM (tiene il valore
+     e la tastiera) ma non si vede e non intercetta nulla. La specificità deve
+     superare quella di `input[type="range"]`, altrimenti torna visibile. */
+  input[type="range"].celato {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0;
+    background: none;
+    opacity: 0;
+    pointer-events: none;
+  }
 
   /* Interruttore: quadretto pieno/vuoto + stato */
   .interruttore {
@@ -1185,7 +1202,11 @@ const Pannello = {
     svg.addEventListener("pointermove", (ev) => {
       if (svg.hasPointerCapture(ev.pointerId)) daPuntatore(ev);
     });
-    svg.addEventListener("pointerup", (ev) => svg.releasePointerCapture(ev.pointerId));
+    const rilascia = (ev) => {
+      try { svg.releasePointerCapture(ev.pointerId); } catch (e) {}
+    };
+    svg.addEventListener("pointerup", rilascia);
+    svg.addEventListener("pointercancel", rilascia);
 
     input.addEventListener("input", disegna);
     disegna();

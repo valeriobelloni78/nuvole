@@ -158,8 +158,16 @@ pallino su filetto). Il registro è **svizzero-tecnico su carta chiara**:
     **una tacca per scatto** — la *Voci* ne ha dieci, e si legge a colpo d'occhio;
     altrimenti ventiquattro intervalli.
   - **cursori a filetto** per i comandi secondari: traccia da 1px con tacche ogni 10%
-    (gradiente ripetuto) e pallino pieno bianco da 9px; nessun riempimento della parte
-    percorsa;
+    e pallino pieno bianco da 9px; nessun riempimento della parte percorsa.
+    **La linea e le tacche sono sfondi dell'`input` stesso** (due gradienti nella
+    proprietà `background`), come in Rada e Rada2 — non pseudo-elementi disegnati
+    sopra. È una scelta di funzionamento, non di stile: `::after` in `position:
+    absolute` sul contenitore viene dipinto *dopo* il contenuto e copre la metà
+    inferiore del comando, pallino compreso, intercettando il puntatore. Con quella
+    stesura `elementFromPoint` non trovava più l'input da metà altezza in giù, e il
+    cursore rispondeva solo se colpito negli 8 px superiori (era il difetto segnalato
+    da Valerio: «se tocco il pallino non prende bene il comando»). **Non disegnare mai
+    nulla sopra un input di comando.**
 - **interruttori**: quadretto 9px vuoto/pieno + stato a parole (`SILENZIO`/`IN ASCOLTO`);
 - **quadrante dei dati**: cifre grandi tabellari con didascalia minuta sotto — frase
   dell'insieme, voci in ascolto, regione dell'arco;
