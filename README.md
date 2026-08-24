@@ -52,9 +52,10 @@ scritta da qualche parte: si formano e si sciolgono come le nuvole che le hanno 
 Di *In C* restano tre regole. Il **polso condiviso**: tutte le frasi partono su un battito,
 ma hanno lunghezze diverse e perciò sfasano lentamente l'una rispetto all'altra.
 L'**archivio percorso in avanti**: l'insieme avanza di una frase per volta, mai a salti,
-così l'armonia deriva per gradi — dal Do puro alla pentatonica, al Fa, alla luce del Fa#,
-alla regione di dominante, all'ombra del Si bemolle, e infine al rientro su Do, dove
-l'arco si richiude. Fra una regione e l'altra l'archivio ha una **cerniera**: quattro
+così l'armonia deriva per gradi. Il quadrante non ne dice i nomi armonici ma quelli del
+cielo, che è ciò che si sente: *Sereno*, *Cirri*, *Velo*, *Radura*, *Controluce*,
+*Corrente*, *Vuoto d'aria*, *Nembo*, *Schiarita*, *Zenit* — e poi si ricomincia, perché
+l'arco si richiude dove è cominciato. Fra una regione e l'altra l'archivio ha una **cerniera**: quattro
 frasi costruite sui soli suoni comuni, dove il grado vecchio si ritira prima che entri il
 nuovo. Senza, il Fa e il Fa# — o il Si e il Si bemolle — finirebbero per sovrapporsi, e
 basta questo perché tutto suoni stonato. La **libertà di ciascuna voce** dentro un intorno
@@ -67,15 +68,17 @@ muto, un cielo coperto è un insieme fitto.
 
 ### Quattro strumenti
 
-Le frasi non sono più eseguite da un timbro solo. **Onda** è un suono semplice e tenuto,
-il fondo dell'insieme; **Vetro** è una campana, con parziali inarmoniche e code di durata
-diversa; **Corda** è un pizzicato, dove il colpo viene dalla rapidità con cui si chiude il
-filtro; **Fiato** è un soffio — rumore filtrato stretto attorno alla nota, con una
-sinusoide sotto che le dà l'intonazione. La differenza sta quasi tutta nella forma
-dell'attacco, non nella forma d'onda: è l'attacco a dire che strumento è.
+Le frasi non sono eseguite da un timbro solo. **Onda** è un suono semplice e tenuto, il
+fondo dell'insieme; **Vetro** è un glockenspiel, sintesi FM con l'indice che decade in
+due decimi di secondo — il colpo entra brillante e si schiarisce in una sinusoide che
+continua a suonare; **Legno** è un battente su barra di marimba, caldo e corto, con il
+parziale a due ottave che se ne va per primo; **Fiato** è un soffio, rumore filtrato
+stretto attorno alla nota con una sinusoide sotto che le dà l'intonazione. La differenza
+sta quasi tutta nella forma dell'attacco e nella lunghezza della coda, non nella forma
+d'onda: è l'attacco a dire che strumento è.
 
 **A scegliere lo strumento è la nuvola stessa.** I quattro stanno su un asse che va dal
-velo sottile alla nuvola piena — Vetro, Corda, Onda, Fiato — e lo spessore della nuvola
+velo sottile alla nuvola piena — Vetro, Legno, Onda, Fiato — e lo spessore della nuvola
 sulla banda decide quale suona: un velo che passa chiama la campana, un banco fitto
 chiama il fiato. Non è una metafora aggiunta dopo: è la stessa densità che disegna i
 puntini bianchi a decidere il timbro, e nel righello sotto la finestra si legge
@@ -97,6 +100,13 @@ Ogni puntino interpola il proprio colore fra il celeste del sereno — che è il
 ## Parametri
 
 Tutti i parametri di resa e di comportamento sono raccolti nell'oggetto `PARAMS` in cima allo script, così da poter regolare in un solo punto la grana della matrice, i due colori del puntino, la velocità del vento e la copertura del cielo.
+
+## Lingue e guida
+
+L'interfaccia è in **italiano, francese, inglese e giapponese**; la lingua si sceglie in
+testata e si conserva fra una visita e l'altra. La [guida](guida.html) è una pagina a sé,
+tradotta anch'essa, e spiega il cielo, il suono, l'arco delle dieci regioni, i quattro
+strumenti e tutti i comandi.
 
 ## Uso
 

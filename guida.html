@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuvole · Guida</title>
+<meta name="description" content="Nuvole — musica generativa nel browser: un cielo di puntini, e le nuvole che chiamano le voci a suonare.">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; min-height: 100%; }
+  body {
+    background: #5e9bc9;
+    color: #ffffff;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    justify-content: center;
+    padding: 6vh 5vw 12vh;
+    min-height: 100vh;
+  }
+  .stanza {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(18px, 3vh, 30px);
+  }
+
+  .tecnico {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
+                 "Liberation Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  html[lang="ja"] .tecnico { letter-spacing: 0.08em; }
+
+  /* Testata: la stessa dello strumento, così le due pagine si riconoscono */
+  .testata { display: flex; flex-direction: column; gap: 9px; }
+  .testata .riga {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 20px;
+  }
+  .testata .filo { height: 1px; background: rgba(255, 255, 255, 0.38); }
+  .marchio {
+    font-weight: 300; letter-spacing: 0.5em; font-size: 13px;
+    text-transform: uppercase; color: rgba(255, 255, 255, 0.95);
+  }
+  .marchio .punto {
+    display: inline-block;
+    width: 0.30em; height: 0.30em; border-radius: 50%;
+    background: #ffffff; vertical-align: 0.20em; margin-left: 0.32em;
+    animation: respiro 2.73s ease-in-out infinite;
+  }
+  @keyframes respiro {
+    0%, 100% { opacity: 0.35; transform: scale(0.85); }
+    50%      { opacity: 1;    transform: scale(1.15); }
+  }
+  @media (prefers-reduced-motion: reduce) { .marchio .punto { animation: none; opacity: 0.85; } }
+
+  .lingue { display: flex; gap: 14px; }
+  .lingue button {
+    font: inherit; letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55); background: transparent; border: none;
+    padding: 0; cursor: pointer; transition: color 0.2s ease;
+  }
+  .lingue button:hover { color: rgba(255, 255, 255, 0.9); }
+  .lingue button.scelta { color: #ffffff; }
+  .lingue button:focus-visible { outline: 1px solid rgba(255,255,255,.6); outline-offset: 3px; }
+
+  a.rimando {
+    color: rgba(255, 255, 255, 0.75); text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+    padding-bottom: 2px; transition: color .2s ease, border-color .2s ease;
+  }
+  a.rimando:hover { color: #ffffff; border-color: #ffffff; }
+  .sigla { color: rgba(255, 255, 255, 0.7); }
+
+  /* Il testo */
+  .rubrica {
+    display: flex; align-items: center; gap: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: clamp(14px, 2.4vh, 26px);
+  }
+  .rubrica .filo { flex: 1; height: 1px; background: rgba(255, 255, 255, 0.38); }
+  .rubrica .codice { color: rgba(255, 255, 255, 0.6); letter-spacing: 0.1em; }
+
+  p {
+    font-size: 15px; line-height: 1.72;
+    color: rgba(255, 255, 255, 0.92);
+    max-width: 62ch;
+  }
+  p + p { margin-top: 0.9em; }
+  p em { font-style: italic; color: #ffffff; }
+  p strong { font-weight: 500; color: #ffffff; }
+
+  dl {
+    display: grid; grid-template-columns: max-content 1fr;
+    gap: 10px 24px; max-width: 62ch;
+  }
+  dt {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
+                 "Liberation Mono", monospace;
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: #ffffff;
+    padding-top: 0.32em;          /* porta la sigla sulla linea di base della glossa */
+  }
+  html[lang="ja"] dt { letter-spacing: 0.08em; }
+  dd { font-size: 14px; line-height: 1.62; color: rgba(255, 255, 255, 0.85); }
+  @media (max-width: 560px) {
+    dl { grid-template-columns: 1fr; gap: 2px; }
+    dd { margin-bottom: 10px; }
+  }
+
+  footer { margin-top: clamp(20px, 4vh, 40px); }
+  footer p { font-size: 13px; color: rgba(255, 255, 255, 0.75); }
+  footer a { color: #ffffff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.45); }
+</style>
+</head>
+<body>
+
+  <div class="stanza">
+
+    <div class="testata">
+      <div class="riga">
+        <div class="marchio">Nuvole<span class="punto" aria-hidden="true"></span></div>
+        <nav class="lingue tecnico" id="lingue" aria-label="Lingua"></nav>
+      </div>
+      <div class="filo"></div>
+      <div class="riga tecnico">
+        <span class="sigla" data-i18n="g.titolo">Guida</span>
+        <a class="rimando" id="torna" href="index.html"
+           data-i18n="g.torna">Torna allo strumento</a>
+      </div>
+    </div>
+
+    <p data-i18n="g.intro"></p>
+
+    <div class="rubrica tecnico">
+      <span data-i18n="g.h.cielo"></span><span class="filo"></span><span class="codice">M1</span>
+    </div>
+    <div>
+      <p data-i18n="g.cielo.1"></p>
+      <p data-i18n="g.cielo.2"></p>
+    </div>
+
+    <div class="rubrica tecnico">
+      <span data-i18n="g.h.suono"></span><span class="filo"></span><span class="codice">M2</span>
+    </div>
+    <div>
+      <p data-i18n="g.suono.1"></p>
+      <p data-i18n="g.suono.2"></p>
+      <p data-i18n="g.suono.3"></p>
+    </div>
+
+    <div class="rubrica tecnico">
+      <span data-i18n="g.h.arco"></span><span class="filo"></span>
+    </div>
+    <div>
+      <p data-i18n="g.arco.1"></p>
+      <dl id="arcoElenco"></dl>
+      <p data-i18n="g.arco.2" style="margin-top:1.1em"></p>
+    </div>
+
+    <div class="rubrica tecnico">
+      <span data-i18n="g.h.strumenti"></span><span class="filo"></span>
+    </div>
+    <div>
+      <p data-i18n="g.strumenti.1"></p>
+      <dl id="strumentiElenco" style="margin-top:1.1em"></dl>
+      <p data-i18n="g.strumenti.2" style="margin-top:1.1em"></p>
+    </div>
+
+    <div class="rubrica tecnico">
+      <span data-i18n="g.h.comandi"></span><span class="filo"></span>
+    </div>
+    <div>
+      <p data-i18n="g.comandi.1"></p>
+      <dl id="comandiCielo" style="margin-top:1.1em"></dl>
+      <dl id="comandiSuono" style="margin-top:1.4em"></dl>
+    </div>
+
+    <div class="rubrica tecnico">
+      <span data-i18n="g.h.crediti"></span><span class="filo"></span>
+    </div>
+    <footer>
+      <p data-i18n="g.crediti.1"></p>
+      <p style="margin-top:.7em">
+        <a href="https://github.com/valeriobelloni78/nuvole" target="_blank" rel="noopener"
+           data-i18n="g.codice">Il codice su GitHub</a>
+      </p>
+    </footer>
+
+  </div>
+
+<script>
+"use strict";
+
+/* =========================================================================
+   NUVOLE · guida — le quattro lingue
+
+   Pagina a sé, autoconsistente come lo strumento: porta con sé il proprio
+   dizionario. La lingua arriva dall'indirizzo (?lang=ja, scritto dal
+   collegamento nello strumento), poi dalla scelta salvata, poi dalle
+   preferenze del browser. Le frasi stanno intere: non si compongono.
+   ========================================================================= */
+
+const LINGUE = ["it", "fr", "en", "ja"];
+const SIGLA_LINGUA = { it: "IT", fr: "FR", en: "EN", ja: "日本語" };
+
+const TESTI = {
+
+it: {
+  "g.titolo": "Guida",
+  "g.torna": "Torna allo strumento",
+  "g.intro": "Nuvole è una web-app di musica generativa che gira interamente nel browser. Un cielo di puntini attraversato da nuvole lente, e un insieme di voci che le nuvole chiamano a suonare. Non c'è nessuna registrazione: quello che si ascolta si forma mentre lo si ascolta, e non si ripete.",
+
+  "g.h.cielo": "Il cielo",
+  "g.cielo.1": "La finestra non contiene nuvole disegnate: contiene un campo continuo di rumore, interrogato in ogni punto di una matrice fitta. Dove il campo supera una soglia c'è nuvola, e il puntino sbianca e cresce; sotto quella soglia il puntino ha esattamente il colore del cielo, e perciò non si vede. La matrice c'è tutta, sempre — appare soltanto dove la nuvola la scopre.",
+  "g.cielo.2": "Il campo non si muove: si sposta il punto da cui lo si guarda, ed è il vento. Una seconda scala, molto più lenta, decide dove il cielo si addensa e dove resta limpido. Per questo le nuvole non si ripetono mai: nascono, attraversano e si sciolgono ai bordi.",
+
+  "g.h.suono": "Il suono",
+  "g.suono.1": "Il motore sonoro è nella scia di In C di Terry Riley (1964): un archivio di frasi brevissime che più voci leggono ciascuna per conto proprio, sopra un polso comune. Le 53 frasi di Nuvole sono materiale originale, non le cellule di Riley — se ne adotta il principio, non le note.",
+  "g.suono.2": "A decidere quando si suona sono le nuvole. La finestra è divisa in bande verticali, una per voce: quando una nuvola entra in una banda, quella voce si sveglia, prende una delle frasi disponibili in quel momento e la ripete; quando la nuvola esce, finisce la lettura e tace. Poiché le bande sono attraversate in momenti diversi e per durate diverse, nessuna sovrapposizione è scritta da qualche parte: si formano e si sciolgono come le nuvole che le hanno chiamate.",
+  "g.suono.3": "Ne segue che Cielo sereno è anche il comando del silenzio: un cielo limpido è quasi muto, un cielo coperto è un insieme fitto.",
+
+  "g.h.arco": "L'arco",
+  "g.arco.1": "L'insieme avanza nell'archivio di una frase per volta, mai a salti, e non lascia indietro nessuno: il fronte aspetta chi sta ancora leggendo. Così l'armonia deriva per gradi lungo dieci tratti, che il quadrante chiama con i nomi del cielo.",
+  "g.arco.2": "Dopo l'ultimo si ricomincia dal primo: l'arco si richiude dove è cominciato.",
+  "arco.1": "tre soli suoni, la luce piena",
+  "arco.2": "l'aria si apre",
+  "arco.3": "il primo peso",
+  "arco.4": "una schiarita prima del cambio",
+  "arco.5": "il tratto più luminoso",
+  "arco.6": "la tensione, il movimento",
+  "arco.7": "il cielo si svuota",
+  "arco.8": "l'ombra",
+  "arco.9": "l'ombra si ritira",
+  "arco.10": "la luce torna, e l'arco si chiude",
+
+  "g.h.strumenti": "Gli strumenti",
+  "g.strumenti.1": "I timbri sono quattro, e a scegliere è ancora la nuvola: lo spessore che ha sulla banda decide con quale voce suonare, dal velo sottile alla nuvola piena.",
+  "g.strumenti.2": "Si possono tenere accesi tutti e quattro, oppure due, oppure uno solo — e allora l'insieme intero suona con quello.",
+  "s.vetro": "un glockenspiel: il colpo entra brillante e si schiarisce subito in un suono puro che continua a suonare",
+  "s.legno": "un battente su barra di marimba, caldo e corto",
+  "s.onda": "un suono semplice e tenuto, il fondo dell'insieme",
+  "s.fiato": "un soffio: rumore filtrato stretto attorno alla nota, con una sinusoide sotto che le dà l'intonazione",
+
+  "g.h.comandi": "I comandi",
+  "g.comandi.1": "Il pannello sta sotto la finestra, in due sezioni. Sopra di esso un righello mostra le bande delle voci — si accende quella su cui passa una nuvola, con il numero della frase e l'iniziale dello strumento — e un quadrante riporta la frase dell'insieme, le voci in ascolto e il tratto dell'arco.",
+  "d.sereno": "quanta parte del cielo resta limpida: alzandolo le nuvole diradano, ed è anche il comando del silenzio",
+  "d.vento": "la velocità con cui le nuvole attraversano la finestra",
+  "d.grana": "la distanza fra i puntini: cambia la retinatura, non la dimensione delle nuvole",
+  "d.ampiezza": "quanto sono larghe le nuvole rispetto alla finestra",
+  "d.muta": "quanto in fretta la copertura del cielo si trasforma",
+  "d.bande": "mostra o nasconde il righello delle voci",
+  "d.ascolto": "accende e spegne il suono; il primo tocco crea il contesto audio, lo esigono i browser",
+  "d.polso": "rende udibile il battito che tiene insieme le voci",
+  "d.strumenti": "quali dei quattro timbri sono in campo",
+  "d.volume": "l'ampiezza d'insieme",
+  "d.tempo": "il passo del polso comune",
+  "d.voci": "quante voci, cioè in quante bande è divisa la finestra",
+  "d.sensibilita": "quanta nuvola basta perché una voce si svegli",
+  "d.dispersione": "di quante frasi le voci possono allontanarsi le une dalle altre",
+  "d.avanzamento": "ogni quanto l'insieme può passare alla frase successiva",
+  "d.riverbero": "la coda dell'ambiente",
+  "d.registro": "il trasporto d'insieme, in semitoni",
+
+  "g.h.crediti": "Crediti",
+  "g.crediti.1": "Nuvole è un progetto di Valerio Belloni. Open source, licenza MIT. Nessuna libreria, nessun campione, nessun file esterno: anche il riverbero è una risposta all'impulso generata al momento.",
+  "g.codice": "Il codice su GitHub",
+},
+
+fr: {
+  "g.titolo": "Guide",
+  "g.torna": "Retour à l'instrument",
+  "g.intro": "Nuvole est une application web de musique générative qui fonctionne entièrement dans le navigateur. Un ciel de points traversé par des nuages lents, et un ensemble de voix que les nuages appellent à jouer. Il n'y a aucun enregistrement : ce que l'on écoute se forme pendant qu'on l'écoute, et ne se répète pas.",
+
+  "g.h.cielo": "Le ciel",
+  "g.cielo.1": "La fenêtre ne contient pas de nuages dessinés : elle contient un champ continu de bruit, interrogé en chaque point d'une trame serrée. Là où le champ dépasse un seuil il y a nuage, et le point blanchit et grandit ; sous ce seuil le point a exactement la couleur du ciel, et donc ne se voit pas. La trame est là tout entière, toujours — elle n'apparaît que là où le nuage la découvre.",
+  "g.cielo.2": "Le champ ne bouge pas : c'est le point d'où on le regarde qui se déplace, et c'est le vent. Une seconde échelle, bien plus lente, décide où le ciel s'épaissit et où il reste limpide. C'est pourquoi les nuages ne se répètent jamais : ils naissent, traversent et se dissolvent aux bords.",
+
+  "g.h.suono": "Le son",
+  "g.suono.1": "Le moteur sonore est dans le sillage de In C de Terry Riley (1964) : un répertoire de phrases très brèves que plusieurs voix lisent chacune pour son compte, sur une pulsation commune. Les 53 phrases de Nuvole sont un matériau original, non les cellules de Riley — on en adopte le principe, pas les notes.",
+  "g.suono.2": "Ce sont les nuages qui décident du moment. La fenêtre est divisée en bandes verticales, une par voix : quand un nuage entre dans une bande, cette voix s'éveille, prend l'une des phrases alors disponibles et la répète ; quand le nuage sort, elle achève sa lecture et se tait. Comme les bandes sont traversées à des moments et pour des durées différentes, aucune superposition n'est écrite nulle part : elles se forment et se défont comme les nuages qui les ont appelées.",
+  "g.suono.3": "Il s'ensuit que Ciel dégagé est aussi la commande du silence : un ciel limpide est presque muet, un ciel couvert est un ensemble dense.",
+
+  "g.h.arco": "L'arc",
+  "g.arco.1": "L'ensemble avance dans le répertoire d'une phrase à la fois, jamais par sauts, et ne laisse personne en arrière : le front attend celui qui lit encore. Ainsi l'harmonie dérive par degrés le long de dix étapes, que le cadran nomme avec les mots du ciel.",
+  "g.arco.2": "Après la dernière on reprend la première : l'arc se referme là où il a commencé.",
+  "arco.1": "trois sons seulement, la pleine lumière",
+  "arco.2": "l'air s'ouvre",
+  "arco.3": "le premier poids",
+  "arco.4": "une éclaircie avant le changement",
+  "arco.5": "l'étape la plus lumineuse",
+  "arco.6": "la tension, le mouvement",
+  "arco.7": "le ciel se vide",
+  "arco.8": "l'ombre",
+  "arco.9": "l'ombre se retire",
+  "arco.10": "la lumière revient, et l'arc se referme",
+
+  "g.h.strumenti": "Les instruments",
+  "g.strumenti.1": "Les timbres sont quatre, et c'est encore le nuage qui choisit : l'épaisseur qu'il a sur la bande décide de la voix, du voile mince au nuage plein.",
+  "g.strumenti.2": "On peut en garder les quatre allumés, ou deux, ou un seul — et alors l'ensemble entier joue avec celui-là.",
+  "s.vetro": "un glockenspiel : l'attaque entre brillante et s'éclaircit aussitôt en un son pur qui continue de sonner",
+  "s.legno": "une mailloche sur lame de marimba, chaude et brève",
+  "s.onda": "un son simple et tenu, le fond de l'ensemble",
+  "s.fiato": "un souffle : bruit filtré étroit autour de la note, avec une sinusoïde dessous qui lui donne la hauteur",
+
+  "g.h.comandi": "Les commandes",
+  "g.comandi.1": "Le panneau se trouve sous la fenêtre, en deux sections. Au-dessus, une réglette montre les bandes des voix — celle que traverse un nuage s'allume, avec le numéro de la phrase et l'initiale de l'instrument — et un cadran indique la phrase de l'ensemble, les voix à l'écoute et l'étape de l'arc.",
+  "d.sereno": "quelle part du ciel reste limpide : en montant, les nuages s'éclaircissent ; c'est aussi la commande du silence",
+  "d.vento": "la vitesse à laquelle les nuages traversent la fenêtre",
+  "d.grain": "",
+  "d.grana": "la distance entre les points : change la trame, non la taille des nuages",
+  "d.ampiezza": "la largeur des nuages par rapport à la fenêtre",
+  "d.muta": "la vitesse à laquelle la couverture du ciel se transforme",
+  "d.bande": "affiche ou masque la réglette des voix",
+  "d.ascolto": "allume et éteint le son ; le premier geste crée le contexte audio, les navigateurs l'exigent",
+  "d.polso": "rend audible la pulsation qui tient les voix ensemble",
+  "d.strumenti": "lesquels des quatre timbres sont en jeu",
+  "d.volume": "l'ampleur d'ensemble",
+  "d.tempo": "le pas de la pulsation commune",
+  "d.voci": "combien de voix, c'est-à-dire en combien de bandes la fenêtre est divisée",
+  "d.sensibilita": "combien de nuage suffit pour éveiller une voix",
+  "d.dispersione": "de combien de phrases les voix peuvent s'éloigner l'une de l'autre",
+  "d.avanzamento": "tous les combien l'ensemble peut passer à la phrase suivante",
+  "d.riverbero": "la queue de la salle",
+  "d.registro": "la transposition d'ensemble, en demi-tons",
+
+  "g.h.crediti": "Crédits",
+  "g.crediti.1": "Nuvole est un projet de Valerio Belloni. Open source, licence MIT. Aucune bibliothèque, aucun échantillon, aucun fichier externe : même la réverbération est une réponse impulsionnelle engendrée sur place.",
+  "g.codice": "Le code sur GitHub",
+},
+
+en: {
+  "g.titolo": "Guide",
+  "g.torna": "Back to the instrument",
+  "g.intro": "Nuvole is a generative-music web app that runs entirely in the browser. A sky of dots crossed by slow clouds, and an ensemble of voices that the clouds call into playing. There is no recording: what you hear forms while you listen to it, and never repeats.",
+
+  "g.h.cielo": "The sky",
+  "g.cielo.1": "The window holds no drawn clouds: it holds a continuous field of noise, questioned at every point of a fine matrix. Where the field crosses a threshold there is cloud, and the dot whitens and grows; below that threshold the dot is exactly the colour of the sky, and so cannot be seen. The matrix is there in full, always — it appears only where the cloud uncovers it.",
+  "g.cielo.2": "The field does not move: what moves is the point from which it is read, and that is the wind. A second scale, far slower, decides where the sky thickens and where it stays clear. This is why the clouds never repeat: they form, cross, and dissolve at the edges.",
+
+  "g.h.suono": "The sound",
+  "g.suono.1": "The sound engine follows in the wake of Terry Riley's In C (1964): an archive of very short phrases that several voices each read on their own, over a shared pulse. The 53 phrases of Nuvole are original material, not Riley's cells — the principle is adopted, not the notes.",
+  "g.suono.2": "It is the clouds that decide when to play. The window is divided into vertical bands, one per voice: when a cloud enters a band, that voice wakes, takes one of the phrases available at that moment and repeats it; when the cloud leaves, it finishes its reading and falls silent. Because the bands are crossed at different moments and for different durations, no overlap is written down anywhere: they form and dissolve like the clouds that called them.",
+  "g.suono.3": "It follows that Clear sky is also the control of silence: a clear sky is nearly mute, an overcast one a dense ensemble.",
+
+  "g.h.arco": "The arc",
+  "g.arco.1": "The ensemble moves through the archive one phrase at a time, never skipping, and leaves no one behind: the front waits for whoever is still reading. So the harmony drifts by degrees along ten stretches, which the dial names with the words of the sky.",
+  "g.arco.2": "After the last one it begins again from the first: the arc closes where it started.",
+  "arco.1": "three notes only, full light",
+  "arco.2": "the air opens",
+  "arco.3": "the first weight",
+  "arco.4": "a clearing before the change",
+  "arco.5": "the brightest stretch",
+  "arco.6": "tension, movement",
+  "arco.7": "the sky empties",
+  "arco.8": "the shadow",
+  "arco.9": "the shadow withdraws",
+  "arco.10": "the light returns, and the arc closes",
+
+  "g.h.strumenti": "The instruments",
+  "g.strumenti.1": "There are four timbres, and again it is the cloud that chooses: its thickness over the band decides which voice sounds, from thin veil to full cloud.",
+  "g.strumenti.2": "You can keep all four on, or two, or only one — and then the whole ensemble plays with that one.",
+  "s.vetro": "a glockenspiel: the stroke enters bright and clears at once into a pure tone that keeps ringing",
+  "s.legno": "a mallet on a marimba bar, warm and short",
+  "s.onda": "a plain sustained tone, the ground of the ensemble",
+  "s.fiato": "a breath: noise filtered narrowly around the note, with a sine beneath giving it pitch",
+
+  "g.h.comandi": "The controls",
+  "g.comandi.1": "The panel sits below the window, in two sections. Above it a ruler shows the bands of the voices — the one a cloud is crossing lights up, with the phrase number and the instrument's initial — and a dial reports the phrase of the ensemble, the voices listening, and the stretch of the arc.",
+  "d.sereno": "how much of the sky stays clear: raising it thins the clouds, and it is also the control of silence",
+  "d.vento": "how fast the clouds cross the window",
+  "d.grana": "the spacing of the dots: it changes the screen, not the size of the clouds",
+  "d.ampiezza": "how wide the clouds are relative to the window",
+  "d.muta": "how quickly the cover of the sky transforms",
+  "d.bande": "shows or hides the ruler of the voices",
+  "d.ascolto": "turns the sound on and off; the first touch creates the audio context, as browsers require",
+  "d.polso": "makes audible the beat that holds the voices together",
+  "d.strumenti": "which of the four timbres are in play",
+  "d.volume": "the level of the ensemble",
+  "d.tempo": "the pace of the shared pulse",
+  "d.voci": "how many voices, that is, into how many bands the window is divided",
+  "d.sensibilita": "how much cloud is enough to wake a voice",
+  "d.dispersione": "how many phrases the voices may drift apart",
+  "d.avanzamento": "how often the ensemble may move on to the next phrase",
+  "d.riverbero": "the tail of the room",
+  "d.registro": "the transposition of the whole, in semitones",
+
+  "g.h.crediti": "Credits",
+  "g.crediti.1": "Nuvole is a project by Valerio Belloni. Open source, MIT licence. No library, no samples, no external files: even the reverb is an impulse response generated on the spot.",
+  "g.codice": "The code on GitHub",
+},
+
+ja: {
+  "g.titolo": "ガイド",
+  "g.torna": "楽器に戻る",
+  "g.intro": "Nuvole はブラウザだけで動く生成音楽のウェブアプリです。点の集まりでできた空を、ゆっくりと雲が渡ってゆき、その雲が声部を呼び出して鳴らします。録音はありません。聴こえているものは聴いているあいだに立ち上がり、二度と同じようには繰り返しません。",
+
+  "g.h.cielo": "空",
+  "g.cielo.1": "窓のなかに描かれた雲はありません。あるのは連続したノイズの場で、細かな格子の各点でその値を尋ねています。場がしきい値を越えるところが雲で、点は白くなり大きくなります。しきい値より下では、点は空とまったく同じ色をしているので見えません。格子はつねに全部そこにあり、雲が覆いを取ったところにだけ現れるのです。",
+  "g.cielo.2": "場そのものは動きません。動くのは場を見る位置のほうで、それが風です。もうひとつの、はるかにゆるやかな尺度が、空のどこが厚くなりどこが晴れたままかを決めています。だから雲は決して繰り返しません。生まれ、渡り、へりで解けてゆきます。",
+
+  "g.h.suono": "音",
+  "g.suono.1": "音の仕組みはテリー・ライリーの《In C》(1964) の流れにあります。ごく短い楽句の書庫があり、複数の声部がそれぞれ自分の判断で読んでゆく——共通の拍の上で。Nuvole の53の楽句はライリーのセルではなく、独自に書かれたものです。受け継いだのは原理であって、音符ではありません。",
+  "g.suono.2": "いつ鳴るかを決めるのは雲です。窓は縦の帯に分けられ、帯ひとつが声部ひとつにあたります。雲が帯に入るとその声部は目を覚まし、そのとき選べる楽句のひとつを取って繰り返します。雲が去ると、読みを終えて黙ります。帯を渡る時刻も長さもそれぞれ違うので、重なり方はどこにも書かれていません。呼び出した雲と同じように、生まれては解けてゆきます。",
+  "g.suono.3": "したがって「晴天」は沈黙の操作子でもあります。晴れた空はほとんど鳴らず、曇った空は密な合奏になります。",
+
+  "g.h.arco": "弧",
+  "g.arco.1": "合奏は書庫を一句ずつ進み、飛ばすことはありません。そして誰も置き去りにしません——まだ読んでいる声部を、先頭は待ちます。こうして和声は十の区間を段階的に移ろい、その区間を計器は空のことばで呼びます。",
+  "g.arco.2": "最後まで来ると最初に戻ります。弧は始まった場所で閉じるのです。",
+  "arco.1": "三つの音だけ、満ちた光",
+  "arco.2": "空気がひらく",
+  "arco.3": "はじめての重み",
+  "arco.4": "変化の前のひとときの晴れ",
+  "arco.5": "もっとも明るい区間",
+  "arco.6": "張りつめと動き",
+  "arco.7": "空が空になる",
+  "arco.8": "翳り",
+  "arco.9": "翳りが退く",
+  "arco.10": "光が戻り、弧が閉じる",
+
+  "g.h.strumenti": "楽器",
+  "g.strumenti.1": "音色は四つ。選ぶのはやはり雲です。帯の上の雲の厚みが、どの声で鳴るかを決めます——薄い衣から、満ちた雲まで。",
+  "g.strumenti.2": "四つとも点けておくことも、二つでも、ひとつだけでもかまいません。ひとつだけなら、合奏全体がその音色で鳴ります。",
+  "s.vetro": "グロッケンシュピール。打点は輝いて入り、すぐに澄んで、鳴りつづける純な音になります",
+  "s.legno": "マリンバの音板を撞木で打った音。温かく、短い",
+  "s.onda": "素朴な持続音。合奏の地の部分",
+  "s.fiato": "息。音の周りを狭く濾したノイズに、下から正弦波が音高を与えます",
+
+  "g.h.comandi": "操作",
+  "g.comandi.1": "操作盤は窓の下、二つの節に分かれています。その上の目盛は声部の帯を示し、雲が渡っている帯が点灯して、楽句の番号と楽器の頭文字を出します。計器には全体の楽句、鳴っている声部の数、弧の区間が出ます。",
+  "d.sereno": "空のどれだけが晴れたままか。上げると雲は薄れます。沈黙の操作子でもあります",
+  "d.vento": "雲が窓を渡ってゆく速さ",
+  "d.grana": "点と点の間隔。網の細かさが変わるだけで、雲の大きさは変わりません",
+  "d.ampiezza": "窓に対する雲の広がり",
+  "d.muta": "空の覆いが移り変わる速さ",
+  "d.bande": "声部の目盛を表示するか隠すか",
+  "d.ascolto": "音を入れ切りします。最初のひと押しで音声の文脈が生まれます（ブラウザの決まりです）",
+  "d.polso": "声部をつないでいる拍を聞こえるようにします",
+  "d.strumenti": "四つの音色のうち、どれを使うか",
+  "d.volume": "全体の音量",
+  "d.tempo": "共通の拍の速さ",
+  "d.voci": "声部の数、すなわち窓をいくつの帯に分けるか",
+  "d.sensibilita": "どれだけの雲があれば声部が目を覚ますか",
+  "d.dispersione": "声部どうしが何句まで離れてよいか",
+  "d.avanzamento": "合奏が次の楽句へ進める間隔",
+  "d.riverbero": "空間の残響",
+  "d.registro": "全体の移調（半音単位）",
+
+  "g.h.crediti": "クレジット",
+  "g.crediti.1": "Nuvole は Valerio Belloni による作品です。オープンソース、MITライセンス。ライブラリも、音素材も、外部ファイルもありません。残響さえその場で生成しています。",
+  "g.codice": "GitHub 上のコード",
+},
+
+};
+
+/* --- scelta e applicazione della lingua ------------------------------------ */
+const CHIAVE_LINGUA = "nuvole.lang";
+function lingueSalvata() {
+  try { return localStorage.getItem(CHIAVE_LINGUA); } catch (e) { return null; }
+}
+function salvaLingua(v) {
+  try { localStorage.setItem(CHIAVE_LINGUA, v); } catch (e) {}
+}
+function scegliLingua() {
+  let q = null;
+  try { q = new URLSearchParams(location.search).get("lang"); } catch (e) {}
+  if (LINGUE.includes(q)) return q;
+  const salvata = lingueSalvata();
+  if (LINGUE.includes(salvata)) return salvata;
+  const pref = (navigator.languages && navigator.languages.length)
+             ? navigator.languages : [navigator.language || ""];
+  for (const tag of pref) {
+    const primaria = String(tag).toLowerCase().split("-")[0];
+    if (primaria === "it" || primaria === "fr" || primaria === "ja") return primaria;
+  }
+  return "en";
+}
+let lingua = scegliLingua();
+function T(chiave) {
+  const d = TESTI[lingua] || TESTI.en;
+  return (chiave in d) ? d[chiave] : (TESTI.en[chiave] || chiave);
+}
+
+/* I nomi dei dieci tratti e dei quattro strumenti sono gli stessi dello
+   strumento: qui servono per gli elenchi, e stanno in un solo posto. */
+const REGIONI = ["reg.1","reg.2","reg.3","reg.4","reg.5","reg.6","reg.7","reg.8","reg.9","reg.10"];
+const NOMI_REGIONI = {
+  it: ["Sereno","Cirri","Velo","Radura","Controluce","Corrente","Vuoto d'aria","Nembo","Schiarita","Zenit"],
+  fr: ["Dégagé","Cirrus","Voile","Clairière","Contre-jour","Courant","Trou d'air","Nimbus","Éclaircie","Zénith"],
+  en: ["Clear","Cirrus","Veil","Clearing","Backlight","Current","Air pocket","Nimbus","Break","Zenith"],
+  ja: ["晴","巻雲","薄衣","切れ間","逆光","気流","空隙","雨雲","薄明","天頂"],
+};
+const NOMI_STRUMENTI = {
+  it: ["Vetro","Legno","Onda","Fiato"],
+  fr: ["Verre","Bois","Onde","Souffle"],
+  en: ["Glass","Wood","Wave","Breath"],
+  ja: ["硝子","木","波","息"],
+};
+const CHIAVI_STRUMENTI = ["s.vetro","s.legno","s.onda","s.fiato"];
+
+const COMANDI_CIELO = [
+  ["c.sereno","d.sereno"], ["c.vento","d.vento"], ["c.grana","d.grana"],
+  ["c.ampiezza","d.ampiezza"], ["c.muta","d.muta"], ["c.bande","d.bande"],
+];
+const COMANDI_SUONO = [
+  ["c.ascolto","d.ascolto"], ["c.polso","d.polso"], ["c.strumenti","d.strumenti"],
+  ["c.volume","d.volume"], ["c.tempo","d.tempo"], ["c.voci","d.voci"],
+  ["c.sensibilita","d.sensibilita"], ["c.dispersione","d.dispersione"],
+  ["c.avanzamento","d.avanzamento"], ["c.riverbero","d.riverbero"],
+  ["c.registro","d.registro"],
+];
+const NOMI_COMANDI = {
+  it: { "c.sereno":"Cielo sereno","c.vento":"Vento","c.grana":"Grana","c.ampiezza":"Ampiezza nuvole",
+        "c.muta":"Muta","c.bande":"Bande","c.ascolto":"Ascolto","c.polso":"Polso udibile",
+        "c.strumenti":"Strumenti","c.volume":"Volume","c.tempo":"Tempo","c.voci":"Voci",
+        "c.sensibilita":"Sensibilità","c.dispersione":"Dispersione","c.avanzamento":"Avanzamento",
+        "c.riverbero":"Riverbero","c.registro":"Registro" },
+  fr: { "c.sereno":"Ciel dégagé","c.vento":"Vent","c.grana":"Grain","c.ampiezza":"Ampleur des nuages",
+        "c.muta":"Mue","c.bande":"Bandes","c.ascolto":"Écoute","c.polso":"Pouls audible",
+        "c.strumenti":"Instruments","c.volume":"Volume","c.tempo":"Tempo","c.voci":"Voix",
+        "c.sensibilita":"Sensibilité","c.dispersione":"Dispersion","c.avanzamento":"Avancement",
+        "c.riverbero":"Réverbération","c.registro":"Registre" },
+  en: { "c.sereno":"Clear sky","c.vento":"Wind","c.grana":"Grain","c.ampiezza":"Cloud width",
+        "c.muta":"Drift","c.bande":"Bands","c.ascolto":"Listening","c.polso":"Audible pulse",
+        "c.strumenti":"Instruments","c.volume":"Volume","c.tempo":"Tempo","c.voci":"Voices",
+        "c.sensibilita":"Sensitivity","c.dispersione":"Spread","c.avanzamento":"Advance",
+        "c.riverbero":"Reverb","c.registro":"Register" },
+  ja: { "c.sereno":"晴天","c.vento":"風","c.grana":"粒","c.ampiezza":"雲の広がり",
+        "c.muta":"変容","c.bande":"帯","c.ascolto":"再生","c.polso":"拍を鳴らす",
+        "c.strumenti":"楽器","c.volume":"音量","c.tempo":"速度","c.voci":"声部",
+        "c.sensibilita":"感度","c.dispersione":"散らばり","c.avanzamento":"進行",
+        "c.riverbero":"残響","c.registro":"音域" },
+};
+
+function elenco(id, righe) {
+  const dl = document.getElementById(id);
+  dl.innerHTML = "";
+  righe.forEach(([titolo, testo]) => {
+    const dt = document.createElement("dt"); dt.textContent = titolo;
+    const dd = document.createElement("dd"); dd.textContent = testo;
+    dl.appendChild(dt); dl.appendChild(dd);
+  });
+}
+
+function applicaLingua() {
+  document.documentElement.lang = lingua;
+  document.title = "Nuvole · " + T("g.titolo");
+
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.textContent = T(el.getAttribute("data-i18n"));
+  });
+
+  elenco("arcoElenco", NOMI_REGIONI[lingua].map((n, i) => [n, T("arco." + (i + 1))]));
+  elenco("strumentiElenco", NOMI_STRUMENTI[lingua].map((n, i) => [n, T(CHIAVI_STRUMENTI[i])]));
+  const nc = NOMI_COMANDI[lingua];
+  elenco("comandiCielo", COMANDI_CIELO.map(([c, d]) => [nc[c], T(d)]));
+  elenco("comandiSuono", COMANDI_SUONO.map(([c, d]) => [nc[c], T(d)]));
+
+  const nav = document.getElementById("lingue");
+  nav.setAttribute("aria-label", T("ui.lingua") || "Lingua");
+  nav.querySelectorAll("button").forEach((b) => {
+    const scelta = b.dataset.lang === lingua;
+    b.classList.toggle("scelta", scelta);
+    b.setAttribute("aria-pressed", scelta ? "true" : "false");
+  });
+  document.getElementById("torna").setAttribute("href", "index.html?lang=" + lingua);
+}
+
+function cambiaLingua(l) {
+  if (!LINGUE.includes(l) || l === lingua) return;
+  lingua = l;
+  salvaLingua(l);
+  applicaLingua();
+}
+
+(function costruisciLingue() {
+  const cont = document.getElementById("lingue");
+  LINGUE.forEach((l) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.dataset.lang = l;
+    b.textContent = SIGLA_LINGUA[l];
+    b.addEventListener("click", () => cambiaLingua(l));
+    cont.appendChild(b);
+  });
+  applicaLingua();
+})();
+
+</script>
+</body>
+</html>

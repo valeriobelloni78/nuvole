@@ -19,7 +19,11 @@ Nessun build, nessuna dipendenza a runtime: un unico `index.html` autoconsistent
 
 - **La stanza è il cielo**: fondo piatto `#5e9bc9`, tutte le scritte e tutti i comandi
   in bianco. La finestra è segnata da un **contorno bianco finissimo** (1px), unico
-  riquadro della pagina; il marchio *Nuvole* è allineato a sinistra sopra il vetro
+  riquadro della pagina; il marchio *Nuvole* è allineato a sinistra sopra il vetro,
+  con accanto un **punto che respira** (come in Rada2, `.logoPunto`): qui però il
+  respiro non è un tempo fisso ma dura **quattro battiti del polso**, quindi segue il
+  comando *Tempo* attraverso la variabile CSS `--respiro` (2,73 s a 88 bpm, 1,82 a 132,
+  5,45 a 44). Si ferma con `prefers-reduced-motion`
   (canvas 2D responsive, largo quanto `.stanza`, max 980px).
 - **Figura e fondo invertiti** (scelta di Valerio, agosto 2026). Il canvas è trasparente
   e `PARAMS.celeste` è **identico al fondo della pagina**: la matrice del cielo sereno
@@ -63,9 +67,48 @@ Nessun build, nessuna dipendenza a runtime: un unico `index.html` autoconsistent
 - **Slider "Cielo sereno"** mappa su `PARAMS.soglia` (range ~0.10–0.21); **"Vento"** su
   `PARAMS.ventoX` (0–2.5) con `ventoY = ventoX * 0.18`.
 
+## Le quattro lingue e la guida
+
+Aggiunte sulla scia di Rada2, con la stessa architettura ma **senza file esterni**:
+ogni pagina porta con sé il proprio dizionario, così restano due soli file
+autoconsistenti (`index.html` e `guida.html`).
+
+- `LINGUE` = it · fr · en · ja; `TESTI` è un dizionario per lingua. **Le frasi stanno
+  intere**, non si compongono concatenando pezzi: l'ordine delle parole cambia da una
+  lingua all'altra e nessun incollaggio può prevederlo. Dove serve un numero c'è `{n}`,
+  e lo mette `Tn(chiave, n)` — per questo anche «15 s», «3 frasi», «0 st» passano dal
+  dizionario e non da una concatenazione.
+- **Scelta della lingua**: indirizzo (`?lang=ja`) → scelta salvata in `localStorage`
+  (chiave `nuvole.lang`) → preferenze del browser → inglese. Ogni accesso a
+  `localStorage` è protetto da `try/catch`: su `file://` e in navigazione privata può
+  essere vietato, e l'app deve funzionare comunque. È anche il motivo per cui i due
+  collegamenti fra strumento e guida **portano la lingua nell'indirizzo**: è la via che
+  funziona sempre.
+- **Applicazione**: `data-i18n` scrive `textContent`, `data-i18n-aria` l'etichetta per
+  chi non vede. Ma metà delle stringhe dell'interfaccia non sta nel markup: sta nei
+  valori dei comandi. Perciò `Pannello` tiene un elenco `rinfresca[]` — ogni `cursore` e
+  ogni `interruttore` vi registra la propria funzione di riscrittura — e al cambio di
+  lingua li riesegue tutti. **Chi aggiunge un comando non deve fare nulla**: il
+  cablaggio è già lì.
+- Gli **interruttori** ricevono due *chiavi*, non due parole, e si riscrivono da sé.
+  I nomi degli **strumenti** e dei **tratti dell'arco** stanno solo nel dizionario:
+  `STRUMENTI` porta una `chiave`, `REGIONI` solo i confini.
+- Il **giapponese** ha un `letter-spacing` ridotto (`html[lang="ja"] .tecnico`): la
+  spaziatura larga, giusta per un maiuscoletto latino, sfalda una riga di kanji.
+
+### La guida (`guida.html`)
+
+Pagina a sé, stessa testata e stesso linguaggio visivo dello strumento. Sei sezioni:
+cos'è, il cielo, il suono, l'arco (con i dieci tratti e una glossa ciascuno), gli
+strumenti, i comandi (tutti e diciassette, con una riga di spiegazione), i crediti.
+Gli elenchi sono costruiti in JS dai dizionari, così un comando nuovo si aggiunge in un
+posto solo. Il maiuscoletto tecnico sta sul termine (`dt`), **mai sulla glossa** (`dd`):
+una spiegazione in maiuscoletto spaziato non si legge.
+
 ## Come sviluppare / verificare
 
-- Aprire `index.html` in un browser moderno (nessun server necessario).
+- Aprire `index.html` in un browser moderno (nessun server necessario). La guida è
+  `guida.html`, e i due collegamenti si passano la lingua nell'indirizzo.
 - Per verifiche automatiche dei fotogrammi si è usato Playwright headless con lo
   Chromium di sistema (screenshot a tempi diversi, click sugli swatch, set dei valori
   degli slider via `dispatchEvent('input')`).
@@ -88,18 +131,23 @@ misurato, il primo scontro cadeva nella finestra 17-21 (Fa contro Fa#), poi di n
 33 in avanti. Ora fra una regione e l'altra c'è una **cerniera di quattro frasi** costruita
 sui soli suoni comuni, dove il grado vecchio si ritira prima che entri il nuovo:
 
-|  |  |  |
-|---|---|---|
-| 1-6 | Do puro | Do Mi Sol |
-| 7-13 | pentatonica | + Re La |
-| 14-18 | il Fa | Do Mi Fa Sol La |
-| **19-22** | **cerniera** | il Fa si ritira |
-| 23-29 | Fa# lidio | Do Re Mi Fa# Sol La |
-| 30-34 | dominante | entra il Si |
-| **35-38** | **cerniera** | la quinta vuota: solo Do e Sol |
-| 39-45 | l'ombra | Do Mib Fa Sol Sib |
-| **46-49** | **cerniera** | l'ombra si ritira: Do Fa Sol |
-| 50-53 | rientro | tornano Mi e Si; la 53 chiude su un Do lungo |
+|  |  |  |  |
+|---|---|---|---|
+| 1-6 | Do puro | *Sereno* | Do Mi Sol |
+| 7-13 | pentatonica | *Cirri* | + Re La |
+| 14-18 | il Fa | *Velo* | Do Mi Fa Sol La |
+| **19-22** | **cerniera** | *Radura* | il Fa si ritira |
+| 23-29 | Fa# lidio | *Controluce* | Do Re Mi Fa# Sol La |
+| 30-34 | dominante | *Corrente* | entra il Si |
+| **35-38** | **cerniera** | *Vuoto d'aria* | la quinta vuota: solo Do e Sol |
+| 39-45 | l'ombra | *Nembo* | Do Mib Fa Sol Sib |
+| **46-49** | **cerniera** | *Schiarita* | l'ombra si ritira: Do Fa Sol |
+| 50-53 | rientro | *Zenit* | tornano Mi e Si; la 53 chiude su un Do lungo |
+
+I nomi in corsivo sono quelli mostrati nel quadrante (`REGIONI`): dicono il cielo e non
+l'armonia, perché chi ascolta non ha bisogno di sapere che è entrato il Fa#, ha bisogno
+di sapere che la luce è cambiata. La corrispondenza con i tratti armonici è annotata
+riga per riga nel codice.
 
 Il fronte torna poi alla 1: l'arco si richiude dove è cominciato.
 
@@ -116,24 +164,34 @@ finestra scorrevole prima di considerare il lavoro finito.
   altezza, durata e ampiezza, poi passa la mano allo strumento della voce.
   - **Onda** — il timbro d'origine: onda semplice + ottava sopra, attacco morbido, coda
     lunga. È il fondo su cui stanno gli altri tre.
-  - **Vetro** — campana: parziali inarmoniche 1 : 2.76 : 5.40 (proporzioni delle campane
-    tubolari), attacco istantaneo, nessuna tenuta, code di durata diversa per parziale.
-  - **Corda** — pizzicato: dente di sega con il filtro che si chiude in 0,32 s; è la
-    chiusura del filtro, più della coda, a dare il colpo dell'unghia.
+  - **Vetro** — glockenspiel, sulla ricetta della «goccia» di Rada (`rada2/js/audio.js`):
+    FM con portante sinusoidale e modulante a rapporto 3, più un parziale a 2.01×
+    scordato dell'1% che dà un battimento lento. Il metallo sta nell'**indice di
+    modulazione che decade**: 1.2 al colpo, poi si schiarisce in 0,22 s in una sinusoide
+    che continua a suonare. Suona un'ottava sopra, come lo strumento vero — la classe
+    d'altezza non cambia, la garanzia dell'archivio resta intatta.
+  - **Legno** — battente su barra di marimba: fondamentale sinusoidale a spegnimento
+    rapido, primo parziale a 4× (due ottave sopra: è così che si accordano le barre) che
+    se ne va ancora prima, e un colpo di rumore scuro di 30 ms per il contatto del
+    battente. Sostituisce il pizzicato *Corda* della prima stesura, che non convinceva:
+    stessa famiglia percussiva del Vetro, colore opposto.
   - **Fiato** — soffio: rumore bianco in un passa-banda stretto (Q 13) sulla nota, più
     una sinusoide che le dà l'intonazione; attacco lento, vibrato appena accennato.
   La differenza fra i quattro sta quasi tutta **nella forma dell'inviluppo**, non nella
   forma d'onda: è l'attacco a dire che strumento è.
-- **Taratura delle ampiezze, misurata** in `OfflineAudioContext` sulla stessa nota:
-  i picchi sono allineati a 0,130–0,141 (Onda 0.137 · Vetro 0.141 · Corda 0.136 ·
-  Fiato 0.130). L'energia sul primo secondo resta invece diversa a coppie — sostenuti
-  0,085 e 0,073, percussivi 0,025 e 0,017 — ed è giusto così: è la loro natura.
-  Se si tocca un inviluppo, **ri-misurare**: i fattori nel codice (0.72 · 0.85 · 1.90)
-  vengono da lì, non a occhio.
+- **Taratura misurata** in `OfflineAudioContext` sulla stessa nota. I picchi sono
+  allineati a 0,131–0,139 (Onda 0.137 · Vetro 0.139 · Legno 0.138 · Fiato 0.131): i
+  fattori di ampiezza nel codice vengono da lì, non a occhio, e se si tocca un inviluppo
+  vanno **ri-misurati**. Le altre due misure dicono il carattere, e vanno lasciate
+  diverse:
+  - *coda* (fino a −60 dB): Legno 0,56 s · Vetro 1,13 · Fiato 1,23 · Onda 1,42;
+  - *brillantezza* (energia sopra i 2 kHz nei primi 170 ms): Vetro 8,8% · Legno 0,3% ·
+    Onda e Fiato 0%. È la misura con cui è stato scelto l'indice FM del Vetro: 0.3 dava
+    1,5% (sordo), 1.8 dava 21% (tagliente con sei voci), 1.2 dà 8,8%.
 ### Lo strumento lo sceglie la nuvola
 
 Non è un sorteggio: è lo **spessore** della nuvola sulla banda a decidere il timbro.
-`ORDINE_SPESSORE` dispone i quattro lungo un asse — **Vetro · Corda · Onda · Fiato**,
+`ORDINE_SPESSORE` dispone i quattro lungo un asse — **Vetro · Legno · Onda · Fiato**,
 dal velo sottile alla nuvola piena — e `Suono.spessore(v)` riporta la densità media
 della banda a 0..1; il tratto in cui cade sceglie lo strumento. Gli strumenti spenti
 escono dall'asse: se ne è acceso uno solo, tutto l'insieme suona con quello; se ne sono
@@ -155,11 +213,11 @@ accesi due, la nuvola sceglie fra quei due. L'ultimo acceso non si può spegnere
   la voce che ripartiva dopo 0,7 s, e il timbro saltava a metà del discorso; dopo: zero.
   La terza serve al caso opposto: una nuvola che staziona sulla banda non lascia mai il
   silenzio per ripensarci, e senza di essa il timbro restava quello del primo arrivo
-  anche a cielo ormai chiuso (misurato: densità mediana 0.78 e ancora Vetro e Corda,
+  anche a cielo ormai chiuso (misurato: densità mediana 0.78 e ancora i timbri del velo,
   cioè i timbri del velo).
 - **Verifica della corrispondenza**, fatta dove la scelta avviene davvero e non al
-  risveglio (dove può essere ereditata): Vetro spessore 0.12-0.24 · Corda 0.45 ·
-  Onda 0.57-0.69 · Fiato 0.85-0.92 — ciascuno dentro il proprio tratto.
+  risveglio (dove può essere ereditata): Vetro spessore 0.07-0.24 · Legno 0.34-0.51 ·
+  Onda 0.55-0.72 · Fiato 0.75-0.87 — ciascuno dentro il proprio tratto.
 - Il **righello delle bande** mostra l'iniziale dello strumento accanto al numero della
   frase (`08 F`), così la corrispondenza nuvola→timbro si legge a occhio.
 - **Le nuvole scelgono.** Ogni voce presidia una banda verticale della finestra; quando

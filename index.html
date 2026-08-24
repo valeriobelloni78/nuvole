@@ -42,15 +42,41 @@
     text-transform: uppercase;
   }
 
-  /* Testata */
-  .testata {
+  /* Testata: due righe separate dal filo. Sopra il marchio e le lingue,
+     sotto la sigla dell'opera e il rimando alla guida. */
+  .testata { display: flex; flex-direction: column; gap: 9px; }
+  .testata .riga {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.38);
   }
+  .testata .filo { height: 1px; background: rgba(255, 255, 255, 0.38); }
+
+  .lingue { display: flex; gap: 14px; }
+  .lingue button {
+    font: inherit;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .lingue button:hover { color: rgba(255, 255, 255, 0.9); }
+  .lingue button.scelta { color: #ffffff; }
+  .lingue button:focus-visible { outline: 1px solid rgba(255, 255, 255, 0.6); outline-offset: 3px; }
+
+  .guida {
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+    padding-bottom: 2px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .guida:hover { color: #ffffff; border-color: #ffffff; }
   .marchio {
     font-weight: 300;
     letter-spacing: 0.5em;
@@ -58,7 +84,31 @@
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.95);
   }
+  /* Il punto che respira accanto al marchio, come in Rada2. Qui però il respiro
+     non è un tempo fisso: dura quattro battiti del polso, quindi segue il Tempo
+     (`--respiro`, scritto dal pannello). Alla velocità di partenza sono 2,7 s. */
+  .marchio .punto {
+    display: inline-block;
+    width: 0.30em; height: 0.30em;
+    border-radius: 50%;
+    background: #ffffff;
+    vertical-align: 0.20em;
+    /* il letter-spacing (0.5em) separa i caratteri ma non lascia nulla dopo un
+       blocco in linea: il margine è la sola distanza fra la "e" e il punto, e
+       va aggiunto a quello. Qui il punto sta staccato dalla parola, non le si
+       appoggia come un segno d'interpunzione. */
+    margin-left: 0.32em;
+    animation: respiro var(--respiro, 2.73s) ease-in-out infinite;
+  }
+  @keyframes respiro {
+    0%, 100% { opacity: 0.35; transform: scale(0.85); }
+    50%      { opacity: 1;    transform: scale(1.15); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marchio .punto { animation: none; opacity: 0.85; }
+  }
   .sigla { color: rgba(255, 255, 255, 0.7); }
+  html[lang="ja"] .tecnico { letter-spacing: 0.08em; }
 
   /* La finestra: solo vetro, nessuna cornice */
   /* La finestra: un contorno finissimo, il solo segno che la incornicia */
@@ -309,8 +359,16 @@
   <div class="stanza">
 
     <div class="testata">
-      <div class="marchio">Nuvole</div>
-      <div class="sigla tecnico">53 frasi in Do · A:2</div>
+      <div class="riga">
+        <div class="marchio">Nuvole<span class="punto" aria-hidden="true"></span></div>
+        <nav class="lingue tecnico" id="lingue" aria-label="Lingua"></nav>
+      </div>
+      <div class="filo"></div>
+      <div class="riga tecnico">
+        <span class="sigla" data-i18n="app.sigla">53 frasi in Do</span>
+        <a class="guida" href="guida.html" target="_blank" rel="noopener"
+           data-i18n="ui.guida" data-i18n-aria="ui.guidaAria">Guida</a>
+      </div>
     </div>
 
     <div class="finestra">
@@ -322,28 +380,28 @@
     <div class="quadrante tecnico">
       <div class="dato">
         <div class="cifra" id="datoFrase">—<span class="piccolo">/53</span></div>
-        <div class="didascalia">Frase dell'insieme</div>
+        <div class="didascalia" data-i18n="q.frase">Frase dell'insieme</div>
       </div>
       <div class="dato">
         <div class="cifra" id="datoVoci">0<span class="piccolo">/6</span></div>
-        <div class="didascalia">Voci in ascolto</div>
+        <div class="didascalia" data-i18n="q.voci">Voci in ascolto</div>
       </div>
       <div class="dato">
         <div class="cifra" id="datoRegione">Do</div>
-        <div class="didascalia">Regione dell'arco</div>
+        <div class="didascalia" data-i18n="q.regione">Regione dell'arco</div>
       </div>
     </div>
 
     <div class="sezione">
       <div class="rubrica tecnico">
-        <span>Cielo</span><span class="filo"></span><span class="codice">M1</span>
+        <span data-i18n="sez.cielo">Cielo</span><span class="filo"></span><span class="codice">M1</span>
       </div>
 
       <div class="griglia archi tecnico">
         <div class="controllo arco">
           <div class="disco" id="discoSereno"></div>
           <div class="targa">
-            <div class="nome">Cielo sereno</div>
+            <div class="nome" data-i18n="c.sereno">Cielo sereno</div>
             <div class="lettura" id="valSereno"></div>
           </div>
           <input type="range" id="sereno" min="0" max="100" value="30" class="celato">
@@ -351,7 +409,7 @@
         <div class="controllo arco">
           <div class="disco" id="discoVento"></div>
           <div class="targa">
-            <div class="nome">Vento</div>
+            <div class="nome" data-i18n="c.vento">Vento</div>
             <div class="lettura" id="valVento"></div>
           </div>
           <input type="range" id="vento" min="0" max="100" value="36" class="celato">
@@ -360,19 +418,19 @@
 
       <div class="griglia tecnico">
         <div class="controllo">
-          <label>Grana <span class="valore" id="valGrana"></span></label>
+          <label><span data-i18n="c.grana">Grana</span> <span class="valore" id="valGrana"></span></label>
           <div class="cursore"><input type="range" id="grana" min="5" max="20" value="9"></div>
         </div>
         <div class="controllo">
-          <label>Ampiezza nuvole <span class="valore" id="valAmpiezza"></span></label>
+          <label><span data-i18n="c.ampiezza">Ampiezza nuvole</span> <span class="valore" id="valAmpiezza"></span></label>
           <div class="cursore"><input type="range" id="ampiezza" min="0" max="100" value="50"></div>
         </div>
         <div class="controllo">
-          <label>Muta <span class="valore" id="valMuta"></span></label>
+          <label><span data-i18n="c.muta">Muta</span> <span class="valore" id="valMuta"></span></label>
           <div class="cursore"><input type="range" id="muta" min="0" max="100" value="40"></div>
         </div>
         <div class="controllo">
-          <label>Bande <span class="valore">righello</span></label>
+          <label><span data-i18n="c.bande">Bande</span> <span class="valore" data-i18n="c.bande.val">righello</span></label>
           <button class="interruttore acceso" id="swBande" type="button" aria-pressed="true">
             <span class="quadro"></span><span class="stato">Visibili</span>
           </button>
@@ -382,24 +440,24 @@
 
     <div class="sezione">
       <div class="rubrica tecnico">
-        <span>Suono</span><span class="filo"></span><span class="codice">M2</span>
+        <span data-i18n="sez.suono">Suono</span><span class="filo"></span><span class="codice">M2</span>
       </div>
 
       <div class="griglia tecnico">
         <div class="controllo">
-          <label>Ascolto <span class="valore" id="valAscolto">fermo</span></label>
+          <label><span data-i18n="c.ascolto">Ascolto</span> <span class="valore" id="valAscolto">fermo</span></label>
           <button class="interruttore" id="swAscolto" type="button" aria-pressed="false">
             <span class="quadro"></span><span class="stato">Silenzio</span>
           </button>
         </div>
         <div class="controllo">
-          <label>Polso udibile <span class="valore">battito</span></label>
+          <label><span data-i18n="c.polso">Polso udibile</span> <span class="valore" data-i18n="c.polso.val">battito</span></label>
           <button class="interruttore" id="swPolso" type="button" aria-pressed="false">
             <span class="quadro"></span><span class="stato">Spento</span>
           </button>
         </div>
         <div class="controllo strumenti">
-          <label>Strumenti <span class="valore" id="valStrumenti"></span></label>
+          <label><span data-i18n="c.strumenti">Strumenti</span> <span class="valore" id="valStrumenti"></span></label>
           <div class="scelta" id="scelta"></div>
         </div>
       </div>
@@ -408,7 +466,7 @@
         <div class="controllo arco">
           <div class="disco" id="discoVolume"></div>
           <div class="targa">
-            <div class="nome">Volume</div>
+            <div class="nome" data-i18n="c.volume">Volume</div>
             <div class="lettura" id="valVolume"></div>
           </div>
           <input type="range" id="volume" min="0" max="100" value="55" class="celato">
@@ -416,7 +474,7 @@
         <div class="controllo arco">
           <div class="disco" id="discoTempo"></div>
           <div class="targa">
-            <div class="nome">Tempo</div>
+            <div class="nome" data-i18n="c.tempo">Tempo</div>
             <div class="lettura" id="valTempo"></div>
           </div>
           <input type="range" id="tempo" min="44" max="132" value="88" class="celato">
@@ -424,7 +482,7 @@
         <div class="controllo arco">
           <div class="disco" id="discoVoci"></div>
           <div class="targa">
-            <div class="nome">Voci</div>
+            <div class="nome" data-i18n="c.voci">Voci</div>
             <div class="lettura" id="valVoci"></div>
           </div>
           <input type="range" id="voci" min="1" max="10" value="6" class="celato">
@@ -432,7 +490,7 @@
         <div class="controllo arco">
           <div class="disco" id="discoSensibilita"></div>
           <div class="targa">
-            <div class="nome">Sensibilità</div>
+            <div class="nome" data-i18n="c.sensibilita">Sensibilità</div>
             <div class="lettura" id="valSensibilita"></div>
           </div>
           <input type="range" id="sensibilita" min="0" max="100" value="64" class="celato">
@@ -441,19 +499,19 @@
 
       <div class="griglia tecnico">
         <div class="controllo">
-          <label>Dispersione <span class="valore" id="valDispersione"></span></label>
+          <label><span data-i18n="c.dispersione">Dispersione</span> <span class="valore" id="valDispersione"></span></label>
           <div class="cursore"><input type="range" id="dispersione" min="1" max="4" value="3"></div>
         </div>
         <div class="controllo">
-          <label>Avanzamento <span class="valore" id="valAvanzamento"></span></label>
+          <label><span data-i18n="c.avanzamento">Avanzamento</span> <span class="valore" id="valAvanzamento"></span></label>
           <div class="cursore"><input type="range" id="avanzamento" min="0" max="100" value="50"></div>
         </div>
         <div class="controllo">
-          <label>Riverbero <span class="valore" id="valRiverbero"></span></label>
+          <label><span data-i18n="c.riverbero">Riverbero</span> <span class="valore" id="valRiverbero"></span></label>
           <div class="cursore"><input type="range" id="riverbero" min="0" max="100" value="38"></div>
         </div>
         <div class="controllo">
-          <label>Registro <span class="valore" id="valRegistro"></span></label>
+          <label><span data-i18n="c.registro">Registro</span> <span class="valore" id="valRegistro"></span></label>
           <div class="cursore"><input type="range" id="registro" min="-12" max="12" value="0"></div>
         </div>
       </div>
@@ -478,6 +536,289 @@
    - FRASI        : l'archivio delle 53 frasi in Do.
    - Suono        : il motore generativo (Web Audio, nessuna libreria).
    ========================================================================= */
+
+/* ------------------------------------------------------------------ */
+/*  Le quattro lingue                                                  */
+/* ------------------------------------------------------------------ */
+/* Come in Rada: un dizionario per lingua, nessuna concatenazione. Le frasi
+   stanno intere, perché l'ordine delle parole cambia da una lingua all'altra
+   e nessun incollaggio può prevederlo; dove serve un numero c'è {n}.
+   L'ordine con cui si sceglie la lingua è: indirizzo (?lang=ja) → scelta
+   salvata → preferenze del browser → inglese. */
+const LINGUE = ["it", "fr", "en", "ja"];
+const SIGLA_LINGUA = { it: "IT", fr: "FR", en: "EN", ja: "日本語" };
+
+const TESTI = {
+
+  it: {
+    "app.sigla": "53 frasi in Do",
+    "ui.lingua": "Lingua",
+    "ui.guida": "Guida",
+    "ui.guidaAria": "Guida (si apre in una nuova scheda)",
+
+    "sez.cielo": "Cielo",
+    "sez.suono": "Suono",
+
+    "q.frase": "Frase dell'insieme",
+    "q.voci": "Voci in ascolto",
+    "q.regione": "Regione dell'arco",
+
+    "c.sereno": "Cielo sereno",
+    "c.vento": "Vento",
+    "c.grana": "Grana",
+    "c.ampiezza": "Ampiezza nuvole",
+    "c.muta": "Muta",
+    "c.bande": "Bande",
+    "c.bande.val": "righello",
+    "c.bande.on": "Visibili",
+    "c.bande.off": "Nascoste",
+    "c.ascolto": "Ascolto",
+    "c.ascolto.on": "In ascolto",
+    "c.ascolto.off": "Silenzio",
+    "c.ascolto.attivo": "attivo",
+    "c.ascolto.fermo": "fermo",
+    "c.polso": "Polso udibile",
+    "c.polso.val": "battito",
+    "c.polso.on": "Acceso",
+    "c.polso.off": "Spento",
+    "c.strumenti": "Strumenti",
+    "c.volume": "Volume",
+    "c.tempo": "Tempo",
+    "c.voci": "Voci",
+    "c.sensibilita": "Sensibilità",
+    "c.dispersione": "Dispersione",
+    "c.avanzamento": "Avanzamento",
+    "c.riverbero": "Riverbero",
+    "c.registro": "Registro",
+
+    "v.pct": "{n}%",
+    "v.px": "{n} px",
+    "v.bpm": "{n} bpm",
+    "v.s": "{n} s",
+    "v.st": "{n} st",
+    "v.frase": "{n} frase",
+    "v.frasi": "{n} frasi",
+
+    "str.onda": "Onda",   "sig.onda": "O",
+    "str.vetro": "Vetro", "sig.vetro": "V",
+    "str.legno": "Legno", "sig.legno": "L",
+    "str.fiato": "Fiato", "sig.fiato": "F",
+
+    "reg.1": "Sereno", "reg.2": "Cirri", "reg.3": "Velo", "reg.4": "Radura",
+    "reg.5": "Controluce", "reg.6": "Corrente", "reg.7": "Vuoto d'aria",
+    "reg.8": "Nembo", "reg.9": "Schiarita", "reg.10": "Zenit",
+  },
+
+  fr: {
+    "app.sigla": "53 phrases en do",
+    "ui.lingua": "Langue",
+    "ui.guida": "Guide",
+    "ui.guidaAria": "Guide (s'ouvre dans un nouvel onglet)",
+
+    "sez.cielo": "Ciel",
+    "sez.suono": "Son",
+
+    "q.frase": "Phrase de l'ensemble",
+    "q.voci": "Voix à l'écoute",
+    "q.regione": "Région de l'arc",
+
+    "c.sereno": "Ciel dégagé",
+    "c.vento": "Vent",
+    "c.grana": "Grain",
+    "c.ampiezza": "Ampleur des nuages",
+    "c.muta": "Mue",
+    "c.bande": "Bandes",
+    "c.bande.val": "réglette",
+    "c.bande.on": "Visibles",
+    "c.bande.off": "Masquées",
+    "c.ascolto": "Écoute",
+    "c.ascolto.on": "À l'écoute",
+    "c.ascolto.off": "Silence",
+    "c.ascolto.attivo": "en cours",
+    "c.ascolto.fermo": "arrêté",
+    "c.polso": "Pouls audible",
+    "c.polso.val": "battement",
+    "c.polso.on": "Activé",
+    "c.polso.off": "Éteint",
+    "c.strumenti": "Instruments",
+    "c.volume": "Volume",
+    "c.tempo": "Tempo",
+    "c.voci": "Voix",
+    "c.sensibilita": "Sensibilité",
+    "c.dispersione": "Dispersion",
+    "c.avanzamento": "Avancement",
+    "c.riverbero": "Réverbération",
+    "c.registro": "Registre",
+
+    "v.pct": "{n}%",
+    "v.px": "{n} px",
+    "v.bpm": "{n} bpm",
+    "v.s": "{n} s",
+    "v.st": "{n} dt",
+    "v.frase": "{n} phrase",
+    "v.frasi": "{n} phrases",
+
+    "str.onda": "Onde",    "sig.onda": "O",
+    "str.vetro": "Verre",  "sig.vetro": "V",
+    "str.legno": "Bois",   "sig.legno": "B",
+    "str.fiato": "Souffle","sig.fiato": "S",
+
+    "reg.1": "Dégagé", "reg.2": "Cirrus", "reg.3": "Voile", "reg.4": "Clairière",
+    "reg.5": "Contre-jour", "reg.6": "Courant", "reg.7": "Trou d'air",
+    "reg.8": "Nimbus", "reg.9": "Éclaircie", "reg.10": "Zénith",
+  },
+
+  en: {
+    "app.sigla": "53 phrases in C",
+    "ui.lingua": "Language",
+    "ui.guida": "Guide",
+    "ui.guidaAria": "Guide (opens in a new tab)",
+
+    "sez.cielo": "Sky",
+    "sez.suono": "Sound",
+
+    "q.frase": "Phrase of the ensemble",
+    "q.voci": "Voices listening",
+    "q.regione": "Region of the arc",
+
+    "c.sereno": "Clear sky",
+    "c.vento": "Wind",
+    "c.grana": "Grain",
+    "c.ampiezza": "Cloud width",
+    "c.muta": "Drift",
+    "c.bande": "Bands",
+    "c.bande.val": "ruler",
+    "c.bande.on": "Visible",
+    "c.bande.off": "Hidden",
+    "c.ascolto": "Listening",
+    "c.ascolto.on": "Listening",
+    "c.ascolto.off": "Silence",
+    "c.ascolto.attivo": "on",
+    "c.ascolto.fermo": "off",
+    "c.polso": "Audible pulse",
+    "c.polso.val": "beat",
+    "c.polso.on": "On",
+    "c.polso.off": "Off",
+    "c.strumenti": "Instruments",
+    "c.volume": "Volume",
+    "c.tempo": "Tempo",
+    "c.voci": "Voices",
+    "c.sensibilita": "Sensitivity",
+    "c.dispersione": "Spread",
+    "c.avanzamento": "Advance",
+    "c.riverbero": "Reverb",
+    "c.registro": "Register",
+
+    "v.pct": "{n}%",
+    "v.px": "{n} px",
+    "v.bpm": "{n} bpm",
+    "v.s": "{n} s",
+    "v.st": "{n} st",
+    "v.frase": "{n} phrase",
+    "v.frasi": "{n} phrases",
+
+    "str.onda": "Wave",   "sig.onda": "W",
+    "str.vetro": "Glass", "sig.vetro": "G",
+    "str.legno": "Wood",  "sig.legno": "D",
+    "str.fiato": "Breath","sig.fiato": "B",
+
+    "reg.1": "Clear", "reg.2": "Cirrus", "reg.3": "Veil", "reg.4": "Clearing",
+    "reg.5": "Backlight", "reg.6": "Current", "reg.7": "Air pocket",
+    "reg.8": "Nimbus", "reg.9": "Break", "reg.10": "Zenith",
+  },
+
+  ja: {
+    "app.sigla": "ハ長調の53の楽句",
+    "ui.lingua": "言語",
+    "ui.guida": "ガイド",
+    "ui.guidaAria": "ガイド（新しいタブで開きます）",
+
+    "sez.cielo": "空",
+    "sez.suono": "音",
+
+    "q.frase": "全体の楽句",
+    "q.voci": "鳴っている声部",
+    "q.regione": "弧の領域",
+
+    "c.sereno": "晴天",
+    "c.vento": "風",
+    "c.grana": "粒",
+    "c.ampiezza": "雲の広がり",
+    "c.muta": "変容",
+    "c.bande": "帯",
+    "c.bande.val": "目盛",
+    "c.bande.on": "表示",
+    "c.bande.off": "非表示",
+    "c.ascolto": "再生",
+    "c.ascolto.on": "再生中",
+    "c.ascolto.off": "静寂",
+    "c.ascolto.attivo": "作動",
+    "c.ascolto.fermo": "停止",
+    "c.polso": "拍を鳴らす",
+    "c.polso.val": "拍",
+    "c.polso.on": "入",
+    "c.polso.off": "切",
+    "c.strumenti": "楽器",
+    "c.volume": "音量",
+    "c.tempo": "速度",
+    "c.voci": "声部",
+    "c.sensibilita": "感度",
+    "c.dispersione": "散らばり",
+    "c.avanzamento": "進行",
+    "c.riverbero": "残響",
+    "c.registro": "音域",
+
+    "v.pct": "{n}%",
+    "v.px": "{n} px",
+    "v.bpm": "{n} bpm",
+    "v.s": "{n} 秒",
+    "v.st": "{n} 半音",
+    "v.frase": "{n} 楽句",
+    "v.frasi": "{n} 楽句",
+
+    "str.onda": "波",  "sig.onda": "波",
+    "str.vetro": "硝子","sig.vetro": "硝",
+    "str.legno": "木",  "sig.legno": "木",
+    "str.fiato": "息",  "sig.fiato": "息",
+
+    "reg.1": "晴", "reg.2": "巻雲", "reg.3": "薄衣", "reg.4": "切れ間",
+    "reg.5": "逆光", "reg.6": "気流", "reg.7": "空隙",
+    "reg.8": "雨雲", "reg.9": "薄明", "reg.10": "天頂",
+  },
+};
+
+/* localStorage può essere vietato (navigazione privata, file://): ogni
+   accesso è protetto, l'app deve funzionare comunque. */
+const CHIAVE_LINGUA = "nuvole.lang";
+function lingueSalvata() {
+  try { return localStorage.getItem(CHIAVE_LINGUA); } catch (e) { return null; }
+}
+function salvaLingua(v) {
+  try { localStorage.setItem(CHIAVE_LINGUA, v); } catch (e) {}
+}
+
+function scegliLingua() {
+  let q = null;
+  try { q = new URLSearchParams(location.search).get("lang"); } catch (e) {}
+  if (LINGUE.includes(q)) return q;
+  const salvata = lingueSalvata();
+  if (LINGUE.includes(salvata)) return salvata;
+  const pref = (navigator.languages && navigator.languages.length)
+             ? navigator.languages : [navigator.language || ""];
+  for (const tag of pref) {
+    const primaria = String(tag).toLowerCase().split("-")[0];
+    if (primaria === "it" || primaria === "fr" || primaria === "ja") return primaria;
+  }
+  return "en";
+}
+
+let lingua = scegliLingua();
+
+function T(chiave) {
+  const d = TESTI[lingua] || TESTI.en;
+  return (chiave in d) ? d[chiave] : (TESTI.en[chiave] || chiave);
+}
+function Tn(chiave, n) { return T(chiave).replace("{n}", n); }
 
 /* ------------------------------------------------------------------ */
 /*  Parametri (alcuni pilotati dal pannello)                          */
@@ -786,23 +1127,25 @@ const FRASI = [
   [[12, 0.5], [11, 0.5], [12, 6]],
 ];
 
-/* Le sette regioni dell'arco, per il quadrante dei dati. */
-const REGIONI = [
-  { da:  0, nome: "Do" },
-  { da:  6, nome: "Pentatonica" },
-  { da: 13, nome: "Fa" },
-  { da: 18, nome: "Cerniera" },
-  { da: 22, nome: "Fa# lidio" },
-  { da: 29, nome: "Dominante" },
-  { da: 34, nome: "Quinta vuota" },
-  { da: 38, nome: "Ombra" },
-  { da: 45, nome: "Cerniera" },
-  { da: 49, nome: "Rientro" },
-];
+/* I dieci tratti dell'arco: qui solo la frase in cui ciascuno comincia. I nomi
+   stanno nel dizionario (`reg.1`…`reg.10`) e dicono il cielo, non l'armonia:
+   chi ascolta non ha bisogno di sapere che è entrato il Fa#, ha bisogno di
+   sapere che la luce è cambiata.
+     1  Sereno       1-6    Do puro: solo Do Mi Sol
+     2  Cirri        7-13   la pentatonica si apre
+     3  Velo        14-18   entra il Fa, il primo peso
+     4  Radura      19-22   cerniera: il Fa si ritira
+     5  Controluce  23-29   il Fa#: il tratto più luminoso
+     6  Corrente    30-34   la dominante, il Si: tensione
+     7  Vuoto d'aria 35-38  cerniera: restano Do e Sol
+     8  Nembo       39-45   l'ombra di Mib e Sib
+     9  Schiarita   46-49   cerniera: l'ombra si ritira
+    10  Zenit       50-53   rientro: tornano Mi e Si                        */
+const REGIONI = [0, 6, 13, 18, 22, 29, 34, 38, 45, 49];
 function regione(i) {
-  let n = REGIONI[0].nome;
-  for (const r of REGIONI) if (i >= r.da) n = r.nome;
-  return n;
+  let n = 1;
+  for (let k = 0; k < REGIONI.length; k++) if (i >= REGIONI[k]) n = k + 1;
+  return T("reg." + n);
 }
 
 /* ------------------------------------------------------------------ */
@@ -839,7 +1182,7 @@ const AUDIO = {
    OfflineAudioContext l'energia di una stessa nota resa dai quattro. */
 const STRUMENTI = [
   {
-    nome: "Onda",
+    chiave: "onda",
     /* Il timbro d'origine: onda semplice con l'ottava sopra appena percettibile,
        attacco morbido, coda lunga. È il fondo su cui stanno gli altri tre. */
     suona(v, freq, dur, amp, t) {
@@ -870,58 +1213,103 @@ const STRUMENTI = [
     }
   },
   {
-    nome: "Vetro",
-    /* Campana: parziali inarmoniche nelle proporzioni delle campane tubolari
-       (1 : 2.76 : 5.40), attacco istantaneo, nessuna tenuta, e code di durata
-       diversa per ciascuna parziale — è la disuguaglianza delle code a fare il
-       vetro: l'acuto se ne va subito e resta il rintocco. */
+    chiave: "vetro",
+    /* Glockenspiel, sulla ricetta della "goccia" di Rada: sintesi FM con
+       portante sinusoidale e modulante a rapporto armonico basso (3), più un
+       filo di parziale scordato dell'1% che dà un battimento lento. Due cose
+       fanno il metallo: l'attacco di 12 ms, e soprattutto l'indice di
+       modulazione che **decade in fretta** — il colpo entra brillante e si
+       schiarisce in 0,22 s in una sinusoide che continua a suonare.
+       L'indice al colpo (1.2, cioè deviazione 3.6·f su modulante 3·f) è scelto
+       misurando l'energia sopra i 2 kHz nell'attacco: 0.3 dava l'1,5% — troppo
+       poco, un suono sordo; 1.8 arrivava al 21% e con sei voci diventava
+       tagliente; 1.2 dà l'11%. Il picco non cambia con l'indice: la modulazione
+       ridistribuisce l'energia, non ne aggiunge. Suona
+       un'ottava sopra lo scritto, come lo strumento vero: la classe d'altezza
+       non cambia, quindi la garanzia dell'archivio resta intatta. */
     suona(v, freq, dur, amp, t) {
       const ctx = Suono.ctx;
-      const base = Math.max(dur, 0.7);
-      const parziali = [[1, 1, 1.7], [2.76, 0.40, 0.9], [5.40, 0.14, 0.45]];
-      const fine = t + base * 1.7 + 0.1;
-      parziali.forEach(([rapporto, peso, lunghezza]) => {
-        const o = ctx.createOscillator();
-        o.type = "sine"; o.frequency.value = freq * rapporto;
-        const g = ctx.createGain();
-        const picco = amp * 0.72 * peso;
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.linearRampToValueAtTime(picco, t + 0.005);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + base * lunghezza);
-        o.connect(g); g.connect(v.uscita);
-        o.start(t); o.stop(fine);
-        o.onended = () => g.disconnect();
-      });
+      const f = freq * 2;
+      const coda = Math.min(3.0, Math.max(1.3, dur * 1.6));
+      const fine = t + coda + 0.1;
+
+      const port = ctx.createOscillator();
+      port.type = "sine"; port.frequency.value = f;
+
+      const mod = ctx.createOscillator();
+      mod.type = "sine"; mod.frequency.value = f * 3;
+      const gmod = ctx.createGain();
+      gmod.gain.setValueAtTime(f * 3.6, t);          // indice 1.2 al colpo
+      gmod.gain.exponentialRampToValueAtTime(f * 0.04, t + 0.22);
+      mod.connect(gmod); gmod.connect(port.frequency);
+
+      const env = ctx.createGain();
+      env.gain.setValueAtTime(0.0001, t);
+      env.gain.linearRampToValueAtTime(amp * 0.94, t + 0.012);
+      env.gain.exponentialRampToValueAtTime(0.0001, t + coda);
+
+      const par = ctx.createOscillator();
+      par.type = "sine"; par.frequency.value = f * 2.01;
+      const gpar = ctx.createGain();
+      gpar.gain.setValueAtTime(0.0001, t);
+      gpar.gain.linearRampToValueAtTime(amp * 0.15, t + 0.010);
+      gpar.gain.exponentialRampToValueAtTime(0.0001, t + coda * 0.55);
+
+      port.connect(env); env.connect(v.uscita);
+      par.connect(gpar); gpar.connect(v.uscita);
+      port.start(t); port.stop(fine);
+      mod.start(t); mod.stop(fine);
+      par.start(t); par.stop(fine);
+      port.onended = () => { env.disconnect(); gmod.disconnect(); gpar.disconnect(); };
     }
   },
   {
-    nome: "Corda",
-    /* Pizzicato: un dente di sega che si spegne presto, ma soprattutto un filtro
-       che si chiude in fretta. È la chiusura del filtro, più della coda, a dare
-       il colpo dell'unghia sulla corda. */
+    chiave: "legno",
+    /* Battente su barra di marimba: la fondamentale sinusoidale che si spegne
+       presto, il primo parziale a 4× (due ottave sopra: è così che si accordano
+       le barre) che se ne va ancora prima, e un colpo di rumore scuro di 30 ms
+       — il contatto del battente sul legno. È l'opposto del Vetro: stessa
+       famiglia percussiva, ma caldo, corto e senza metallo. */
     suona(v, freq, dur, amp, t) {
       const ctx = Suono.ctx;
-      const lunghezza = Math.min(Math.max(dur * 1.2, 0.5), 2.4);
+      const coda = Math.min(1.5, Math.max(0.5, dur * 0.8));
+      const fine = t + coda + 0.1;
+
       const o = ctx.createOscillator();
-      o.type = "sawtooth"; o.frequency.value = freq;
-
-      const f = ctx.createBiquadFilter();
-      f.type = "lowpass"; f.Q.value = 2.4;
-      f.frequency.setValueAtTime(Math.min(7000, freq * 9), t);
-      f.frequency.exponentialRampToValueAtTime(Math.max(240, freq * 1.4), t + 0.32);
-
+      o.type = "sine"; o.frequency.value = freq;
       const g = ctx.createGain();
       g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(amp * 0.85, t + 0.006);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + lunghezza);
+      g.gain.linearRampToValueAtTime(amp * 0.90, t + 0.004);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + coda);
 
-      o.connect(f); f.connect(g); g.connect(v.uscita);
-      o.start(t); o.stop(t + lunghezza + 0.05);
-      o.onended = () => { g.disconnect(); f.disconnect(); };
+      const barra = ctx.createOscillator();
+      barra.type = "sine"; barra.frequency.value = freq * 4;
+      const gbarra = ctx.createGain();
+      gbarra.gain.setValueAtTime(0.0001, t);
+      gbarra.gain.linearRampToValueAtTime(amp * 0.23, t + 0.003);
+      gbarra.gain.exponentialRampToValueAtTime(0.0001, t + Math.min(0.20, coda * 0.3));
+
+      const n = ctx.createBufferSource();
+      n.buffer = Suono.rumore(); n.loop = true;
+      const lp = ctx.createBiquadFilter();
+      lp.type = "lowpass";
+      lp.frequency.value = Math.min(2400, freq * 5); lp.Q.value = 0.7;
+      const gn = ctx.createGain();
+      gn.gain.setValueAtTime(amp * 0.43, t);
+      gn.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+
+      o.connect(g); g.connect(v.uscita);
+      barra.connect(gbarra); gbarra.connect(v.uscita);
+      n.connect(lp); lp.connect(gn); gn.connect(v.uscita);
+
+      o.start(t); o.stop(fine);
+      barra.start(t); barra.stop(t + 0.35);
+      n.start(t); n.stop(t + 0.06);
+      o.onended = () => { g.disconnect(); gbarra.disconnect(); lp.disconnect(); gn.disconnect(); };
     }
   },
   {
-    nome: "Fiato",
+    chiave: "fiato",
     /* Soffio: rumore bianco filtrato stretto attorno alla nota, e sotto una
        sinusoide che le dà l'intonazione. Attacco lento, tenuta piena, un vibrato
        appena accennato: è l'unico dei quattro che si sente respirare. */
@@ -968,7 +1356,7 @@ const STRUMENTI = [
 /* I quattro disposti lungo un asse: dal velo sottile alla nuvola piena.
    Il velo chiama un suono breve e brillante, la nuvola piena un suono tenuto
    e pieno di fiato. È l'ordine su cui `strumentoDellaNuvola` fa la sua scelta. */
-const ORDINE_SPESSORE = [1, 2, 0, 3];   // Vetro · Corda · Onda · Fiato
+const ORDINE_SPESSORE = [1, 2, 0, 3];   // Vetro · Legno · Onda · Fiato
 
 /* ------------------------------------------------------------------ */
 /*  Suono: le nuvole scelgono le frasi                                 */
@@ -1180,7 +1568,7 @@ const Suono = {
        sulla banda non lascia mai alla voce il silenzio per ripensarci, e il
        timbro resta quello del primo arrivo anche se il cielo si è chiuso:
        misurato, con cielo coperto e densità mediana 0.78 uscivano ancora Vetro
-       e Corda, cioè i timbri del velo sottile. */
+       e Legno, cioè i timbri del velo sottile. */
     const t = this.spessore(v);
     if (v.attesa >= 4 || !AUDIO.strumenti[v.strumento] ||
         Math.abs(t - v.spessoreScelta) > 0.28) {
@@ -1323,11 +1711,14 @@ const Pannello = {
 
   /* Un cursore: mappa 0..100 (o il proprio intervallo) sul parametro, e
      scrive l'etichetta del valore. */
+  rinfresca: [],       // funzioni da rieseguire quando cambia la lingua
+
   cursore(id, applica) {
     const el = document.getElementById(id);
     const val = document.getElementById("val" + id[0].toUpperCase() + id.slice(1));
     const agisci = () => { if (val) val.textContent = applica(+el.value); };
     el.addEventListener("input", agisci);
+    this.rinfresca.push(agisci);
     agisci();
   },
 
@@ -1417,17 +1808,20 @@ const Pannello = {
   },
 
   /* Un interruttore: quadretto pieno/vuoto, due stati, due etichette. */
-  interruttore(id, acceso, etichette, applica) {
+  /* `chiavi` sono due chiavi del dizionario, non due parole: l'interruttore
+     si riscrive da sé quando la lingua cambia. */
+  interruttore(id, acceso, chiavi, applica) {
     const el = document.getElementById(id);
     const stato = el.querySelector(".stato");
     let on = acceso;
     const mostra = () => {
       el.classList.toggle("acceso", on);
       el.setAttribute("aria-pressed", on ? "true" : "false");
-      stato.textContent = on ? etichette[1] : etichette[0];
+      stato.textContent = T(on ? chiavi[1] : chiavi[0]);
       applica(on);
     };
     el.addEventListener("click", () => { on = !on; mostra(); });
+    this.rinfresca.push(mostra);
     mostra();
     return { leggi: () => on, scrivi: (v) => { on = v; mostra(); } };
   },
@@ -1436,17 +1830,17 @@ const Pannello = {
     /* ---- Cielo ---- */
     this.cursore("sereno", (v) => {
       PARAMS.soglia = 0.10 + (v / 100) * (0.21 - 0.10);
-      return v + "%";
+      return Tn("v.pct", v);
     });
     this.cursore("vento", (v) => {
       PARAMS.ventoX = (v / 100) * 2.5;
       PARAMS.ventoY = PARAMS.ventoX * 0.18;
-      return v + "%";
+      return Tn("v.pct", v);
     });
     this.cursore("grana", (v) => {
       PARAMS.passo = v;                 // fattoreGriglia() tiene ferme le nuvole
       Cielo.resize();
-      return v + " px";
+      return Tn("v.px", v);
     });
     this.cursore("ampiezza", (v) => {
       // Più alto = nuvole più larghe: la scala del rumore diminuisce. La corsa
@@ -1454,31 +1848,37 @@ const Pannello = {
       // resta uniforme, il cielo non si copre mai e l'insieme ammutolisce.
       PARAMS.scalaForma = 0.115 - (v / 100) * 0.080;
       PARAMS.scalaMassa = PARAMS.scalaForma * 0.267;   // la massa segue la forma
-      return v + "%";
+      return Tn("v.pct", v);
     });
     this.cursore("muta", (v) => {
       PARAMS.morphMassa = (v / 100) * 0.030;
-      return v + "%";
+      return Tn("v.pct", v);
     });
 
     /* ---- Suono ---- */
     const valAscolto = document.getElementById("valAscolto");
-    this.interruttore("swAscolto", false, ["Silenzio", "In ascolto"], (on) => {
+    this.interruttore("swAscolto", false, ["c.ascolto.off", "c.ascolto.on"], (on) => {
+      valAscolto.textContent = T(on ? "c.ascolto.attivo" : "c.ascolto.fermo");
       if (on === Suono.attivo) return;
       if (on) Suono.avvia(); else Suono.ferma();
-      valAscolto.textContent = on ? "attivo" : "fermo";
     });
-    this.interruttore("swPolso", false, ["Spento", "Acceso"], (on) => {
+    this.interruttore("swPolso", false, ["c.polso.off", "c.polso.on"], (on) => {
       AUDIO.polso = on;
     });
-    this.interruttore("swBande", true, ["Nascoste", "Visibili"], (on) => {
+    this.interruttore("swBande", true, ["c.bande.off", "c.bande.on"], (on) => {
       document.getElementById("righello").classList.toggle("nascosto", !on);
     });
 
     this.strumenti();
 
-    this.cursore("volume", (v) => { Suono.volume(v / 100); return v + "%"; });
-    this.cursore("tempo", (v) => { AUDIO.bpm = v; return v + " bpm"; });
+    this.cursore("volume", (v) => { Suono.volume(v / 100); return Tn("v.pct", v); });
+    this.cursore("tempo", (v) => {
+      AUDIO.bpm = v;
+      // il punto accanto al marchio respira in quattro battiti
+      document.documentElement.style.setProperty(
+        "--respiro", (4 * 60 / v).toFixed(2) + "s");
+      return Tn("v.bpm", v);
+    });
     this.cursore("voci", (v) => {
       if (v !== AUDIO.voci) { Suono.impostaVoci(v); this.righello(); }
       return v;
@@ -1487,27 +1887,29 @@ const Pannello = {
       // Più alta = basta poca nuvola per svegliare una voce.
       AUDIO.entra = 0.28 - (v / 100) * 0.25;
       AUDIO.esce  = AUDIO.entra * 0.4;
-      return v + "%";
+      return Tn("v.pct", v);
     });
     this.cursore("dispersione", (v) => {
       // La corsa si ferma a 4 perché l'archivio garantisce l'assenza di scontri
       // cromatici solo entro una campata di 5 frasi (4 di scelta + 1 di coda).
       AUDIO.finestra = v;
-      return v + (v === 1 ? " frase" : " frasi");
+      return Tn(v === 1 ? "v.frase" : "v.frasi", v);
     });
     this.cursore("avanzamento", (v) => {
       // Ogni quanto l'insieme può passare alla frase successiva.
       AUDIO.attesaFronte = 60 * Math.pow(0.06, v / 100);
-      return Math.round(AUDIO.attesaFronte) + " s";
+      return Tn("v.s", Math.round(AUDIO.attesaFronte));
     });
-    this.cursore("riverbero", (v) => { Suono.riverbero(v / 100); return v + "%"; });
+    this.cursore("riverbero", (v) => { Suono.riverbero(v / 100); return Tn("v.pct", v); });
     this.cursore("registro", (v) => {
       AUDIO.registro = v;
-      return (v > 0 ? "+" : "") + v + " st";
+      return Tn("v.st", (v > 0 ? "+" : "") + v);
     });
 
     ["sereno", "vento", "volume", "tempo", "voci", "sensibilita"]
       .forEach((id) => this.arco(id));
+
+    this.lingue();
 
     this.righello();
     setInterval(() => this.aggiornaQuadrante(), 250);
@@ -1523,16 +1925,17 @@ const Pannello = {
       [...cont.children].forEach((t, i) => {
         t.classList.toggle("acceso", AUDIO.strumenti[i]);
         t.setAttribute("aria-pressed", AUDIO.strumenti[i] ? "true" : "false");
+        t.querySelector(".nomeStr").textContent = T("str." + STRUMENTI[i].chiave);
       });
       valore.textContent = accesi === 1
-        ? STRUMENTI[AUDIO.strumenti.findIndex(Boolean)].nome
+        ? T("str." + STRUMENTI[AUDIO.strumenti.findIndex(Boolean)].chiave)
         : accesi + "/" + STRUMENTI.length;
     };
     STRUMENTI.forEach((st, i) => {
       const t = document.createElement("button");
       t.type = "button";
       t.className = "tasto";
-      t.innerHTML = '<span class="quadro"></span>' + st.nome;
+      t.innerHTML = '<span class="quadro"></span><span class="nomeStr"></span>';
       t.addEventListener("click", () => {
         const accesi = AUDIO.strumenti.filter(Boolean).length;
         if (AUDIO.strumenti[i] && accesi === 1) return;   // l'ultimo resta
@@ -1542,6 +1945,55 @@ const Pannello = {
       cont.appendChild(t);
     });
     mostra();
+    this.rinfresca.push(mostra);
+  },
+
+  /* Le quattro lingue. Il selettore sta in testata, sopra il filo; la scelta
+     si conserva in `localStorage` e passa alla guida, che è una pagina a sé. */
+  lingue() {
+    const cont = document.getElementById("lingue");
+    LINGUE.forEach((l) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.lang = l;
+      b.textContent = SIGLA_LINGUA[l];
+      b.addEventListener("click", () => this.cambiaLingua(l));
+      cont.appendChild(b);
+    });
+    this.applicaLingua();
+  },
+
+  cambiaLingua(l) {
+    if (!LINGUE.includes(l) || l === lingua) return;
+    lingua = l;
+    salvaLingua(l);
+    this.applicaLingua();
+  },
+
+  /* Due attributi, non uno: `data-i18n` scrive testo semplice, `data-i18n-aria`
+     l'etichetta che sente chi non vede. Poi si rieseguono i rinfreschi dei
+     comandi, perché i loro valori sono frasi anch'essi ("15 s", "3 frasi"). */
+  applicaLingua() {
+    document.documentElement.lang = lingua;
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      el.textContent = T(el.getAttribute("data-i18n"));
+    });
+    document.querySelectorAll("[data-i18n-aria]").forEach((el) => {
+      el.setAttribute("aria-label", T(el.getAttribute("data-i18n-aria")));
+    });
+    const nav = document.getElementById("lingue");
+    nav.setAttribute("aria-label", T("ui.lingua"));
+    nav.querySelectorAll("button").forEach((b) => {
+      const scelta = b.dataset.lang === lingua;
+      b.classList.toggle("scelta", scelta);
+      b.setAttribute("aria-pressed", scelta ? "true" : "false");
+    });
+    // il rimando alla guida porta con sé la lingua
+    const g = document.querySelector("a.guida");
+    if (g) g.setAttribute("href", "guida.html?lang=" + lingua);
+
+    this.rinfresca.forEach((f) => f());
+    this.aggiornaQuadrante();
   },
 
   /* Il righello: una casella per voce. Mostra la frase che la voce sta
@@ -1567,7 +2019,7 @@ const Pannello = {
       if (viva) inAscolto++;
       caselle[i].innerHTML = viva
         ? String(v.iFrase + 1).padStart(2, "0") +
-          '<span class="strum">' + STRUMENTI[v.strumento].nome[0] + "</span>"
+          '<span class="strum">' + T("sig." + STRUMENTI[v.strumento].chiave) + "</span>"
         : "·";
       caselle[i].classList.toggle("attiva", viva);
     }
