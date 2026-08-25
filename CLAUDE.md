@@ -61,6 +61,22 @@ Nessun build, nessuna dipendenza a runtime: un unico `index.html` autoconsistent
 - **Taratura del campo**: l'fBm si concentra su valori bassi (misurati: min ~0, p50 ~0.14,
   max ~0.28). `soglia`/`ampiezza` sono tarate su questa distribuzione reale, non a occhio.
   Se cambi le scale del rumore, ri-misura la distribuzione prima di ritoccare la soglia.
+- **Ogni visita, un cielo diverso** (`Cielo.cieloIniziale`). Il campo di rumore è
+  deterministico — `hash2` non ha seme — e la deriva partiva da zero: ogni caricamento
+  si apriva perciò sullo stesso identico cielo, e due sessioni con gli stessi comandi
+  vedevano passare le stesse nuvole agli stessi minuti (misurato: impronta del campo
+  invariata dopo il ricaricamento). Ora la deriva parte da un punto a caso: tre
+  spostamenti indipendenti — `phaseX` (forma e massa), `phaseY` (solo forma), `tempo`
+  (il tempo lento della copertura) — ricavati da un solo numero con tre moltiplicatori
+  irrazionali. Con **`?cielo=<numero>`** quel numero si sceglie, e il cielo torna
+  riproducibile: serve a condividerlo e serve alle misure. Il seme è moltiplicato per
+  997 perché numeri vicini darebbero cieli quasi identici — uno scarto di 1 vale meno
+  di un periodo del rumore.
+  *Nota per chi verifica*: il pannello d'anteprima di Claude Code carica le pagine come
+  `data:` URL, dove `location.search` è vuoto e la query non arriva mai. Il ramo del
+  seme va provato estraendo la funzione ed eseguendola con una `location` finta, come
+  è stato fatto qui (dieci caricamenti senza seme: dieci cieli diversi; `?cielo=42` due
+  volte: identici; seme malformato: si torna al caso).
 - **Vento a fase accumulata**: la deriva usa `phaseX/phaseY` accumulate per frame
   (`+= vento * dt`), non il tempo assoluto. Così cambiare la velocità muta il *ritmo*
   e non fa **saltare** le nuvole di posizione. Il `dt` è clampato per la tab in background.
@@ -243,6 +259,10 @@ accesi due, la nuvola sceglie fra quei due. L'ultimo acceso non si può spegnere
   0,7 s, cielo coperto); ai valori di partenza la campata osservata è 3.
 - **Comandi**: vedi la sezione «Pannello» qui sotto. Il contesto audio nasce al primo
   clic sull'interruttore d'ascolto: lo esigono i browser.
+- **Il polso udibile è stato rimosso** (agosto 2026), dall'interfaccia e dal codice:
+  `AUDIO.polso`, `Suono.avanzaPolso`, `Suono.battuta` e `tPolso` non esistono più. Resta
+  il polso *condiviso* — la griglia di battiti su cui tutte le frasi partono — che è
+  un'altra cosa e regge l'intero impianto ritmico.
 
 ## Il pannello — linguaggio visivo
 
@@ -277,7 +297,11 @@ pallino su filetto). Il registro è **svizzero-tecnico su carta chiara**:
     cursore rispondeva solo se colpito negli 8 px superiori (era il difetto segnalato
     da Valerio: «se tocco il pallino non prende bene il comando»). **Non disegnare mai
     nulla sopra un input di comando.**
-- **interruttori**: quadretto 9px vuoto/pieno + stato a parole (`SILENZIO`/`IN ASCOLTO`);
+- **interruttori**: quadretto 9px vuoto/pieno + stato a parole (`SILENZIO`/`ASCOLTO`).
+  Quello d'ascolto è **senza etichetta**: solo il quadretto e la parola di stato, perché
+  è il comando che non ha bisogno di essere nominato. Il nome resta però in
+  `aria-label` (`data-i18n-aria="c.ascolto"`), che con `aria-pressed` è la forma giusta
+  per un interruttore: il nome dice che cos'è, lo stato lo dice l'attributo;
 - **quadrante dei dati**: cifre grandi tabellari con didascalia minuta sotto — frase
   dell'insieme, voci in ascolto, regione dell'arco;
 - **righello delle bande** sotto la finestra: una casella per voce, il numero della frase
@@ -311,8 +335,7 @@ puntatori può fallire — se fallisse dopo, il clic andrebbe perso.
 | Ampiezza nuvole | `PARAMS.scalaForma` | 0.115–0.035 | `scalaMassa` segue (×0.267) |
 | Muta | `PARAMS.morphMassa` | 0–0.030 | quanto in fretta muta la copertura |
 | Bande | — | — | mostra/nasconde il righello |
-| Ascolto | `Suono.avvia/ferma` | — | dissolvenza di 1.2–1.5 s |
-| Polso udibile | `AUDIO.polso` | — | il Do acuto sulla griglia comune |
+| Ascolto | `Suono.avvia/ferma` | — | il solo quadretto con `SILENZIO`/`ASCOLTO`; dissolvenza di 1.2–1.5 s |
 | Strumenti | `AUDIO.strumenti` | 4 quadretti | uno solo, o più d'uno e allora si sorteggia |
 | Volume | `AUDIO.volume` | 0–1 | |
 | Tempo | `AUDIO.bpm` | 44–132 | |

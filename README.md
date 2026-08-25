@@ -27,7 +27,6 @@ sezioni.
 **Suono**
 
 - **Ascolto** — accende e spegne il suono (il primo clic crea il contesto audio: lo esigono i browser).
-- **Polso udibile** — rende udibile il battito che tiene insieme le voci, un Do acuto sulla griglia comune.
 - **Strumenti** — quali dei quattro timbri sono in campo. Uno solo, o più d'uno: in tal caso ogni voce ne sorteggia uno a ogni risveglio.
 - **Volume**, **Tempo** — l'ampiezza e il passo del polso.
 - **Voci** — quante voci, cioè in quante bande è divisa la finestra.
@@ -92,6 +91,10 @@ Tutto è Web Audio API: nessuna libreria, nessun campione, nessun file esterno �
 riverbero è una risposta all'impulso generata al momento.
 
 ## Come funziona
+
+Ogni visita si apre su un cielo diverso: la deriva parte da un punto a caso del campo.
+Aggiungendo `?cielo=42` all'indirizzo si torna invece su un cielo preciso, sempre lo
+stesso — per rivedere una configurazione, o per condividerla con qualcuno.
 
 Il cielo non è una sequenza di nuvole pre-disegnate ma un **campo continuo di rumore** (`fBm`, moto browniano frazionario) campionato in ogni punto della matrice. Un termine di deriva sposta il campo nel tempo — il *vento* — mentre una seconda scala, più lenta, decide dove il cielo si addensa e dove resta sereno. Le nuvole così non si ripetono mai: nascono, attraversano e si sciolgono ai bordi.
 

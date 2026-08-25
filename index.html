@@ -445,15 +445,9 @@
 
       <div class="griglia tecnico">
         <div class="controllo">
-          <label><span data-i18n="c.ascolto">Ascolto</span> <span class="valore" id="valAscolto">fermo</span></label>
-          <button class="interruttore" id="swAscolto" type="button" aria-pressed="false">
+          <button class="interruttore" id="swAscolto" type="button"
+                  aria-pressed="false" data-i18n-aria="c.ascolto">
             <span class="quadro"></span><span class="stato">Silenzio</span>
-          </button>
-        </div>
-        <div class="controllo">
-          <label><span data-i18n="c.polso">Polso udibile</span> <span class="valore" data-i18n="c.polso.val">battito</span></label>
-          <button class="interruttore" id="swPolso" type="button" aria-pressed="false">
-            <span class="quadro"></span><span class="stato">Spento</span>
           </button>
         </div>
         <div class="controllo strumenti">
@@ -573,14 +567,8 @@ const TESTI = {
     "c.bande.on": "Visibili",
     "c.bande.off": "Nascoste",
     "c.ascolto": "Ascolto",
-    "c.ascolto.on": "In ascolto",
+    "c.ascolto.on": "Ascolto",
     "c.ascolto.off": "Silenzio",
-    "c.ascolto.attivo": "attivo",
-    "c.ascolto.fermo": "fermo",
-    "c.polso": "Polso udibile",
-    "c.polso.val": "battito",
-    "c.polso.on": "Acceso",
-    "c.polso.off": "Spento",
     "c.strumenti": "Strumenti",
     "c.volume": "Volume",
     "c.tempo": "Tempo",
@@ -632,14 +620,8 @@ const TESTI = {
     "c.bande.on": "Visibles",
     "c.bande.off": "Masquées",
     "c.ascolto": "Écoute",
-    "c.ascolto.on": "À l'écoute",
+    "c.ascolto.on": "Écoute",
     "c.ascolto.off": "Silence",
-    "c.ascolto.attivo": "en cours",
-    "c.ascolto.fermo": "arrêté",
-    "c.polso": "Pouls audible",
-    "c.polso.val": "battement",
-    "c.polso.on": "Activé",
-    "c.polso.off": "Éteint",
     "c.strumenti": "Instruments",
     "c.volume": "Volume",
     "c.tempo": "Tempo",
@@ -693,12 +675,6 @@ const TESTI = {
     "c.ascolto": "Listening",
     "c.ascolto.on": "Listening",
     "c.ascolto.off": "Silence",
-    "c.ascolto.attivo": "on",
-    "c.ascolto.fermo": "off",
-    "c.polso": "Audible pulse",
-    "c.polso.val": "beat",
-    "c.polso.on": "On",
-    "c.polso.off": "Off",
     "c.strumenti": "Instruments",
     "c.volume": "Volume",
     "c.tempo": "Tempo",
@@ -750,14 +726,8 @@ const TESTI = {
     "c.bande.on": "表示",
     "c.bande.off": "非表示",
     "c.ascolto": "再生",
-    "c.ascolto.on": "再生中",
+    "c.ascolto.on": "再生",
     "c.ascolto.off": "静寂",
-    "c.ascolto.attivo": "作動",
-    "c.ascolto.fermo": "停止",
-    "c.polso": "拍を鳴らす",
-    "c.polso.val": "拍",
-    "c.polso.on": "入",
-    "c.polso.off": "切",
     "c.strumenti": "楽器",
     "c.volume": "音量",
     "c.tempo": "速度",
@@ -939,10 +909,43 @@ const Cielo = {
     this.canvas = document.getElementById("cielo");
     this.ctx = this.canvas.getContext("2d");
     this.cornice = document.querySelector(".finestra");
+    this.cieloIniziale();
     this.resize();
     window.addEventListener("resize", () => this.resize());
     this.lastTs = performance.now();
     requestAnimationFrame((ts) => this.loop(ts));
+  },
+
+  /* Da dove comincia il cielo.
+
+     Il campo di rumore è deterministico — `hash2` non ha seme — e la deriva
+     partiva da zero: ogni visita si apriva perciò sullo stesso identico cielo,
+     e due sessioni con gli stessi comandi vedevano passare le stesse nuvole
+     agli stessi minuti. Misurato: impronta del campo invariata dopo il
+     ricaricamento. Qui la deriva parte invece da un punto a caso del campo, e
+     ogni visita trova un cielo diverso.
+
+     Tre spostamenti indipendenti, perché tre sono le coordinate del campo: la
+     forma in orizzontale (`phaseX`, che muove anche la massa), la forma in
+     verticale (`phaseY`) e il tempo lento della copertura (`tempo`). Si
+     ricavano da un solo numero con tre moltiplicatori irrazionali, così lo
+     stesso numero dà sempre lo stesso cielo.
+
+     Con `?cielo=<numero>` quel numero lo si sceglie: serve a condividere un
+     cielo con qualcuno, e serve alle misure — buona parte delle tarature di
+     questo progetto è stata fatta potendo tornare sullo stesso cielo. */
+  cieloIniziale() {
+    let seme = null;
+    try { seme = new URLSearchParams(location.search).get("cielo"); } catch (e) {}
+    // il seme si moltiplica per un primo grande, altrimenti numeri vicini
+    // darebbero cieli quasi identici: uno scarto di 1 vale meno di un periodo
+    // del rumore, e `?cielo=42` e `?cielo=43` si somiglierebbero.
+    const n = (seme !== null && seme !== "" && isFinite(+seme))
+            ? Math.abs(+seme) * 997
+            : Math.random() * 1e6;
+    this.phaseX = (n * 0.7919) % 4000;
+    this.phaseY = (n * 0.3571) % 4000;
+    this.tempo  = (n * 1.6180) % 20000;
   },
 
   // Dimensiona la finestra in modo responsive, lasciando spazio ai controlli
@@ -1163,7 +1166,6 @@ const AUDIO = {
   attesaFronte:   15,    // ...ma non più spesso di così (secondi)
   registro:        0,    // trasporto d'insieme, in semitoni
   strumenti: [true, true, true, true],   // quali strumenti sono in campo
-  polso:       false,    // il battito udibile (in "In C" è ciò che tiene insieme)
   volume:       0.55,
   attacco:      0.09,
   rilascio:     0.85,
@@ -1377,7 +1379,7 @@ const ORDINE_SPESSORE = [1, 2, 0, 3];   // Vetro · Legno · Onda · Fiato
 const Suono = {
   ctx: null, master: null, convolutore: null, invio: null,
   voci: [], timer: null, attivo: false,
-  fronte: 0, letture: 0, ultimoPasso: 0, tDensita: 0, tPolso: 0,
+  fronte: 0, letture: 0, ultimoPasso: 0, tDensita: 0,
 
   battito() { return 60 / AUDIO.bpm; },
 
@@ -1592,33 +1594,6 @@ const Suono = {
     const orizzonte = ora + 0.25;
     this.aggiornaDensita(ora);
     for (const v of this.voci) this.avanza(v, orizzonte, ora);
-    this.avanzaPolso(orizzonte);
-  },
-
-  /* Il battito udibile: un Do acuto, brevissimo, sulla griglia comune.
-     È la sola cosa che tiene insieme le voci; senza, l'insieme resta
-     ugualmente in fase ma nessuno la sente. */
-  avanzaPolso(orizzonte) {
-    if (this.tPolso < this.ctx.currentTime) this.tPolso = this.ctx.currentTime + 0.05;
-    let passi = 0;
-    while (this.tPolso < orizzonte && passi++ < 32) {
-      if (AUDIO.polso) this.battuta(this.tPolso);
-      this.tPolso += this.battito();
-    }
-  },
-
-  battuta(t) {
-    const ctx = this.ctx;
-    const osc = ctx.createOscillator();
-    osc.type = "sine";
-    osc.frequency.value = 1046.5;            // Do, due ottave sopra
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(0.05, t + 0.004);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
-    osc.connect(g); g.connect(this.master);
-    osc.start(t); osc.stop(t + 0.14);
-    osc.onended = () => g.disconnect();
   },
 
   avanza(v, orizzonte, ora) {
@@ -1668,7 +1643,6 @@ const Suono = {
     this.master.gain.setValueAtTime(this.master.gain.value, t);
     this.master.gain.linearRampToValueAtTime(AUDIO.volume, t + 1.5);
     this.voci.forEach(v => { v.tProssimo = t + 0.3; this.congeda(v); });
-    this.tPolso = t + 0.3;
     this.ultimoPasso = t;
     this.attivo = true;
     this.timer = setInterval(() => this.tick(), 25);
@@ -1856,14 +1830,9 @@ const Pannello = {
     });
 
     /* ---- Suono ---- */
-    const valAscolto = document.getElementById("valAscolto");
     this.interruttore("swAscolto", false, ["c.ascolto.off", "c.ascolto.on"], (on) => {
-      valAscolto.textContent = T(on ? "c.ascolto.attivo" : "c.ascolto.fermo");
       if (on === Suono.attivo) return;
       if (on) Suono.avvia(); else Suono.ferma();
-    });
-    this.interruttore("swPolso", false, ["c.polso.off", "c.polso.on"], (on) => {
-      AUDIO.polso = on;
     });
     this.interruttore("swBande", true, ["c.bande.off", "c.bande.on"], (on) => {
       document.getElementById("righello").classList.toggle("nascosto", !on);
