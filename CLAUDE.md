@@ -308,7 +308,10 @@ pallino su filetto). Il registro è **svizzero-tecnico su carta chiara**:
     cursore rispondeva solo se colpito negli 8 px superiori (era il difetto segnalato
     da Valerio: «se tocco il pallino non prende bene il comando»). **Non disegnare mai
     nulla sopra un input di comando.**
-- **interruttori**: quadretto 9px vuoto/pieno + stato a parole (`SILENZIO`/`ASCOLTO`).
+- **interruttori**: quadretto 9px vuoto/pieno + stato a parole (`SILENZIO`/`ASCOLTO`,
+  `VISIBILI`/`NASCOSTE`). Nessuno di loro porta più una parola di contorno: la parola di
+  stato **è** il valore, e una seconda dicitura accanto direbbe due volte la stessa cosa
+  (sono cadute così «fermo/attivo» sull'ascolto e «righello» sulle bande).
   Quello d'ascolto è **senza etichetta**: solo il quadretto e la parola di stato, perché
   è il comando che non ha bisogno di essere nominato. Il nome resta però in
   `aria-label` (`data-i18n-aria="c.ascolto"`), che con `aria-pressed` è la forma giusta
@@ -345,7 +348,7 @@ puntatori può fallire — se fallisse dopo, il clic andrebbe perso.
 | Grana | `PARAMS.passo` | 5–20 px | chiama `Cielo.resize()`; `fattoreGriglia()` tiene ferme le nuvole |
 | Ampiezza nuvole | `PARAMS.scalaForma` | 0.115–0.035 | `scalaMassa` segue (×0.267) |
 | Muta | `PARAMS.morphMassa` | 0–0.030 | quanto in fretta muta la copertura |
-| Bande | — | — | mostra/nasconde il righello |
+| Bande | — | — | mostra/nasconde il righello; sta tutto su una riga (`.controllo.linea`), nome a sinistra e interruttore a destra |
 | Ascolto | `Suono.avvia/ferma` | — | il solo quadretto con `SILENZIO`/`ASCOLTO`; dissolvenza di 1.2–1.5 s |
 | Strumenti | `AUDIO.strumenti` | 4 quadretti | uno solo, o più d'uno e allora si sorteggia |
 | Volume | `AUDIO.volume` | 0–1 | |

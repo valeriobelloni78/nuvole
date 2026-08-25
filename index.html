@@ -187,6 +187,15 @@
     gap: 18px 34px;
   }
   .controllo { display: flex; flex-direction: column; gap: 9px; }
+  /* Un comando che sta tutto su una riga: il nome a sinistra, l'interruttore a
+     destra — come ogni altra riga del pannello, dove a destra c'è il valore. */
+  .controllo.linea {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .controllo .nomeComando { color: rgba(255, 255, 255, 0.75); }
   .controllo > label {
     color: rgba(255, 255, 255, 0.75);
     display: flex;
@@ -443,9 +452,10 @@
           <label><span data-i18n="c.muta">Muta</span> <span class="valore" id="valMuta"></span></label>
           <div class="cursore"><input type="range" id="muta" min="0" max="100" value="40"></div>
         </div>
-        <div class="controllo">
-          <label><span data-i18n="c.bande">Bande</span> <span class="valore" data-i18n="c.bande.val">righello</span></label>
-          <button class="interruttore acceso" id="swBande" type="button" aria-pressed="true">
+        <div class="controllo linea">
+          <span class="nomeComando" id="etBande" data-i18n="c.bande">Bande</span>
+          <button class="interruttore acceso" id="swBande" type="button"
+                  aria-pressed="true" aria-labelledby="etBande">
             <span class="quadro"></span><span class="stato">Visibili</span>
           </button>
         </div>
@@ -572,7 +582,6 @@ const TESTI = {
     "c.ampiezza": "Ampiezza nuvole",
     "c.muta": "Muta",
     "c.bande": "Bande",
-    "c.bande.val": "righello",
     "c.bande.on": "Visibili",
     "c.bande.off": "Nascoste",
     "c.ascolto": "Ascolto",
@@ -625,7 +634,6 @@ const TESTI = {
     "c.ampiezza": "Ampleur des nuages",
     "c.muta": "Mue",
     "c.bande": "Bandes",
-    "c.bande.val": "réglette",
     "c.bande.on": "Visibles",
     "c.bande.off": "Masquées",
     "c.ascolto": "Écoute",
@@ -678,7 +686,6 @@ const TESTI = {
     "c.ampiezza": "Cloud width",
     "c.muta": "Drift",
     "c.bande": "Bands",
-    "c.bande.val": "ruler",
     "c.bande.on": "Visible",
     "c.bande.off": "Hidden",
     "c.ascolto": "Listening",
@@ -731,7 +738,6 @@ const TESTI = {
     "c.ampiezza": "雲の広がり",
     "c.muta": "変容",
     "c.bande": "帯",
-    "c.bande.val": "目盛",
     "c.bande.on": "表示",
     "c.bande.off": "非表示",
     "c.ascolto": "再生",
