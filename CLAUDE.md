@@ -112,6 +112,27 @@ autoconsistenti (`index.html` e `guida.html`).
 - Il **giapponese** ha un `letter-spacing` ridotto (`html[lang="ja"] .tecnico`): la
   spaziatura larga, giusta per un maiuscoletto latino, sfalda una riga di kanji.
 
+### I testi: `guida.md`
+
+**`guida.md` è il tavolo di lavoro, non la sorgente.** Contiene tutte le parole
+italiane della guida, divise in blocchi con àncore fra parentesi quadre
+(`[intro]`, `[cielo 1]`, `[arco · i dieci tratti]`…). Valerio corregge lì; poi il
+testo va riportato a mano nel dizionario dentro `guida.html`, **e nelle altre tre
+lingue**, che sono traduzioni dell'italiano. Se i due file divergono, la pagina
+non se ne accorge: è l'unico prezzo di questo modo di lavorare, ed è lo stesso
+di Rada2 (`testi-guida.md`).
+
+Due cose da ricordare quando si riporta un testo:
+
+- le voci segnate «anche nell'interfaccia» — nomi dei comandi, dei dieci tratti,
+  dei quattro strumenti, la firma — vivono **anche in `index.html`**: vanno
+  cambiate in tutt'e due i dizionari, o il pannello e la guida si contraddicono;
+- il risalto: i paragrafi di prosa della guida usano `data-i18n-html`, quindi
+  `**grassetto**` diventa `<strong>` e `*corsivo*` diventa `<em>`. Le etichette
+  brevi restano `data-i18n` (testo semplice). In giapponese il corsivo non si
+  applica: i titoli d'opera prendono le 《》, e infatti *In C* è in corsivo in
+  italiano, francese e inglese ma sta fra 《》 in giapponese.
+
 ### La guida (`guida.html`)
 
 Pagina a sé, stessa testata e stesso linguaggio visivo dello strumento. Sei sezioni:
