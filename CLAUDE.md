@@ -204,6 +204,17 @@ finestra scorrevole prima di considerare il lavoro finito.
   - *brillantezza* (energia sopra i 2 kHz nei primi 170 ms): Vetro 8,8% · Legno 0,3% ·
     Onda e Fiato 0%. È la misura con cui è stato scelto l'indice FM del Vetro: 0.3 dava
     1,5% (sordo), 1.8 dava 21% (tagliente con sei voci), 1.2 dà 8,8%.
+- **La fila del suono**: sotto la rubrica M2, l'interruttore d'ascolto e i quattro
+  quadretti degli strumenti stanno **tutti sulla stessa linea** (`.fila`), l'ascolto a
+  sinistra e gli strumenti **giustificati a destra** (`space-between`, più
+  `justify-content: flex-end` dentro `.scelta` perché restino a destra anche andando a
+  capo). I due poli agli estremi ripetono la struttura di ogni altra riga del pannello —
+  nome a sinistra, valore a destra — e bastano a dire che il primo quadretto comanda
+  un'altra cosa: il filetto verticale che li separava, con questa disposizione, finiva
+  appiccicato al gruppo di destra e sembrava appartenergli, quindi è stato tolto.
+  Non c'è etichetta né contatore: i quadretti pieni o vuoti dicono già tutto, e i nomi
+  dei due gruppi restano in `aria-label` per chi non vede.
+
 ### Lo strumento lo sceglie la nuvola
 
 Non è un sorteggio: è lo **spessore** della nuvola sulla banda a decidere il timbro.

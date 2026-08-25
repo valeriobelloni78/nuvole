@@ -298,10 +298,24 @@
     pointer-events: none;
   }
 
-  /* Scelta degli strumenti: una fila di quadretti, uno per strumento.
-     Se ne può tenere acceso uno solo, o tutti e quattro. */
-  .controllo.strumenti { grid-column: 1 / -1; }
-  .scelta { display: flex; flex-wrap: wrap; gap: 10px 26px; }
+  /* La fila dei quadretti del suono: a sinistra l'interruttore d'ascolto, a
+     destra i quattro strumenti, tutti sulla stessa linea. I due poli agli
+     estremi ripetono la struttura di ogni altra riga del pannello (nome a
+     sinistra, valore a destra) e dicono da soli che il primo quadretto
+     comanda un'altra cosa: non serve un filetto a separarli. */
+  .fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 26px;
+  }
+  .scelta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;      /* restano a destra anche andando a capo */
+    gap: 12px 26px;
+  }
   .tasto {
     font: inherit;
     letter-spacing: 0.16em;
@@ -443,17 +457,12 @@
         <span data-i18n="sez.suono">Suono</span><span class="filo"></span><span class="codice">M2</span>
       </div>
 
-      <div class="griglia tecnico">
-        <div class="controllo">
-          <button class="interruttore" id="swAscolto" type="button"
-                  aria-pressed="false" data-i18n-aria="c.ascolto">
-            <span class="quadro"></span><span class="stato">Silenzio</span>
-          </button>
-        </div>
-        <div class="controllo strumenti">
-          <label><span data-i18n="c.strumenti">Strumenti</span> <span class="valore" id="valStrumenti"></span></label>
-          <div class="scelta" id="scelta"></div>
-        </div>
+      <div class="fila tecnico">
+        <button class="interruttore" id="swAscolto" type="button"
+                aria-pressed="false" data-i18n-aria="c.ascolto">
+          <span class="quadro"></span><span class="stato">Silenzio</span>
+        </button>
+        <div class="scelta" id="scelta" role="group" data-i18n-aria="c.strumenti"></div>
       </div>
 
       <div class="griglia archi tecnico">
@@ -1888,17 +1897,12 @@ const Pannello = {
      non farebbe tacere l'insieme, lo lascerebbe senza timbro. */
   strumenti() {
     const cont = document.getElementById("scelta");
-    const valore = document.getElementById("valStrumenti");
     const mostra = () => {
-      const accesi = AUDIO.strumenti.filter(Boolean).length;
       [...cont.children].forEach((t, i) => {
         t.classList.toggle("acceso", AUDIO.strumenti[i]);
         t.setAttribute("aria-pressed", AUDIO.strumenti[i] ? "true" : "false");
         t.querySelector(".nomeStr").textContent = T("str." + STRUMENTI[i].chiave);
       });
-      valore.textContent = accesi === 1
-        ? T("str." + STRUMENTI[AUDIO.strumenti.findIndex(Boolean)].chiave)
-        : accesi + "/" + STRUMENTI.length;
     };
     STRUMENTI.forEach((st, i) => {
       const t = document.createElement("button");
