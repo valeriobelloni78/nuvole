@@ -111,6 +111,34 @@
     dd { margin-bottom: 10px; }
   }
 
+  /* La firma, identica a quella dello strumento. L'indirizzo di posta non è un
+     collegamento, e per la stessa ragione: un mailto: che contenga "[at]"
+     aprirebbe una bozza verso un destinatario inesistente. */
+  .firma {
+    margin-top: clamp(18px, 3vh, 34px);
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.38);
+    text-align: center;
+  }
+  .firma p { font-size: 10px; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.7); }
+  .firma .recapiti {
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px; flex-wrap: wrap; margin-top: 9px;
+  }
+  .firma a, .firma .posta {
+    font-size: 10px; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.7);
+    text-decoration: none; padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
+  }
+  .firma a { transition: color 0.2s ease, border-color 0.2s ease; }
+  .firma a:hover { color: #ffffff; border-bottom-color: rgba(255, 255, 255, 0.6); }
+  .firma a:focus-visible { outline: 1px solid rgba(255,255,255,.6); outline-offset: 3px; }
+  .firma .sep { width: 1px; height: 10px; background: rgba(255, 255, 255, 0.38); flex: none; }
+  @media (max-width: 479px) {
+    .firma .sep { display: none; }
+    .firma .recapiti { gap: 8px; flex-direction: column; }
+  }
+
   footer { margin-top: clamp(20px, 4vh, 40px); }
   footer p { font-size: 13px; color: rgba(255, 255, 255, 0.75); }
   footer a { color: #ffffff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.45); }
@@ -190,6 +218,15 @@
       </p>
     </footer>
 
+    <div class="firma">
+      <p data-i18n="foot.credits">questo è un progetto open source ideato da Valerio Belloni</p>
+      <div class="recapiti">
+        <a href="https://www.valeriobelloni.art" target="_blank" rel="noopener">valeriobelloni.art</a>
+        <span class="sep" aria-hidden="true"></span>
+        <span class="posta">valerio.belloni [at] pm.me</span>
+      </div>
+    </div>
+
   </div>
 
 <script>
@@ -265,7 +302,8 @@ it: {
   "d.registro": "il trasporto d'insieme, in semitoni",
 
   "g.h.crediti": "Crediti",
-  "g.crediti.1": "Nuvole è un progetto di Valerio Belloni. Open source, licenza MIT. Nessuna libreria, nessun campione, nessun file esterno: anche il riverbero è una risposta all'impulso generata al momento.",
+  "g.crediti.1": "Licenza MIT. Nessuna libreria, nessun campione, nessun file esterno: anche il riverbero è una risposta all'impulso generata al momento.",
+  "foot.credits": "questo è un progetto open source ideato da Valerio Belloni",
   "g.codice": "Il codice su GitHub",
 },
 
@@ -326,7 +364,8 @@ fr: {
   "d.registro": "la transposition d'ensemble, en demi-tons",
 
   "g.h.crediti": "Crédits",
-  "g.crediti.1": "Nuvole est un projet de Valerio Belloni. Open source, licence MIT. Aucune bibliothèque, aucun échantillon, aucun fichier externe : même la réverbération est une réponse impulsionnelle engendrée sur place.",
+  "g.crediti.1": "Licence MIT. Aucune bibliothèque, aucun échantillon, aucun fichier externe : même la réverbération est une réponse impulsionnelle engendrée sur place.",
+  "foot.credits": "ce projet libre est une idée de Valerio Belloni",
   "g.codice": "Le code sur GitHub",
 },
 
@@ -386,7 +425,8 @@ en: {
   "d.registro": "the transposition of the whole, in semitones",
 
   "g.h.crediti": "Credits",
-  "g.crediti.1": "Nuvole is a project by Valerio Belloni. Open source, MIT licence. No library, no samples, no external files: even the reverb is an impulse response generated on the spot.",
+  "g.crediti.1": "MIT licence. No library, no samples, no external files: even the reverb is an impulse response generated on the spot.",
+  "foot.credits": "this is an open source project by Valerio Belloni",
   "g.codice": "The code on GitHub",
 },
 
@@ -446,7 +486,8 @@ ja: {
   "d.registro": "全体の移調（半音単位）",
 
   "g.h.crediti": "クレジット",
-  "g.crediti.1": "Nuvole は Valerio Belloni による作品です。オープンソース、MITライセンス。ライブラリも、音素材も、外部ファイルもありません。残響さえその場で生成しています。",
+  "g.crediti.1": "MITライセンス。ライブラリも、音素材も、外部ファイルもありません。残響さえその場で生成しています。",
+  "foot.credits": "Valerio Belloniによる、オープンソースの企画です。",
   "g.codice": "GitHub 上のコード",
 },
 

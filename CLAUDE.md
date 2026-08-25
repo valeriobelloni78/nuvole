@@ -318,6 +318,18 @@ pallino su filetto). Il registro è **svizzero-tecnico su carta chiara**:
   per un interruttore: il nome dice che cos'è, lo stato lo dice l'attributo;
 - **quadrante dei dati**: cifre grandi tabellari con didascalia minuta sotto — frase
   dell'insieme, voci in ascolto, regione dell'arco;
+- **firma in fondo**, copiata da Rada (`.firma` in `rada2/css/style.css`): un filetto,
+  il credito in grottesco — non in monospaziato, perché non fa parte dello strumento e
+  si deve vedere — e sotto i recapiti separati da un filetto verticale, che sparisce
+  sotto i 480px lasciandoli impilati. **L'indirizzo di posta non è un collegamento**, e
+  per la stessa ragione di Rada: un `mailto:` che contenga «[at]» aprirebbe una bozza
+  verso un destinatario inesistente. Va ricomposto a mano, ed è il prezzo di non darlo
+  in pasto ai raccoglitori di indirizzi. Il testo del credito è la stringa `foot.credits`
+  di Rada, nelle stesse quattro lingue. **La stessa firma chiude anche la guida**; là il
+  paragrafo dei crediti è stato alleggerito della paternità («Nuvole è un progetto di
+  Valerio Belloni») e tenuto ai soli fatti tecnici — licenza, nessuna libreria, nessun
+  campione — perché a dire di chi è il progetto ora ci pensa la firma, e dirlo due volte
+  a tre righe di distanza si notava.
 - **righello delle bande** sotto la finestra: una casella per voce, il numero della frase
   che sta leggendo, e un filetto nero che si accende quando la nuvola è sulla sua banda.
   È il riscontro visivo del legame nuvola→voce (era fra i «prossimi passi»).

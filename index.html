@@ -242,6 +242,40 @@
     stroke-width: 4;
   }
 
+  /* La firma: un filetto, e sotto il nome e i recapiti. In grottesco e non in
+     monospaziato, come in Rada: non fa parte dello strumento, e si vede. */
+  .firma {
+    margin-top: clamp(18px, 3vh, 34px);
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.38);
+    text-align: center;
+  }
+  .firma p {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .firma .recapiti {
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px; flex-wrap: wrap; margin-top: 9px;
+  }
+  .firma a, .firma .posta {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
+  }
+  .firma a { transition: color 0.2s ease, border-color 0.2s ease; }
+  .firma a:hover { color: #ffffff; border-bottom-color: rgba(255, 255, 255, 0.6); }
+  .firma a:focus-visible { outline: 1px solid rgba(255, 255, 255, 0.6); outline-offset: 3px; }
+  .firma .sep { width: 1px; height: 10px; background: rgba(255, 255, 255, 0.38); flex: none; }
+  @media (max-width: 479px) {
+    .firma .sep { display: none; }
+    .firma .recapiti { gap: 8px; flex-direction: column; }
+  }
+
   /* Cursore: filetto con tacche e pallino pieno.
      La linea e le tacche sono SFONDI DELL'INPUT (due gradienti), non elementi
      disegnati sopra di esso — come in Rada. È la differenza fra un comando che
@@ -530,6 +564,19 @@
       </div>
     </div>
 
+    <!-- La firma, come in Rada. L'indirizzo di posta NON è un collegamento, e
+         per la stessa ragione di là: un mailto: che contenga "[at]" aprirebbe
+         una bozza verso un destinatario inesistente. Va ricomposto a mano, ed
+         è il prezzo di non darlo in pasto ai raccoglitori di indirizzi. -->
+    <div class="firma">
+      <p data-i18n="foot.credits">questo è un progetto open source ideato da Valerio Belloni</p>
+      <div class="recapiti">
+        <a href="https://www.valeriobelloni.art" target="_blank" rel="noopener">valeriobelloni.art</a>
+        <span class="sep" aria-hidden="true"></span>
+        <span class="posta">valerio.belloni [at] pm.me</span>
+      </div>
+    </div>
+
   </div>
 
 <script>
@@ -610,6 +657,8 @@ const TESTI = {
     "str.legno": "Legno", "sig.legno": "L",
     "str.fiato": "Fiato", "sig.fiato": "F",
 
+    "foot.credits": "questo è un progetto open source ideato da Valerio Belloni",
+
     "reg.1": "Sereno", "reg.2": "Cirri", "reg.3": "Velo", "reg.4": "Radura",
     "reg.5": "Controluce", "reg.6": "Corrente", "reg.7": "Vuoto d'aria",
     "reg.8": "Nembo", "reg.9": "Schiarita", "reg.10": "Zenit",
@@ -661,6 +710,8 @@ const TESTI = {
     "str.vetro": "Verre",  "sig.vetro": "V",
     "str.legno": "Bois",   "sig.legno": "B",
     "str.fiato": "Souffle","sig.fiato": "S",
+
+    "foot.credits": "ce projet libre est une idée de Valerio Belloni",
 
     "reg.1": "Dégagé", "reg.2": "Cirrus", "reg.3": "Voile", "reg.4": "Clairière",
     "reg.5": "Contre-jour", "reg.6": "Courant", "reg.7": "Trou d'air",
@@ -714,6 +765,8 @@ const TESTI = {
     "str.legno": "Wood",  "sig.legno": "D",
     "str.fiato": "Breath","sig.fiato": "B",
 
+    "foot.credits": "this is an open source project by Valerio Belloni",
+
     "reg.1": "Clear", "reg.2": "Cirrus", "reg.3": "Veil", "reg.4": "Clearing",
     "reg.5": "Backlight", "reg.6": "Current", "reg.7": "Air pocket",
     "reg.8": "Nimbus", "reg.9": "Break", "reg.10": "Zenith",
@@ -765,6 +818,8 @@ const TESTI = {
     "str.vetro": "硝子","sig.vetro": "硝",
     "str.legno": "木",  "sig.legno": "木",
     "str.fiato": "息",  "sig.fiato": "息",
+
+    "foot.credits": "Valerio Belloniによる、オープンソースの企画です。",
 
     "reg.1": "晴", "reg.2": "巻雲", "reg.3": "薄衣", "reg.4": "切れ間",
     "reg.5": "逆光", "reg.6": "気流", "reg.7": "空隙",
