@@ -553,8 +553,24 @@
           <div class="cursore"><input type="range" id="avanzamento" min="0" max="100" value="50"></div>
         </div>
         <div class="controllo">
+          <label><span data-i18n="c.ripetizione">Ripetizione</span> <span class="valore" id="valRipetizione"></span></label>
+          <div class="cursore"><input type="range" id="ripetizione" min="0" max="100" value="20"></div>
+        </div>
+        <div class="controllo">
+          <label><span data-i18n="c.apertura">Apertura</span> <span class="valore" id="valApertura"></span></label>
+          <div class="cursore"><input type="range" id="apertura" min="0" max="100" value="50"></div>
+        </div>
+        <div class="controllo">
           <label><span data-i18n="c.respiro">Respiro</span> <span class="valore" id="valRespiro"></span></label>
           <div class="cursore"><input type="range" id="respiro" min="0" max="100" value="50"></div>
+        </div>
+        <div class="controllo">
+          <label><span data-i18n="c.colore">Colore</span> <span class="valore" id="valColore"></span></label>
+          <div class="cursore"><input type="range" id="colore" min="0" max="100" value="100"></div>
+        </div>
+        <div class="controllo">
+          <label><span data-i18n="c.larghezza">Larghezza</span> <span class="valore" id="valLarghezza"></span></label>
+          <div class="cursore"><input type="range" id="larghezza" min="0" max="100" value="100"></div>
         </div>
         <div class="controllo">
           <label><span data-i18n="c.registro">Registro</span> <span class="valore" id="valRegistro"></span></label>
@@ -641,6 +657,10 @@ const TESTI = {
     "c.avanzamento": "Avanzamento",
     "c.riverbero": "Riverbero",
     "c.respiro": "Respiro",
+    "c.ripetizione": "Ripetizione",
+    "c.apertura": "Apertura",
+    "c.larghezza": "Larghezza",
+    "c.colore": "Colore",
     "c.registro": "Registro",
 
     "v.pct": "{n}%",
@@ -694,6 +714,10 @@ const TESTI = {
     "c.avanzamento": "Avancement",
     "c.riverbero": "Réverbération",
     "c.respiro": "Respiration",
+    "c.ripetizione": "Répétition",
+    "c.apertura": "Ouverture",
+    "c.larghezza": "Largeur",
+    "c.colore": "Couleur",
     "c.registro": "Registre",
 
     "v.pct": "{n}%",
@@ -747,6 +771,10 @@ const TESTI = {
     "c.avanzamento": "Advance",
     "c.riverbero": "Reverb",
     "c.respiro": "Breathing",
+    "c.ripetizione": "Repeats",
+    "c.apertura": "Range",
+    "c.larghezza": "Width",
+    "c.colore": "Color",
     "c.registro": "Register",
 
     "v.pct": "{n}%",
@@ -800,6 +828,10 @@ const TESTI = {
     "c.avanzamento": "進行",
     "c.riverbero": "残響",
     "c.respiro": "呼吸",
+    "c.ripetizione": "反復",
+    "c.apertura": "音域幅",
+    "c.larghezza": "左右幅",
+    "c.colore": "明るさ",
     "c.registro": "音域",
 
     "v.pct": "{n}%",
@@ -1237,6 +1269,10 @@ const AUDIO = {
   rilascio:     0.85,
   respiro:       1.0,    // moltiplica attacchi e code di TUTTI gli strumenti:
                          // 0.4 = suoni netti e asciutti, 2.6 = tessuto continuo
+  apertura:      1.0,    // ampiezza dei registri, in ottave per lato (0 = un coro
+                         // stretto, 2 = quattro ottave, i gravi a sinistra)
+  larghezza:     1.0,    // panorama: 0 = mono, 1 = la banda occupa tutto il campo
+  colore:      18000,    // taglio del passa-basso d'insieme, in Hz
   riverbero:    0.38,
 };
 
@@ -1462,7 +1498,15 @@ const Suono = {
 
     this.master = this.ctx.createGain();
     this.master.gain.value = 0;               // si apre in dissolvenza
-    this.master.connect(this.ctx.destination);
+
+    /* Il colore d'insieme: un passa-basso in fondo alla catena, dopo il
+       riverbero, così vela tutto — voci e coda dell'ambiente insieme. */
+    this.filtro = this.ctx.createBiquadFilter();
+    this.filtro.type = "lowpass";
+    this.filtro.frequency.value = AUDIO.colore;
+    this.filtro.Q.value = 0.4;
+    this.master.connect(this.filtro);
+    this.filtro.connect(this.ctx.destination);
 
     // Riverbero: risposta all'impulso generata, nessun file esterno.
     this.convolutore = this.ctx.createConvolver();
@@ -1500,15 +1544,37 @@ const Suono = {
   },
 
   /* --- le voci ----------------------------------------------------- */
+  /* L'ottava di una voce viene dalla sua posizione nella finestra: a sinistra i
+     gravi, a destra gli acuti, e l'*Apertura* dice quante ottave separano i due
+     estremi. Il trasporto è sempre di ottave intere, mai di altri intervalli:
+     l'ottava conserva la classe d'altezza, e con essa la garanzia dell'archivio
+     contro gli scontri cromatici. Un trasporto di quinta la distruggerebbe. */
+  ottavaDi(pos) {
+    // arrotondamento simmetrico: Math.round(-0.5) dà 0 e Math.round(0.5) dà 1,
+    // e le sei voci uscirebbero sbilanciate verso l'acuto.
+    const x = pos * AUDIO.apertura;
+    return Math.sign(x) * Math.round(Math.abs(x)) * 12;
+  },
+
+  /* Apertura e larghezza si applicano a voci già in corso senza ricostruirle:
+     le note già programmate tengono la frequenza che avevano, le prossime
+     nascono con la nuova. Nessuno scatto. */
+  riallineaVoci() {
+    for (const v of this.voci) {
+      v.ottava = this.ottavaDi(v.pos);
+      if (v.pan) v.pan.pan.value = v.pos * AUDIO.larghezza;
+    }
+  },
+
   creaVoci() {
-    const registri = [-12, 0, 12, 0, -12, 12];
-    const onde     = ["sine", "triangle"];
+    const onde = ["sine", "triangle"];
     this.voci = [];
     for (let i = 0; i < AUDIO.voci; i++) {
       const a = i / AUDIO.voci, b = (i + 1) / AUDIO.voci;
+      const pos = ((a + b) / 2) * 2 - 1;                // -1 a sinistra, +1 a destra
       const pan = this.ctx.createStereoPanner
         ? this.ctx.createStereoPanner() : null;
-      if (pan) pan.pan.value = ((a + b) / 2) * 2 - 1;   // la banda dà la posizione
+      if (pan) pan.pan.value = pos * AUDIO.larghezza;
       const uscita = this.ctx.createGain();
       uscita.gain.value = 1;
       uscita.connect(pan || this.master);
@@ -1517,7 +1583,8 @@ const Suono = {
 
       this.voci.push({
         banda: [a, b],
-        ottava: registri[i % registri.length],
+        pos: pos,
+        ottava: this.ottavaDi(pos),
         onda: onde[i % onde.length],
         strumento: 0,
         uscita: uscita, pan: pan,
@@ -1732,6 +1799,11 @@ const Suono = {
     setTimeout(() => { if (!this.attivo) this.ctx.suspend(); }, 1500);
   },
 
+  colore(hz) {
+    AUDIO.colore = hz;
+    if (this.filtro) this.filtro.frequency.value = hz;
+  },
+
   riverbero(v) {
     AUDIO.riverbero = v;
     if (this.invio) this.invio.gain.value = v;
@@ -1935,6 +2007,27 @@ const Pannello = {
       return Tn("v.s", Math.round(AUDIO.attesaFronte));
     });
     this.cursore("riverbero", (v) => { Suono.riverbero(v / 100); return Tn("v.pct", v); });
+    this.cursore("ripetizione", (v) => {
+      // quante volte una voce ripete la frase prima di lasciarla
+      AUDIO.lettureMin = 1 + Math.round(v / 100 * 6);
+      AUDIO.lettureMax = AUDIO.lettureMin + 1 + Math.round(v / 100 * 8);
+      return AUDIO.lettureMin + "–" + AUDIO.lettureMax;
+    });
+    this.cursore("apertura", (v) => {
+      AUDIO.apertura = v / 50;               // ottave per lato: 0 … 2
+      Suono.riallineaVoci();
+      return Tn("v.pct", v);
+    });
+    this.cursore("larghezza", (v) => {
+      AUDIO.larghezza = v / 100;
+      Suono.riallineaVoci();
+      return Tn("v.pct", v);
+    });
+    this.cursore("colore", (v) => {
+      // corsa esponenziale: 600 Hz velato … 18 kHz, cioè trasparente
+      Suono.colore(600 * Math.pow(30, v / 100));
+      return Tn("v.pct", v);
+    });
     this.cursore("respiro", (v) => {
       // corsa esponenziale centrata sull'unità: a metà corsa il suono è quello
       // di riferimento, agli estremi 0.4 (netto e asciutto) e 2.6 (tessuto).

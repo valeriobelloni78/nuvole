@@ -386,6 +386,10 @@ puntatori può fallire — se fallisse dopo, il clic andrebbe perso.
 | Volume | `AUDIO.volume` | 0–1 | |
 | Riverbero | `AUDIO.riverbero` | 0–1 | mandata al convolutore |
 | Respiro | `AUDIO.respiro` | 0.4–2.6 | moltiplica attacchi e code di tutti gli strumenti; corsa esponenziale, a metà vale 1 |
+| Ripetizione | `AUDIO.lettureMin/Max` | 1–2 … 7–16 | quante volte una voce ripete la frase; il valore mostrato è l'intervallo |
+| Apertura | `AUDIO.apertura` | 0–2 ottave per lato | `Suono.ottavaDi(pos)`: **solo ottave intere** |
+| Larghezza | `AUDIO.larghezza` | 0–1 | panorama: 0 = mono, 1 = ogni voce sulla sua banda |
+| Colore | `AUDIO.colore` | 600–18000 Hz | passa-basso d'insieme in fondo alla catena, dopo il riverbero |
 | Voci | `AUDIO.voci` | 1–10 | `Suono.impostaVoci()` ricostruisce bande e righello |
 | Sensibilità | `AUDIO.entra` | 0.28–0.03 | `esce = entra * 0.4` |
 | Dispersione | `AUDIO.finestra` | 1–4 frasi | quanto le voci possono allontanarsi dal fronte; **non allargare** oltre 4 senza rifare le cerniere |
@@ -426,25 +430,33 @@ sei note simultanee, ~5 note al secondo, 60 fps stabili.
 
 ### Comandi proposti, in attesa (agosto 2026)
 
-Quattro possibilità nate quando il cursore del *Riverbero* è passato a quadrante e ha
-lasciato un posto libero. **Il primo è stato fatto** (*Respiro*); gli altri tre restano
-qui, scelti e non scartati:
+**Fatti tutti e cinque** (agosto 2026): *Respiro*, *Ripetizione* (era «Insistenza»),
+*Apertura*, *Larghezza* (era «larghezza stereo») e *Colore*. Restano qui le note di
+progetto, perché dicono il perché di ciascuno:
 
-- **Apertura** — l'ampiezza dei registri fra le voci. Oggi sono fissi
-  (`[-12, 0, 12, 0, -12, 12]`, ciclati): il comando andrebbe da tutte le voci nella
-  stessa ottava — insieme stretto, quasi un coro — fino a quattro ottave, con i gravi
-  sotto e gli acuti in cima. Stretto si sentono gli attriti, largo si sente lo spazio.
-- **Insistenza** — quante volte una voce ripete la frase prima di lasciarla
-  (`AUDIO.lettureMin/Max`, oggi 2–5). Da «una o due volte», insieme inquieto, a
-  «sei-dieci», con l'armonia che si deposita. È il comando più vicino allo spirito di
-  *In C*, dove quanto restare su una cellula è la sola vera decisione dell'esecutore.
+- **Apertura** — l'ampiezza dei registri fra le voci. Prima erano fissi
+  (`[-12, 0, 12, 0, -12, 12]`, ciclati); ora l'ottava viene dalla **posizione della voce
+  nella finestra** — i gravi a sinistra, gli acuti a destra — e il comando dice quante
+  ottave separano i due estremi (0 = un coro stretto, 2 = quattro ottave).
+  **Solo ottave intere**: l'ottava conserva la classe d'altezza, e con essa la garanzia
+  dell'archivio contro gli scontri cromatici; un trasporto di quinta la distruggerebbe.
+  L'arrotondamento è **simmetrico** (`Math.sign(x) * Math.round(Math.abs(x))`) perché
+  `Math.round(-0.5)` dà 0 e `Math.round(0.5)` dà 1: con l'arrotondamento normale le sei
+  voci uscivano sbilanciate verso l'acuto (misurato: `-12 0 0 0 12 12` invece di
+  `-12 -12 0 0 12 12`).
+- **Ripetizione** (nata come «Insistenza») — quante volte una voce ripete la frase
+  prima di lasciarla. È il comando più vicino allo spirito di *In C*, dove quanto restare
+  su una cellula è la sola vera decisione dell'esecutore. Il valore di partenza (20%)
+  riproduce esattamente il 2–5 di prima.
 - **Scordatura** — un lievissimo disaccordo fra le voci, da zero a pochi centesimi di
   semitono: non stona, produce battimenti lenti fra note uguali suonate da voci diverse
   (l'effetto che in Rada fa il parziale a 2,01×). A cielo coperto sarebbe il più
   suggestivo dei tre, ma su una nota sola non si sente.
 
-Altre due, viste e messe da parte: **larghezza stereo** (da mono al panorama pieno) e
-**colore** (apertura globale del passa-basso).
+- **Scordatura** resta **da fare**: è la sola delle proposte che non è stata realizzata.
+- *Larghezza* e *Colore* partono al massimo (100%), cioè sul suono di prima: si possono
+  solo stringere e velare. Un cursore al fondo corsa è insolito, ma è onesto — il suono
+  di riferimento è quello aperto.
 
 ## Prossimi passi possibili (da discutere con Valerio)
 

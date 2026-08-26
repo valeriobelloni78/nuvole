@@ -173,10 +173,14 @@ Il pannello sta sotto la finestra, in due sezioni. Sopra di esso un righello mos
 | Volume | l'ampiezza d'insieme |
 | Riverbero | la coda dell'ambiente |
 | Respiro | quanto lentamente ogni nota entra e quanto a lungo resta: da suoni netti e asciutti a un tessuto continuo |
+| Colore | quanto il suono d'insieme resta aperto o si vela |
+| Larghezza | quanto le voci si allargano fra i due lati: da tutte al centro a ciascuna sulla sua banda |
 | Voci | quante voci, cioè in quante bande è divisa la finestra |
 | Sensibilità | quanta nuvola basta perché una voce si svegli |
 | Dispersione | di quante frasi le voci possono allontanarsi le une dalle altre |
 | Avanzamento | ogni quanto l'insieme può passare alla frase successiva |
+| Ripetizione | quante volte una voce ripete la frase prima di lasciarla |
+| Apertura | di quante ottave si distanziano le voci: da un coro stretto a quattro ottave, i gravi a sinistra e gli acuti a destra |
 | Registro | il trasporto d'insieme, in semitoni |
 
 ---
