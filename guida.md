@@ -5,8 +5,7 @@ legge le parole dal dizionario dentro `guida.html`, dove le stesse voci esistono
 in quattro lingue. 
 
 **L'italiano è la lingua madre.** Francese, inglese e giapponese sono traduzioni
-di quello che c'è qui: quando cambi un testo italiano, riallineo anche le altre
-tre. Non serve che le tocchi tu.
+dei testi in questo documento 
 
 ## Tre convenzioni
 
@@ -46,7 +45,7 @@ stanno male. Sotto ogni nome trovi fra parentesi quante lettere ha oggi.
 
 ## [intro]
 
-Nuvole è una web-app di musica generativa che gira interamente nel browser. Un cielo di puntini attraversato da nuvole lente, e un insieme di voci che le nuvole chiamano a suonare. Non c'è nessuna registrazione: quello che si ascolta si forma mentre lo si ascolta, e non si ripete.
+Nuvole è una web-app di musica che gira interamente nel browser. Un cielo di puntini attraversato da nuvole lente, e un insieme di voci che le nuvole chiamano a suonare. 
 
 ---
 
@@ -70,15 +69,14 @@ Il campo non si muove: si sposta il punto da cui lo si guarda, ed è il vento. U
 
 ## [suono 1]
 
-Il motore sonoro è nella scia di *In C* di Terry Riley (1964): un archivio di frasi brevissime che più voci leggono ciascuna per conto proprio, sopra un polso comune. Le 53 frasi di Nuvole sono materiale originale, non le cellule di Riley — se ne adotta il principio, non le note.
+La musica che si ascolta guardando fuori dalla finestra è composta da un archivio di 53 brevi frasi musicali. La densità di ogni nuvola che passa dà il segnale a una delle voci di eseguire una delle frasi. Il passare delle nuvole crea quindi melodie sempre differenti.
+Questa è l'idea alla base della composizione *In C* di Terry Riley (1964), e questo progetto è un tributo al suo lavoro.
+
 
 ## [suono 2]
 
-A decidere quando si suona sono le nuvole. La finestra è divisa in bande verticali, una per voce: quando una nuvola entra in una banda, quella voce si sveglia, prende una delle frasi disponibili in quel momento e la ripete; quando la nuvola esce, finisce la lettura e tace. Poiché le bande sono attraversate in momenti diversi e per durate diverse, nessuna sovrapposizione è scritta da qualche parte: si formano e si sciolgono come le nuvole che le hanno chiamate.
+La finestra è divisa in bande verticali immaginarie, una per voce: quando una nuvola entra in una banda, quella voce si attiva, prende una delle frasi disponibili in quel momento e la ripete. Poiché le bande sono attraversate in momenti diversi e per durate diverse, le sovrapposizioni si formano e si sciolgono come le nuvole che le hanno chiamate.
 
-## [suono 3]
-
-Ne segue che Cielo sereno è anche il comando del silenzio: un cielo limpido è quasi muto, un cielo coperto è un insieme fitto.
 
 ---
 
@@ -88,7 +86,7 @@ Ne segue che Cielo sereno è anche il comando del silenzio: un cielo limpido è 
 
 ## [arco 1]
 
-L'insieme avanza nell'archivio di una frase per volta, mai a salti, e non lascia indietro nessuno: il fronte aspetta chi sta ancora leggendo. Così l'armonia deriva per gradi lungo dieci tratti, che il quadrante chiama con i nomi del cielo.
+L'insieme attivato dal passare delle nuvole avanza nell'archivio di una frase per volta, mai a salti: il fronte aspetta le nuvole che devono ancora arrivare. Così l'armonia deriva per gradi lungo dieci tratti, che il quadrante chiama con i nomi del cielo.
 
 ## [arco · i dieci tratti]   [anche nell'interfaccia]
 
@@ -109,7 +107,7 @@ Nome a sinistra, glossa a destra. Fra parentesi le lettere del nome oggi.
 
 ## [arco 2]
 
-Dopo l'ultimo si ricomincia dal primo: l'arco si richiude dove è cominciato.
+Dopo l'ultimo tratto si ricomincia dal primo.
 
 ---
 
@@ -119,7 +117,7 @@ Dopo l'ultimo si ricomincia dal primo: l'arco si richiude dove è cominciato.
 
 ## [strumenti 1]
 
-I timbri sono quattro, e a scegliere è ancora la nuvola: lo spessore che ha sulla banda decide con quale voce suonare, dal velo sottile alla nuvola piena.
+I timbri sono quattro e a scegliere è ancora la nuvola: lo spessore che ha sulla banda decide con quale voce suonare, dal velo sottile alla nuvola piena.
 
 ## [strumenti · i quattro]   [anche nell'interfaccia]
 
@@ -136,7 +134,7 @@ la stessa lettera.
 
 ## [strumenti 2]
 
-Si possono tenere accesi tutti e quattro, oppure due, oppure uno solo — e allora l'insieme intero suona con quello.
+Si possono tenere accesi tutti e quattro, oppure due, oppure uno solo — in questo caso l'insieme intero suona con quello selezionato.
 
 ---
 
@@ -186,7 +184,7 @@ Il pannello sta sotto la finestra, in due sezioni. Sopra di esso un righello mos
 
 ## [crediti 1]
 
-Licenza MIT. Nessuna libreria, nessun campione, nessun file esterno: anche il riverbero è una risposta all'impulso generata al momento.
+Licenza MIT. Nessuna libreria, nessun campione, nessun file esterno.
 
 ## [crediti · collegamento]
 

@@ -177,7 +177,6 @@
     <div>
       <p data-i18n-html="g.suono.1"></p>
       <p data-i18n-html="g.suono.2"></p>
-      <p data-i18n-html="g.suono.3"></p>
     </div>
 
     <div class="rubrica tecnico">
@@ -249,20 +248,19 @@ const TESTI = {
 it: {
   "g.titolo": "Guida",
   "g.torna": "Torna allo strumento",
-  "g.intro": "Nuvole è una web-app di musica generativa che gira interamente nel browser. Un cielo di puntini attraversato da nuvole lente, e un insieme di voci che le nuvole chiamano a suonare. Non c'è nessuna registrazione: quello che si ascolta si forma mentre lo si ascolta, e non si ripete.",
+  "g.intro": "Nuvole è una web-app di musica che gira interamente nel browser. Un cielo di puntini attraversato da nuvole lente, e un insieme di voci che le nuvole chiamano a suonare.",
 
   "g.h.cielo": "Il cielo",
   "g.cielo.1": "La finestra non contiene nuvole disegnate: contiene un campo continuo di rumore, interrogato in ogni punto di una matrice fitta. Dove il campo supera una soglia c'è nuvola, e il puntino sbianca e cresce; sotto quella soglia il puntino ha esattamente il colore del cielo, e perciò non si vede. La matrice c'è tutta, sempre — appare soltanto dove la nuvola la scopre.",
   "g.cielo.2": "Il campo non si muove: si sposta il punto da cui lo si guarda, ed è il vento. Una seconda scala, molto più lenta, decide dove il cielo si addensa e dove resta limpido. Per questo le nuvole non si ripetono mai: nascono, attraversano e si sciolgono ai bordi.",
 
   "g.h.suono": "Il suono",
-  "g.suono.1": "Il motore sonoro è nella scia di <em>In C</em> di Terry Riley (1964): un archivio di frasi brevissime che più voci leggono ciascuna per conto proprio, sopra un polso comune. Le 53 frasi di Nuvole sono materiale originale, non le cellule di Riley — se ne adotta il principio, non le note.",
-  "g.suono.2": "A decidere quando si suona sono le nuvole. La finestra è divisa in bande verticali, una per voce: quando una nuvola entra in una banda, quella voce si sveglia, prende una delle frasi disponibili in quel momento e la ripete; quando la nuvola esce, finisce la lettura e tace. Poiché le bande sono attraversate in momenti diversi e per durate diverse, nessuna sovrapposizione è scritta da qualche parte: si formano e si sciolgono come le nuvole che le hanno chiamate.",
-  "g.suono.3": "Ne segue che Cielo sereno è anche il comando del silenzio: un cielo limpido è quasi muto, un cielo coperto è un insieme fitto.",
+  "g.suono.1": "La musica che si ascolta guardando fuori dalla finestra è composta da un archivio di 53 brevi frasi musicali. La densità di ogni nuvola che passa dà il segnale a una delle voci di eseguire una delle frasi. Il passare delle nuvole crea quindi melodie sempre differenti. Questa è l'idea alla base della composizione <em>In C</em> di Terry Riley (1964), e questo progetto è un tributo al suo lavoro.",
+  "g.suono.2": "La finestra è divisa in bande verticali immaginarie, una per voce: quando una nuvola entra in una banda, quella voce si attiva, prende una delle frasi disponibili in quel momento e la ripete. Poiché le bande sono attraversate in momenti diversi e per durate diverse, le sovrapposizioni si formano e si sciolgono come le nuvole che le hanno chiamate.",
 
   "g.h.arco": "L'arco",
-  "g.arco.1": "L'insieme avanza nell'archivio di una frase per volta, mai a salti, e non lascia indietro nessuno: il fronte aspetta chi sta ancora leggendo. Così l'armonia deriva per gradi lungo dieci tratti, che il quadrante chiama con i nomi del cielo.",
-  "g.arco.2": "Dopo l'ultimo si ricomincia dal primo: l'arco si richiude dove è cominciato.",
+  "g.arco.1": "L'insieme attivato dal passare delle nuvole avanza nell'archivio di una frase per volta, mai a salti: il fronte aspetta le nuvole che devono ancora arrivare. Così l'armonia deriva per gradi lungo dieci tratti, che il quadrante chiama con i nomi del cielo.",
+  "g.arco.2": "Dopo l'ultimo tratto si ricomincia dal primo.",
   "arco.1": "tre soli suoni, la luce piena",
   "arco.2": "l'aria si apre",
   "arco.3": "il primo peso",
@@ -275,8 +273,8 @@ it: {
   "arco.10": "la luce torna, e l'arco si chiude",
 
   "g.h.strumenti": "Gli strumenti",
-  "g.strumenti.1": "I timbri sono quattro, e a scegliere è ancora la nuvola: lo spessore che ha sulla banda decide con quale voce suonare, dal velo sottile alla nuvola piena.",
-  "g.strumenti.2": "Si possono tenere accesi tutti e quattro, oppure due, oppure uno solo — e allora l'insieme intero suona con quello.",
+  "g.strumenti.1": "I timbri sono quattro e a scegliere è ancora la nuvola: lo spessore che ha sulla banda decide con quale voce suonare, dal velo sottile alla nuvola piena.",
+  "g.strumenti.2": "Si possono tenere accesi tutti e quattro, oppure due, oppure uno solo — in questo caso l'insieme intero suona con quello selezionato.",
   "s.vetro": "un glockenspiel: il colpo entra brillante e si schiarisce subito in un suono puro che continua a suonare",
   "s.legno": "un battente su barra di marimba, caldo e corto",
   "s.onda": "un suono semplice e tenuto, il fondo dell'insieme",
@@ -306,7 +304,7 @@ it: {
   "d.registro": "il trasporto d'insieme, in semitoni",
 
   "g.h.crediti": "Crediti",
-  "g.crediti.1": "Licenza MIT. Nessuna libreria, nessun campione, nessun file esterno: anche il riverbero è una risposta all'impulso generata al momento.",
+  "g.crediti.1": "Licenza MIT. Nessuna libreria, nessun campione, nessun file esterno.",
   "foot.credits": "questo è un progetto open source ideato da Valerio Belloni",
   "g.codice": "Il codice su GitHub",
 },
@@ -314,20 +312,19 @@ it: {
 fr: {
   "g.titolo": "Guide",
   "g.torna": "Retour à l'instrument",
-  "g.intro": "Nuvole est une application web de musique générative qui fonctionne entièrement dans le navigateur. Un ciel de points traversé par des nuages lents, et un ensemble de voix que les nuages appellent à jouer. Il n'y a aucun enregistrement : ce que l'on écoute se forme pendant qu'on l'écoute, et ne se répète pas.",
+  "g.intro": "Nuvole est une application web de musique qui fonctionne entièrement dans le navigateur. Un ciel de points traversé par des nuages lents, et un ensemble de voix que les nuages appellent à jouer.",
 
   "g.h.cielo": "Le ciel",
   "g.cielo.1": "La fenêtre ne contient pas de nuages dessinés : elle contient un champ continu de bruit, interrogé en chaque point d'une trame serrée. Là où le champ dépasse un seuil il y a nuage, et le point blanchit et grandit ; sous ce seuil le point a exactement la couleur du ciel, et donc ne se voit pas. La trame est là tout entière, toujours — elle n'apparaît que là où le nuage la découvre.",
   "g.cielo.2": "Le champ ne bouge pas : c'est le point d'où on le regarde qui se déplace, et c'est le vent. Une seconde échelle, bien plus lente, décide où le ciel s'épaissit et où il reste limpide. C'est pourquoi les nuages ne se répètent jamais : ils naissent, traversent et se dissolvent aux bords.",
 
   "g.h.suono": "Le son",
-  "g.suono.1": "Le moteur sonore est dans le sillage d'<em>In C</em> de Terry Riley (1964) : un répertoire de phrases très brèves que plusieurs voix lisent chacune pour son compte, sur une pulsation commune. Les 53 phrases de Nuvole sont un matériau original, non les cellules de Riley — on en adopte le principe, pas les notes.",
-  "g.suono.2": "Ce sont les nuages qui décident du moment. La fenêtre est divisée en bandes verticales, une par voix : quand un nuage entre dans une bande, cette voix s'éveille, prend l'une des phrases alors disponibles et la répète ; quand le nuage sort, elle achève sa lecture et se tait. Comme les bandes sont traversées à des moments et pour des durées différentes, aucune superposition n'est écrite nulle part : elles se forment et se défont comme les nuages qui les ont appelées.",
-  "g.suono.3": "Il s'ensuit que Ciel dégagé est aussi la commande du silence : un ciel limpide est presque muet, un ciel couvert est un ensemble dense.",
+  "g.suono.1": "La musique que l'on écoute en regardant par la fenêtre est faite d'un répertoire de 53 brèves phrases musicales. La densité de chaque nuage qui passe donne à l'une des voix le signal d'en jouer une. Le passage des nuages crée ainsi des mélodies toujours différentes. C'est l'idée à la base de la composition <em>In C</em> de Terry Riley (1964), et ce projet est un hommage à son travail.",
+  "g.suono.2": "La fenêtre est divisée en bandes verticales imaginaires, une par voix : quand un nuage entre dans une bande, cette voix s'active, prend l'une des phrases alors disponibles et la répète. Comme les bandes sont traversées à des moments et pour des durées différentes, les superpositions se forment et se défont comme les nuages qui les ont appelées.",
 
   "g.h.arco": "L'arc",
-  "g.arco.1": "L'ensemble avance dans le répertoire d'une phrase à la fois, jamais par sauts, et ne laisse personne en arrière : le front attend celui qui lit encore. Ainsi l'harmonie dérive par degrés le long de dix étapes, que le cadran nomme avec les mots du ciel.",
-  "g.arco.2": "Après la dernière on reprend la première : l'arc se referme là où il a commencé.",
+  "g.arco.1": "L'ensemble appelé par le passage des nuages avance dans le répertoire d'une phrase à la fois, jamais par sauts : le front attend les nuages qui doivent encore arriver. Ainsi l'harmonie dérive par degrés le long de dix étapes, que le cadran nomme avec les mots du ciel.",
+  "g.arco.2": "Après la dernière étape on reprend par la première.",
   "arco.1": "trois sons seulement, la pleine lumière",
   "arco.2": "l'air s'ouvre",
   "arco.3": "le premier poids",
@@ -340,8 +337,8 @@ fr: {
   "arco.10": "la lumière revient, et l'arc se referme",
 
   "g.h.strumenti": "Les instruments",
-  "g.strumenti.1": "Les timbres sont quatre, et c'est encore le nuage qui choisit : l'épaisseur qu'il a sur la bande décide de la voix, du voile mince au nuage plein.",
-  "g.strumenti.2": "On peut en garder les quatre allumés, ou deux, ou un seul — et alors l'ensemble entier joue avec celui-là.",
+  "g.strumenti.1": "Les timbres sont quatre et c'est encore le nuage qui choisit : l'épaisseur qu'il a sur la bande décide de la voix, du voile mince au nuage plein.",
+  "g.strumenti.2": "On peut en garder les quatre allumés, ou deux, ou un seul — dans ce cas l'ensemble entier joue avec celui que l'on a choisi.",
   "s.vetro": "un glockenspiel : l'attaque entre brillante et s'éclaircit aussitôt en un son pur qui continue de sonner",
   "s.legno": "une mailloche sur lame de marimba, chaude et brève",
   "s.onda": "un son simple et tenu, le fond de l'ensemble",
@@ -351,7 +348,6 @@ fr: {
   "g.comandi.1": "Le panneau se trouve sous la fenêtre, en deux sections. Au-dessus, une réglette montre les bandes des voix — celle que traverse un nuage s'allume, avec le numéro de la phrase et l'initiale de l'instrument — et un cadran indique la phrase de l'ensemble, les voix à l'écoute et l'étape de l'arc.",
   "d.sereno": "quelle part du ciel reste limpide : en montant, les nuages s'éclaircissent ; c'est aussi la commande du silence",
   "d.vento": "la vitesse à laquelle les nuages traversent la fenêtre",
-  "d.grain": "",
   "d.grana": "la distance entre les points : change la trame, non la taille des nuages",
   "d.ampiezza": "la largeur des nuages par rapport à la fenêtre",
   "d.muta": "la vitesse à laquelle la couverture du ciel se transforme",
@@ -372,7 +368,7 @@ fr: {
   "d.registro": "la transposition d'ensemble, en demi-tons",
 
   "g.h.crediti": "Crédits",
-  "g.crediti.1": "Licence MIT. Aucune bibliothèque, aucun échantillon, aucun fichier externe : même la réverbération est une réponse impulsionnelle engendrée sur place.",
+  "g.crediti.1": "Licence MIT. Aucune bibliothèque, aucun échantillon, aucun fichier externe.",
   "foot.credits": "ce projet libre est une idée de Valerio Belloni",
   "g.codice": "Le code sur GitHub",
 },
@@ -380,20 +376,19 @@ fr: {
 en: {
   "g.titolo": "Guide",
   "g.torna": "Back to the instrument",
-  "g.intro": "Nuvole is a generative-music web app that runs entirely in the browser. A sky of dots crossed by slow clouds, and an ensemble of voices that the clouds call into playing. There is no recording: what you hear forms while you listen to it, and never repeats.",
+  "g.intro": "Nuvole is a music web app that runs entirely in the browser. A sky of dots crossed by slow clouds, and an ensemble of voices that the clouds call into playing.",
 
   "g.h.cielo": "The sky",
   "g.cielo.1": "The window holds no drawn clouds: it holds a continuous field of noise, questioned at every point of a fine matrix. Where the field crosses a threshold there is cloud, and the dot whitens and grows; below that threshold the dot is exactly the colour of the sky, and so cannot be seen. The matrix is there in full, always — it appears only where the cloud uncovers it.",
   "g.cielo.2": "The field does not move: what moves is the point from which it is read, and that is the wind. A second scale, far slower, decides where the sky thickens and where it stays clear. This is why the clouds never repeat: they form, cross, and dissolve at the edges.",
 
   "g.h.suono": "The sound",
-  "g.suono.1": "The sound engine follows in the wake of Terry Riley's <em>In C</em> (1964): an archive of very short phrases that several voices each read on their own, over a shared pulse. The 53 phrases of Nuvole are original material, not Riley's cells — the principle is adopted, not the notes.",
-  "g.suono.2": "It is the clouds that decide when to play. The window is divided into vertical bands, one per voice: when a cloud enters a band, that voice wakes, takes one of the phrases available at that moment and repeats it; when the cloud leaves, it finishes its reading and falls silent. Because the bands are crossed at different moments and for different durations, no overlap is written down anywhere: they form and dissolve like the clouds that called them.",
-  "g.suono.3": "It follows that Clear sky is also the control of silence: a clear sky is nearly mute, an overcast one a dense ensemble.",
+  "g.suono.1": "The music one hears while looking out of the window is made from an archive of 53 short musical phrases. The density of each passing cloud gives one of the voices the signal to play one of them. The passing of the clouds therefore creates melodies that are never the same. This is the idea behind Terry Riley's <em>In C</em> (1964), and this project is a tribute to that work.",
+  "g.suono.2": "The window is divided into imaginary vertical bands, one per voice: when a cloud enters a band, that voice comes in, takes one of the phrases available at that moment and repeats it. Because the bands are crossed at different moments and for different durations, the overlaps form and dissolve like the clouds that called them.",
 
   "g.h.arco": "The arc",
-  "g.arco.1": "The ensemble moves through the archive one phrase at a time, never skipping, and leaves no one behind: the front waits for whoever is still reading. So the harmony drifts by degrees along ten stretches, which the dial names with the words of the sky.",
-  "g.arco.2": "After the last one it begins again from the first: the arc closes where it started.",
+  "g.arco.1": "The ensemble that the passing clouds set going moves through the archive one phrase at a time, never skipping: the front waits for the clouds that have yet to arrive. So the harmony drifts by degrees along ten stretches, which the dial names with the words of the sky.",
+  "g.arco.2": "After the last stretch it begins again from the first.",
   "arco.1": "three notes only, full light",
   "arco.2": "the air opens",
   "arco.3": "the first weight",
@@ -406,8 +401,8 @@ en: {
   "arco.10": "the light returns, and the arc closes",
 
   "g.h.strumenti": "The instruments",
-  "g.strumenti.1": "There are four timbres, and again it is the cloud that chooses: its thickness over the band decides which voice sounds, from thin veil to full cloud.",
-  "g.strumenti.2": "You can keep all four on, or two, or only one — and then the whole ensemble plays with that one.",
+  "g.strumenti.1": "There are four timbres and again it is the cloud that chooses: its thickness over the band decides which voice sounds, from thin veil to full cloud.",
+  "g.strumenti.2": "You can keep all four on, or two, or only one — in which case the whole ensemble plays with the one selected.",
   "s.vetro": "a glockenspiel: the stroke enters bright and clears at once into a pure tone that keeps ringing",
   "s.legno": "a mallet on a marimba bar, warm and short",
   "s.onda": "a plain sustained tone, the ground of the ensemble",
@@ -437,7 +432,7 @@ en: {
   "d.registro": "the transposition of the whole, in semitones",
 
   "g.h.crediti": "Credits",
-  "g.crediti.1": "MIT licence. No library, no samples, no external files: even the reverb is an impulse response generated on the spot.",
+  "g.crediti.1": "MIT licence. No libraries, no samples, no external files.",
   "foot.credits": "this is an open source project by Valerio Belloni",
   "g.codice": "The code on GitHub",
 },
@@ -445,20 +440,19 @@ en: {
 ja: {
   "g.titolo": "ガイド",
   "g.torna": "楽器に戻る",
-  "g.intro": "Nuvole はブラウザだけで動く生成音楽のウェブアプリです。点の集まりでできた空を、ゆっくりと雲が渡ってゆき、その雲が声部を呼び出して鳴らします。録音はありません。聴こえているものは聴いているあいだに立ち上がり、二度と同じようには繰り返しません。",
+  "g.intro": "Nuvole はブラウザだけで動く音楽のウェブアプリです。点の集まりでできた空を、ゆっくりと雲が渡ってゆき、その雲が声部を呼び出して鳴らします。",
 
   "g.h.cielo": "空",
   "g.cielo.1": "窓のなかに描かれた雲はありません。あるのは連続したノイズの場で、細かな格子の各点でその値を尋ねています。場がしきい値を越えるところが雲で、点は白くなり大きくなります。しきい値より下では、点は空とまったく同じ色をしているので見えません。格子はつねに全部そこにあり、雲が覆いを取ったところにだけ現れるのです。",
   "g.cielo.2": "場そのものは動きません。動くのは場を見る位置のほうで、それが風です。もうひとつの、はるかにゆるやかな尺度が、空のどこが厚くなりどこが晴れたままかを決めています。だから雲は決して繰り返しません。生まれ、渡り、へりで解けてゆきます。",
 
   "g.h.suono": "音",
-  "g.suono.1": "音の仕組みはテリー・ライリーの《In C》(1964) の流れにあります。ごく短い楽句の書庫があり、複数の声部がそれぞれ自分の判断で読んでゆく——共通の拍の上で。Nuvole の53の楽句はライリーのセルではなく、独自に書かれたものです。受け継いだのは原理であって、音符ではありません。",
-  "g.suono.2": "いつ鳴るかを決めるのは雲です。窓は縦の帯に分けられ、帯ひとつが声部ひとつにあたります。雲が帯に入るとその声部は目を覚まし、そのとき選べる楽句のひとつを取って繰り返します。雲が去ると、読みを終えて黙ります。帯を渡る時刻も長さもそれぞれ違うので、重なり方はどこにも書かれていません。呼び出した雲と同じように、生まれては解けてゆきます。",
-  "g.suono.3": "したがって「晴天」は沈黙の操作子でもあります。晴れた空はほとんど鳴らず、曇った空は密な合奏になります。",
+  "g.suono.1": "窓の外を眺めながら聴こえてくる音楽は、53 の短い楽句からなる書庫でできています。通り過ぎる雲それぞれの濃さが、声部のひとつに、そのうちのひと句を鳴らす合図を送ります。こうして雲の通過が、そのつど違う旋律を生みます。これはテリー・ライリーの《In C》(1964) の根底にある考えであり、この作品はその仕事への献辞です。",
+  "g.suono.2": "窓は、目には見えない縦の帯に分けられ、帯ひとつが声部ひとつにあたります。雲が帯に入るとその声部が動きだし、そのとき選べる楽句のひとつを取って繰り返します。帯を渡る時刻も長さもそれぞれ違うので、重なりは、呼び出した雲と同じように生まれては解けてゆきます。",
 
   "g.h.arco": "弧",
-  "g.arco.1": "合奏は書庫を一句ずつ進み、飛ばすことはありません。そして誰も置き去りにしません——まだ読んでいる声部を、先頭は待ちます。こうして和声は十の区間を段階的に移ろい、その区間を計器は空のことばで呼びます。",
-  "g.arco.2": "最後まで来ると最初に戻ります。弧は始まった場所で閉じるのです。",
+  "g.arco.1": "雲の通過によって動きだした合奏は、書庫を一句ずつ進み、飛ばすことはありません。先頭は、まだ来ていない雲を待ちます。こうして和声は十の区間を段階的に移ろい、その区間を計器は空のことばで呼びます。",
+  "g.arco.2": "最後の区間まで来ると、また最初の区間に戻ります。",
   "arco.1": "三つの音だけ、満ちた光",
   "arco.2": "空気がひらく",
   "arco.3": "はじめての重み",
@@ -472,7 +466,7 @@ ja: {
 
   "g.h.strumenti": "楽器",
   "g.strumenti.1": "音色は四つ。選ぶのはやはり雲です。帯の上の雲の厚みが、どの声で鳴るかを決めます——薄い衣から、満ちた雲まで。",
-  "g.strumenti.2": "四つとも点けておくことも、二つでも、ひとつだけでもかまいません。ひとつだけなら、合奏全体がその音色で鳴ります。",
+  "g.strumenti.2": "四つとも点けておくことも、二つでも、ひとつだけでもかまいません。ひとつだけなら、合奏全体がその選んだ音色で鳴ります。",
   "s.vetro": "グロッケンシュピール。打点は輝いて入り、すぐに澄んで、鳴りつづける純な音になります",
   "s.legno": "マリンバの音板を撞木で打った音。温かく、短い",
   "s.onda": "素朴な持続音。合奏の地の部分",
@@ -502,7 +496,7 @@ ja: {
   "d.registro": "全体の移調（半音単位）",
 
   "g.h.crediti": "クレジット",
-  "g.crediti.1": "MITライセンス。ライブラリも、音素材も、外部ファイルもありません。残響さえその場で生成しています。",
+  "g.crediti.1": "MIT ライセンス。ライブラリも、音素材も、外部ファイルもありません。",
   "foot.credits": "Valerio Belloniによる、オープンソースの企画です。",
   "g.codice": "GitHub 上のコード",
 },
