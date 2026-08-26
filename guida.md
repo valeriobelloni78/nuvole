@@ -1,13 +1,8 @@
 # Nuvole · i testi della guida
 
-Tutte le parole della pagina `guida.html` in italiano, per correggerle qui invece
-che dettarle nella chat. Modifica quello che vuoi, salva, poi dimmi che l'hai
-aggiornato: rileggo il file e riporto tutto nella pagina.
-
 **Questo file non è la sorgente della pagina**, è il tavolo di lavoro. La pagina
 legge le parole dal dizionario dentro `guida.html`, dove le stesse voci esistono
-in quattro lingue. Correggere qui e non dirmelo lascia i due file disallineati:
-la pagina non cambia da sola.
+in quattro lingue. 
 
 **L'italiano è la lingua madre.** Francese, inglese e giapponese sono traduzioni
 di quello che c'è qui: quando cambi un testo italiano, riallineo anche le altre
