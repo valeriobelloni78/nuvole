@@ -21,9 +21,8 @@ Nessun build, nessuna dipendenza a runtime: un unico `index.html` autoconsistent
   in bianco. La finestra è segnata da un **contorno bianco finissimo** (1px), unico
   riquadro della pagina; il marchio *Nuvole* è allineato a sinistra sopra il vetro,
   con accanto un **punto che respira** (come in Rada2, `.logoPunto`): qui però il
-  respiro non è un tempo fisso ma dura **quattro battiti del polso**, quindi segue il
-  comando *Tempo* attraverso la variabile CSS `--respiro` (2,73 s a 88 bpm, 1,82 a 132,
-  5,45 a 44). Si ferma con `prefers-reduced-motion`
+  respiro dura **quattro battiti del polso**, cioè 5,45 s ai 44 bpm fissi.
+  Si ferma con `prefers-reduced-motion`
   (canvas 2D responsive, largo quanto `.stanza`, max 980px).
 - **Figura e fondo invertiti** (scelta di Valerio, agosto 2026). Il canvas è trasparente
   e `PARAMS.celeste` è **identico al fondo della pagina**: la matrice del cielo sereno
@@ -212,18 +211,18 @@ finestra scorrevole prima di considerare il lavoro finito.
     se ne va ancora prima, e un colpo di rumore scuro di 30 ms per il contatto del
     battente. Sostituisce il pizzicato *Corda* della prima stesura, che non convinceva:
     stessa famiglia percussiva del Vetro, colore opposto.
-  - **Fiato** — soffio: rumore bianco in un passa-banda stretto (Q 13) sulla nota, più
+  - **Soffio** — soffio: rumore bianco in un passa-banda stretto (Q 13) sulla nota, più
     una sinusoide che le dà l'intonazione; attacco lento, vibrato appena accennato.
   La differenza fra i quattro sta quasi tutta **nella forma dell'inviluppo**, non nella
   forma d'onda: è l'attacco a dire che strumento è.
 - **Taratura misurata** in `OfflineAudioContext` sulla stessa nota. I picchi sono
-  allineati a 0,131–0,139 (Onda 0.137 · Vetro 0.139 · Legno 0.138 · Fiato 0.131): i
+  allineati a 0,131–0,139 (Onda 0.137 · Vetro 0.139 · Legno 0.138 · Soffio 0.131): i
   fattori di ampiezza nel codice vengono da lì, non a occhio, e se si tocca un inviluppo
   vanno **ri-misurati**. Le altre due misure dicono il carattere, e vanno lasciate
   diverse:
-  - *coda* (fino a −60 dB): Legno 0,56 s · Vetro 1,13 · Fiato 1,23 · Onda 1,42;
+  - *coda* (fino a −60 dB): Legno 0,56 s · Vetro 1,13 · Soffio 1,23 · Onda 1,42;
   - *brillantezza* (energia sopra i 2 kHz nei primi 170 ms): Vetro 8,8% · Legno 0,3% ·
-    Onda e Fiato 0%. È la misura con cui è stato scelto l'indice FM del Vetro: 0.3 dava
+    Onda e Soffio 0%. È la misura con cui è stato scelto l'indice FM del Vetro: 0.3 dava
     1,5% (sordo), 1.8 dava 21% (tagliente con sei voci), 1.2 dà 8,8%.
 - **La fila del suono**: sotto la rubrica M2, l'interruttore d'ascolto e i quattro
   quadretti degli strumenti stanno **tutti sulla stessa linea** (`.fila`), l'ascolto a
@@ -239,7 +238,7 @@ finestra scorrevole prima di considerare il lavoro finito.
 ### Lo strumento lo sceglie la nuvola
 
 Non è un sorteggio: è lo **spessore** della nuvola sulla banda a decidere il timbro.
-`ORDINE_SPESSORE` dispone i quattro lungo un asse — **Vetro · Legno · Onda · Fiato**,
+`ORDINE_SPESSORE` dispone i quattro lungo un asse — **Vetro · Legno · Onda · Soffio**,
 dal velo sottile alla nuvola piena — e `Suono.spessore(v)` riporta la densità media
 della banda a 0..1; il tratto in cui cade sceglie lo strumento. Gli strumenti spenti
 escono dall'asse: se ne è acceso uno solo, tutto l'insieme suona con quello; se ne sono
@@ -250,7 +249,7 @@ accesi due, la nuvola sceglie fra quei due. L'ultimo acceso non si può spegnere
   partenza, p05 0.145 · p25 0.234 · p50 0.418 · p75 0.643 · p90 0.852 · max 0.98. Gli
   estremi vengono da quei quartili, perché i quattro tratti risultino ugualmente
   frequentati. **Una prima taratura a 0.10-0.95**, fatta su un solo campione più
-  nuvoloso, lasciava Onda e Fiato quasi sempre fuori: il cielo cambia molto nell'arco
+  nuvoloso, lasciava Onda e Soffio quasi sempre fuori: il cielo cambia molto nell'arco
   dei minuti, e un campione solo non basta. Se si tocca il cielo, ri-misurare.
 - **Uno scarto casuale di ±0.06** sul valore normalizzato: il confine fra due tratti non
   dev'essere una lama, due nuvole quasi identiche non devono dare sempre lo stesso.
@@ -265,7 +264,7 @@ accesi due, la nuvola sceglie fra quei due. L'ultimo acceso non si può spegnere
   cioè i timbri del velo).
 - **Verifica della corrispondenza**, fatta dove la scelta avviene davvero e non al
   risveglio (dove può essere ereditata): Vetro spessore 0.07-0.24 · Legno 0.34-0.51 ·
-  Onda 0.55-0.72 · Fiato 0.75-0.87 — ciascuno dentro il proprio tratto.
+  Onda 0.55-0.72 · Soffio 0.75-0.87 — ciascuno dentro il proprio tratto.
 - Il **righello delle bande** mostra l'iniziale dello strumento accanto al numero della
   frase (`08 F`), così la corrispondenza nuvola→timbro si legge a occhio.
 - **Le nuvole scelgono.** Ogni voce presidia una banda verticale della finestra; quando
@@ -312,7 +311,7 @@ pallino su filetto). Il registro è **svizzero-tecnico su carta chiara**:
   sezione con codice a destra (`M1`, `M2`), separatori del quadrante;
 - **due strumenti diversi, in due file distinte per sezione**:
   - **quadranti ad arco** (`Pannello.arco`) per i sei comandi principali — *Cielo sereno*
-    e *Vento* nel Cielo, *Volume*, *Tempo*, *Voci* e *Sensibilità* nel Suono: arco di
+    e *Vento* nel Cielo, *Volume*, *Riverbero*, *Voci* e *Sensibilità* nel Suono: arco di
     tacche, pallino pieno che corre dentro l'arco, e sotto la targa con nome minuto e
     valore grande. Geometria: centro (70,70), arco da 195° a −15°, tacche fra r=58 e
     r=66, pallino su r=46, `viewBox 0 0 140 92`. Se la corsa è breve (≤12 scatti) c'è
@@ -385,13 +384,19 @@ puntatori può fallire — se fallisse dopo, il clic andrebbe perso.
 | Ascolto | `Suono.avvia/ferma` | — | il solo quadretto con `SILENZIO`/`ASCOLTO`; dissolvenza di 1.2–1.5 s |
 | Strumenti | `AUDIO.strumenti` | 4 quadretti | uno solo, o più d'uno e allora si sorteggia |
 | Volume | `AUDIO.volume` | 0–1 | |
-| Tempo | `AUDIO.bpm` | 44–132 | |
+| Riverbero | `AUDIO.riverbero` | 0–1 | mandata al convolutore |
+| Respiro | `AUDIO.respiro` | 0.4–2.6 | moltiplica attacchi e code di tutti gli strumenti; corsa esponenziale, a metà vale 1 |
 | Voci | `AUDIO.voci` | 1–10 | `Suono.impostaVoci()` ricostruisce bande e righello |
 | Sensibilità | `AUDIO.entra` | 0.28–0.03 | `esce = entra * 0.4` |
 | Dispersione | `AUDIO.finestra` | 1–4 frasi | quanto le voci possono allontanarsi dal fronte; **non allargare** oltre 4 senza rifare le cerniere |
 | Avanzamento | `AUDIO.attesaFronte` | 60–3.6 s | corsa esponenziale, `60·0.06^v` |
-| Riverbero | `AUDIO.riverbero` | 0–1 | mandata al convolutore |
 | Registro | `AUDIO.registro` | ±12 st | trasporto d'insieme |
+
+**Il tempo non è più un comando**: `AUDIO.bpm` è **fisso a 44** (battito di 1,36 s).
+Il quadrante che lo regolava è stato dato al *Riverbero*, che era un cursore a filetto;
+il posto lasciato libero da quel cursore è ancora vuoto. Il punto che respira accanto al
+marchio dura quattro battiti, cioè 5,45 s: è ora scritto in chiaro nel CSS, non più
+calcolato dal pannello.
 
 Due avvertenze emerse provando:
 
@@ -419,11 +424,32 @@ sei note simultanee, ~5 note al secondo, 60 fps stabili.
 
 ## Prossimi passi possibili (da discutere con Valerio)
 
-- **Timbro**: è il punto più debole. Oggi: oscillatore (seno/triangolo) + ottava sopra
-  appena percettibile, passa-basso, riverbero a convoluzione. Non c'è alcun comando di
-  timbro nel pannello ed è probabilmente il prossimo da inventare.
-- **Registri delle voci**: oggi fissi (`[-12, 0, 12, 0, -12, 12]`, ciclati). Si potrebbe
-  legarli alla banda (grave a sinistra, acuto a destra) o renderli mobili.
+### Comandi proposti, in attesa (agosto 2026)
+
+Quattro possibilità nate quando il cursore del *Riverbero* è passato a quadrante e ha
+lasciato un posto libero. **Il primo è stato fatto** (*Respiro*); gli altri tre restano
+qui, scelti e non scartati:
+
+- **Apertura** — l'ampiezza dei registri fra le voci. Oggi sono fissi
+  (`[-12, 0, 12, 0, -12, 12]`, ciclati): il comando andrebbe da tutte le voci nella
+  stessa ottava — insieme stretto, quasi un coro — fino a quattro ottave, con i gravi
+  sotto e gli acuti in cima. Stretto si sentono gli attriti, largo si sente lo spazio.
+- **Insistenza** — quante volte una voce ripete la frase prima di lasciarla
+  (`AUDIO.lettureMin/Max`, oggi 2–5). Da «una o due volte», insieme inquieto, a
+  «sei-dieci», con l'armonia che si deposita. È il comando più vicino allo spirito di
+  *In C*, dove quanto restare su una cellula è la sola vera decisione dell'esecutore.
+- **Scordatura** — un lievissimo disaccordo fra le voci, da zero a pochi centesimi di
+  semitono: non stona, produce battimenti lenti fra note uguali suonate da voci diverse
+  (l'effetto che in Rada fa il parziale a 2,01×). A cielo coperto sarebbe il più
+  suggestivo dei tre, ma su una nota sola non si sente.
+
+Altre due, viste e messe da parte: **larghezza stereo** (da mono al panorama pieno) e
+**colore** (apertura globale del passa-basso).
+
+## Prossimi passi possibili (da discutere con Valerio)
+
+- **Timbro**: i quattro strumenti sono a posto, ma non c'è alcun comando che li plasmi
+  oltre a *Respiro*.
 - **Memoria dei comandi**: nessuna persistenza. Un `localStorage` conserverebbe la
   regolazione fra una visita e l'altra.
 - **Ricarica e stato degli slider**: il browser ripristina i valori dei cursori al

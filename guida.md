@@ -137,7 +137,7 @@ la stessa lettera.
 | Vetro | un glockenspiel: il colpo entra brillante e si schiarisce subito in un suono puro che continua a suonare |
 | Legno | un battente su barra di marimba, caldo e corto |
 | Onda | un suono semplice e tenuto, il fondo dell'insieme |
-| Fiato | un soffio: rumore filtrato stretto attorno alla nota, con una sinusoide sotto che le dà l'intonazione |
+| Soffio | un soffio: rumore filtrato stretto attorno alla nota, con una sinusoide sotto che le dà l'intonazione |
 
 ## [strumenti 2]
 
@@ -171,12 +171,12 @@ Il pannello sta sotto la finestra, in due sezioni. Sopra di esso un righello mos
 | Ascolto | accende e spegne il suono; il primo tocco crea il contesto audio, lo esigono i browser |
 | Strumenti | quali dei quattro timbri sono in campo |
 | Volume | l'ampiezza d'insieme |
-| Tempo | il passo del polso comune |
+| Riverbero | la coda dell'ambiente |
+| Respiro | quanto lentamente ogni nota entra e quanto a lungo resta: da suoni netti e asciutti a un tessuto continuo |
 | Voci | quante voci, cioè in quante bande è divisa la finestra |
 | Sensibilità | quanta nuvola basta perché una voce si svegli |
 | Dispersione | di quante frasi le voci possono allontanarsi le une dalle altre |
 | Avanzamento | ogni quanto l'insieme può passare alla frase successiva |
-| Riverbero | la coda dell'ambiente |
 | Registro | il trasporto d'insieme, in semitoni |
 
 ---

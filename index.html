@@ -84,9 +84,8 @@
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.95);
   }
-  /* Il punto che respira accanto al marchio, come in Rada2. Qui però il respiro
-     non è un tempo fisso: dura quattro battiti del polso, quindi segue il Tempo
-     (`--respiro`, scritto dal pannello). Alla velocità di partenza sono 2,7 s. */
+  /* Il punto che respira accanto al marchio, come in Rada2. Il respiro dura
+     quattro battiti del polso: a 44 bpm sono 5,45 s. */
   .marchio .punto {
     display: inline-block;
     width: 0.30em; height: 0.30em;
@@ -98,7 +97,7 @@
        va aggiunto a quello. Qui il punto sta staccato dalla parola, non le si
        appoggia come un segno d'interpunzione. */
     margin-left: 0.32em;
-    animation: respiro var(--respiro, 2.73s) ease-in-out infinite;
+    animation: respiro 5.45s ease-in-out infinite;
   }
   @keyframes respiro {
     0%, 100% { opacity: 0.35; transform: scale(0.85); }
@@ -519,12 +518,12 @@
           <input type="range" id="volume" min="0" max="100" value="55" class="celato">
         </div>
         <div class="controllo arco">
-          <div class="disco" id="discoTempo"></div>
+          <div class="disco" id="discoRiverbero"></div>
           <div class="targa">
-            <div class="nome" data-i18n="c.tempo">Tempo</div>
-            <div class="lettura" id="valTempo"></div>
+            <div class="nome" data-i18n="c.riverbero">Riverbero</div>
+            <div class="lettura" id="valRiverbero"></div>
           </div>
-          <input type="range" id="tempo" min="44" max="132" value="88" class="celato">
+          <input type="range" id="riverbero" min="0" max="100" value="38" class="celato">
         </div>
         <div class="controllo arco">
           <div class="disco" id="discoVoci"></div>
@@ -554,8 +553,8 @@
           <div class="cursore"><input type="range" id="avanzamento" min="0" max="100" value="50"></div>
         </div>
         <div class="controllo">
-          <label><span data-i18n="c.riverbero">Riverbero</span> <span class="valore" id="valRiverbero"></span></label>
-          <div class="cursore"><input type="range" id="riverbero" min="0" max="100" value="38"></div>
+          <label><span data-i18n="c.respiro">Respiro</span> <span class="valore" id="valRespiro"></span></label>
+          <div class="cursore"><input type="range" id="respiro" min="0" max="100" value="50"></div>
         </div>
         <div class="controllo">
           <label><span data-i18n="c.registro">Registro</span> <span class="valore" id="valRegistro"></span></label>
@@ -636,17 +635,16 @@ const TESTI = {
     "c.ascolto.off": "Silenzio",
     "c.strumenti": "Strumenti",
     "c.volume": "Volume",
-    "c.tempo": "Tempo",
     "c.voci": "Voci",
     "c.sensibilita": "Sensibilità",
     "c.dispersione": "Dispersione",
     "c.avanzamento": "Avanzamento",
     "c.riverbero": "Riverbero",
+    "c.respiro": "Respiro",
     "c.registro": "Registro",
 
     "v.pct": "{n}%",
     "v.px": "{n} px",
-    "v.bpm": "{n} bpm",
     "v.s": "{n} s",
     "v.st": "{n} st",
     "v.frase": "{n} frase",
@@ -655,7 +653,7 @@ const TESTI = {
     "str.onda": "Onda",   "sig.onda": "O",
     "str.vetro": "Vetro", "sig.vetro": "V",
     "str.legno": "Legno", "sig.legno": "L",
-    "str.fiato": "Fiato", "sig.fiato": "F",
+    "str.soffio": "Soffio", "sig.soffio": "S",
 
     "foot.credits": "questo è un progetto open source ideato da Valerio Belloni",
 
@@ -690,17 +688,16 @@ const TESTI = {
     "c.ascolto.off": "Silence",
     "c.strumenti": "Instruments",
     "c.volume": "Volume",
-    "c.tempo": "Tempo",
     "c.voci": "Voix",
     "c.sensibilita": "Sensibilité",
     "c.dispersione": "Dispersion",
     "c.avanzamento": "Avancement",
     "c.riverbero": "Réverbération",
+    "c.respiro": "Respiration",
     "c.registro": "Registre",
 
     "v.pct": "{n}%",
     "v.px": "{n} px",
-    "v.bpm": "{n} bpm",
     "v.s": "{n} s",
     "v.st": "{n} dt",
     "v.frase": "{n} phrase",
@@ -709,7 +706,7 @@ const TESTI = {
     "str.onda": "Onde",    "sig.onda": "O",
     "str.vetro": "Verre",  "sig.vetro": "V",
     "str.legno": "Bois",   "sig.legno": "B",
-    "str.fiato": "Souffle","sig.fiato": "S",
+    "str.soffio": "Souffle","sig.soffio": "S",
 
     "foot.credits": "ce projet libre est une idée de Valerio Belloni",
 
@@ -744,17 +741,16 @@ const TESTI = {
     "c.ascolto.off": "Silence",
     "c.strumenti": "Instruments",
     "c.volume": "Volume",
-    "c.tempo": "Tempo",
     "c.voci": "Voices",
     "c.sensibilita": "Sensitivity",
     "c.dispersione": "Spread",
     "c.avanzamento": "Advance",
     "c.riverbero": "Reverb",
+    "c.respiro": "Breathing",
     "c.registro": "Register",
 
     "v.pct": "{n}%",
     "v.px": "{n} px",
-    "v.bpm": "{n} bpm",
     "v.s": "{n} s",
     "v.st": "{n} st",
     "v.frase": "{n} phrase",
@@ -763,7 +759,7 @@ const TESTI = {
     "str.onda": "Wave",   "sig.onda": "W",
     "str.vetro": "Glass", "sig.vetro": "G",
     "str.legno": "Wood",  "sig.legno": "D",
-    "str.fiato": "Breath","sig.fiato": "B",
+    "str.soffio": "Breath", "sig.soffio": "B",
 
     "foot.credits": "this is an open source project by Valerio Belloni",
 
@@ -798,17 +794,16 @@ const TESTI = {
     "c.ascolto.off": "静寂",
     "c.strumenti": "楽器",
     "c.volume": "音量",
-    "c.tempo": "速度",
     "c.voci": "声部",
     "c.sensibilita": "感度",
     "c.dispersione": "散らばり",
     "c.avanzamento": "進行",
     "c.riverbero": "残響",
+    "c.respiro": "呼吸",
     "c.registro": "音域",
 
     "v.pct": "{n}%",
     "v.px": "{n} px",
-    "v.bpm": "{n} bpm",
     "v.s": "{n} 秒",
     "v.st": "{n} 半音",
     "v.frase": "{n} 楽句",
@@ -817,7 +812,7 @@ const TESTI = {
     "str.onda": "波",  "sig.onda": "波",
     "str.vetro": "硝子","sig.vetro": "硝",
     "str.legno": "木",  "sig.legno": "木",
-    "str.fiato": "息",  "sig.fiato": "息",
+    "str.soffio": "息",  "sig.soffio": "息",
 
     "foot.credits": "Valerio Belloniによる、オープンソースの企画です。",
 
@@ -1225,7 +1220,8 @@ function regione(i) {
 /*  Parametri del suono                                                */
 /* ------------------------------------------------------------------ */
 const AUDIO = {
-  bpm:            88,    // il polso: tutte le voci condividono questa griglia
+  bpm:            44,    // il polso: FISSO, non è più un comando. Tutte le voci
+                         // condividono questa griglia; a 44 il battito dura 1,36 s
   voci:            6,    // quante voci (bande verticali della finestra)
   entra:        0.12,    // copertura di nuvola oltre cui una voce si sveglia
   esce:         0.05,    // copertura sotto cui la voce si congeda
@@ -1239,6 +1235,8 @@ const AUDIO = {
   volume:       0.55,
   attacco:      0.09,
   rilascio:     0.85,
+  respiro:       1.0,    // moltiplica attacchi e code di TUTTI gli strumenti:
+                         // 0.4 = suoni netti e asciutti, 2.6 = tessuto continuo
   riverbero:    0.38,
 };
 
@@ -1259,10 +1257,11 @@ const STRUMENTI = [
        attacco morbido, coda lunga. È il fondo su cui stanno gli altri tre. */
     suona(v, freq, dur, amp, t) {
       const ctx = Suono.ctx;
-      const tenuta = Math.max(0.12, dur * 0.82), coda = AUDIO.rilascio;
+      const R = AUDIO.respiro;
+      const tenuta = Math.max(0.12, dur * 0.82), coda = AUDIO.rilascio * R;
       const g = ctx.createGain();
       g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(amp, t + AUDIO.attacco);
+      g.gain.linearRampToValueAtTime(amp, t + AUDIO.attacco * R);
       g.gain.setValueAtTime(amp, t + tenuta);
       g.gain.exponentialRampToValueAtTime(0.0001, t + tenuta + coda);
 
@@ -1301,8 +1300,9 @@ const STRUMENTI = [
        non cambia, quindi la garanzia dell'archivio resta intatta. */
     suona(v, freq, dur, amp, t) {
       const ctx = Suono.ctx;
+      const R = AUDIO.respiro;
       const f = freq * 2;
-      const coda = Math.min(3.0, Math.max(1.3, dur * 1.6));
+      const coda = Math.min(3.0, Math.max(1.3, dur * 1.6)) * R;
       const fine = t + coda + 0.1;
 
       const port = ctx.createOscillator();
@@ -1317,14 +1317,14 @@ const STRUMENTI = [
 
       const env = ctx.createGain();
       env.gain.setValueAtTime(0.0001, t);
-      env.gain.linearRampToValueAtTime(amp * 0.94, t + 0.012);
+      env.gain.linearRampToValueAtTime(amp * 0.94, t + 0.012 * R);
       env.gain.exponentialRampToValueAtTime(0.0001, t + coda);
 
       const par = ctx.createOscillator();
       par.type = "sine"; par.frequency.value = f * 2.01;
       const gpar = ctx.createGain();
       gpar.gain.setValueAtTime(0.0001, t);
-      gpar.gain.linearRampToValueAtTime(amp * 0.15, t + 0.010);
+      gpar.gain.linearRampToValueAtTime(amp * 0.15, t + 0.010 * R);
       gpar.gain.exponentialRampToValueAtTime(0.0001, t + coda * 0.55);
 
       port.connect(env); env.connect(v.uscita);
@@ -1344,21 +1344,22 @@ const STRUMENTI = [
        famiglia percussiva, ma caldo, corto e senza metallo. */
     suona(v, freq, dur, amp, t) {
       const ctx = Suono.ctx;
-      const coda = Math.min(1.5, Math.max(0.5, dur * 0.8));
+      const R = AUDIO.respiro;
+      const coda = Math.min(1.5, Math.max(0.5, dur * 0.8)) * R;
       const fine = t + coda + 0.1;
 
       const o = ctx.createOscillator();
       o.type = "sine"; o.frequency.value = freq;
       const g = ctx.createGain();
       g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(amp * 0.90, t + 0.004);
+      g.gain.linearRampToValueAtTime(amp * 0.90, t + 0.004 * R);
       g.gain.exponentialRampToValueAtTime(0.0001, t + coda);
 
       const barra = ctx.createOscillator();
       barra.type = "sine"; barra.frequency.value = freq * 4;
       const gbarra = ctx.createGain();
       gbarra.gain.setValueAtTime(0.0001, t);
-      gbarra.gain.linearRampToValueAtTime(amp * 0.23, t + 0.003);
+      gbarra.gain.linearRampToValueAtTime(amp * 0.23, t + 0.003 * R);
       gbarra.gain.exponentialRampToValueAtTime(0.0001, t + Math.min(0.20, coda * 0.3));
 
       const n = ctx.createBufferSource();
@@ -1381,19 +1382,20 @@ const STRUMENTI = [
     }
   },
   {
-    chiave: "fiato",
+    chiave: "soffio",
     /* Soffio: rumore bianco filtrato stretto attorno alla nota, e sotto una
        sinusoide che le dà l'intonazione. Attacco lento, tenuta piena, un vibrato
        appena accennato: è l'unico dei quattro che si sente respirare. */
     suona(v, freq, dur, amp, t) {
       const ctx = Suono.ctx;
-      const tenuta = Math.max(0.3, dur * 0.9), coda = 0.5;
+      const R = AUDIO.respiro;
+      const tenuta = Math.max(0.3, dur * 0.9), coda = 0.5 * R;
       const fine = t + tenuta + coda + 0.05;
 
       const g = ctx.createGain();
       const picco = amp * 1.90;
       g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(picco, t + Math.min(0.35, tenuta * 0.5));
+      g.gain.linearRampToValueAtTime(picco, t + Math.min(0.35 * R, tenuta * 0.5));
       g.gain.setValueAtTime(picco, t + tenuta);
       g.gain.exponentialRampToValueAtTime(0.0001, t + tenuta + coda);
 
@@ -1428,7 +1430,7 @@ const STRUMENTI = [
 /* I quattro disposti lungo un asse: dal velo sottile alla nuvola piena.
    Il velo chiama un suono breve e brillante, la nuvola piena un suono tenuto
    e pieno di fiato. È l'ordine su cui `strumentoDellaNuvola` fa la sua scelta. */
-const ORDINE_SPESSORE = [1, 2, 0, 3];   // Vetro · Legno · Onda · Fiato
+const ORDINE_SPESSORE = [1, 2, 0, 3];   // Vetro · Legno · Onda · Soffio
 
 /* ------------------------------------------------------------------ */
 /*  Suono: le nuvole scelgono le frasi                                 */
@@ -1472,7 +1474,7 @@ const Suono = {
   },
 
   /* Due secondi di rumore bianco, generati una volta sola: la sorgente del
-     Fiato. Ogni nota ne prende un pezzo in loop. */
+     Soffio. Ogni nota ne prende un pezzo in loop. */
   rumore() {
     if (!this._rumore) {
       const n = Math.floor(this.ctx.sampleRate * 2);
@@ -1604,14 +1606,14 @@ const Suono = {
      Gli estremi 0.05 e 0.85 sono ricavati da quei quartili, perché con quattro
      strumenti accesi i quattro tratti risultino ugualmente frequentati; una
      prima taratura a 0.10-0.95, fatta su un solo campione più nuvoloso, lasciava
-     Onda e Fiato quasi sempre fuori. Se si cambia il cielo, ri-misurare. */
+     Onda e Soffio quasi sempre fuori. Se si cambia il cielo, ri-misurare. */
   spessore(v) {
     return Math.min(1, Math.max(0, (v.densita - 0.05) / 0.80));
   },
 
   /* È la nuvola a scegliere lo strumento. Gli strumenti accesi si dispongono
      lungo l'asse dello spessore e la nuvola cade in uno dei tratti: un velo
-     sottile chiama il Vetro, una nuvola piena chiama il Fiato. Se ne è acceso
+     sottile chiama il Vetro, una nuvola piena chiama il Soffio. Se ne è acceso
      uno solo, tutto l'insieme suona con quello.
      La scelta si rinnova a ogni episodio *vero*: se la voce si congeda e
      riparte subito — cosa che accade di continuo mentre una nuvola staziona
@@ -1911,13 +1913,6 @@ const Pannello = {
     this.strumenti();
 
     this.cursore("volume", (v) => { Suono.volume(v / 100); return Tn("v.pct", v); });
-    this.cursore("tempo", (v) => {
-      AUDIO.bpm = v;
-      // il punto accanto al marchio respira in quattro battiti
-      document.documentElement.style.setProperty(
-        "--respiro", (4 * 60 / v).toFixed(2) + "s");
-      return Tn("v.bpm", v);
-    });
     this.cursore("voci", (v) => {
       if (v !== AUDIO.voci) { Suono.impostaVoci(v); this.righello(); }
       return v;
@@ -1940,12 +1935,18 @@ const Pannello = {
       return Tn("v.s", Math.round(AUDIO.attesaFronte));
     });
     this.cursore("riverbero", (v) => { Suono.riverbero(v / 100); return Tn("v.pct", v); });
+    this.cursore("respiro", (v) => {
+      // corsa esponenziale centrata sull'unità: a metà corsa il suono è quello
+      // di riferimento, agli estremi 0.4 (netto e asciutto) e 2.6 (tessuto).
+      AUDIO.respiro = 0.4 * Math.pow(6.5, v / 100);
+      return Tn("v.pct", v);
+    });
     this.cursore("registro", (v) => {
       AUDIO.registro = v;
       return Tn("v.st", (v > 0 ? "+" : "") + v);
     });
 
-    ["sereno", "vento", "volume", "tempo", "voci", "sensibilita"]
+    ["sereno", "vento", "volume", "riverbero", "voci", "sensibilita"]
       .forEach((id) => this.arco(id));
 
     this.lingue();

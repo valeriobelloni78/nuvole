@@ -28,12 +28,14 @@ sezioni.
 
 - **Ascolto** — accende e spegne il suono (il primo clic crea il contesto audio: lo esigono i browser).
 - **Strumenti** — quali dei quattro timbri sono in campo. Uno solo, o più d'uno: in tal caso ogni voce ne sorteggia uno a ogni risveglio.
-- **Volume**, **Tempo** — l'ampiezza e il passo del polso.
+- **Volume** — l'ampiezza d'insieme. Il polso è fisso a 44 bpm e non è un comando.
 - **Voci** — quante voci, cioè in quante bande è divisa la finestra.
 - **Sensibilità** — quanta nuvola basta perché una voce si svegli.
 - **Dispersione** — di quante frasi le voci possono allontanarsi le une dalle altre.
 - **Avanzamento** — ogni quanto l'insieme può passare alla frase successiva dell'archivio.
-- **Riverbero**, **Registro** — la coda dell'ambiente e il trasporto d'insieme.
+- **Riverbero** — la coda dell'ambiente.
+- **Respiro** — quanto lentamente ogni nota entra e quanto a lungo resta: da suoni netti e asciutti a un tessuto continuo.
+- **Registro** — il trasporto d'insieme, in semitoni.
 
 ## Il suono
 
@@ -71,13 +73,13 @@ Le frasi non sono eseguite da un timbro solo. **Onda** è un suono semplice e te
 fondo dell'insieme; **Vetro** è un glockenspiel, sintesi FM con l'indice che decade in
 due decimi di secondo — il colpo entra brillante e si schiarisce in una sinusoide che
 continua a suonare; **Legno** è un battente su barra di marimba, caldo e corto, con il
-parziale a due ottave che se ne va per primo; **Fiato** è un soffio, rumore filtrato
+parziale a due ottave che se ne va per primo; **Soffio** è un soffio, rumore filtrato
 stretto attorno alla nota con una sinusoide sotto che le dà l'intonazione. La differenza
 sta quasi tutta nella forma dell'attacco e nella lunghezza della coda, non nella forma
 d'onda: è l'attacco a dire che strumento è.
 
 **A scegliere lo strumento è la nuvola stessa.** I quattro stanno su un asse che va dal
-velo sottile alla nuvola piena — Vetro, Legno, Onda, Fiato — e lo spessore della nuvola
+velo sottile alla nuvola piena — Vetro, Legno, Onda, Soffio — e lo spessore della nuvola
 sulla banda decide quale suona: un velo che passa chiama la campana, un banco fitto
 chiama il fiato. Non è una metafora aggiunta dopo: è la stessa densità che disegna i
 puntini bianchi a decidere il timbro, e nel righello sotto la finestra si legge
