@@ -557,7 +557,7 @@
         </div>
         <div class="controllo">
           <label><span data-i18n="c.ripetizione">Ripetizione</span> <span class="valore" id="valRipetizione"></span></label>
-          <div class="cursore"><input type="range" id="ripetizione" min="0" max="100" value="20"></div>
+          <div class="cursore"><input type="range" id="ripetizione" min="0" max="100" value="0"></div>
         </div>
         <div class="controllo">
           <label><span data-i18n="c.apertura">Apertura</span> <span class="valore" id="valApertura"></span></label>
@@ -1261,8 +1261,8 @@ const AUDIO = {
   entra:        0.12,    // copertura di nuvola oltre cui una voce si sveglia
   esce:         0.05,    // copertura sotto cui la voce si congeda
   finestra:        3,    // quante frasi attorno al fronte sono scegliibili
-  lettureMin:      2,    // ripetizioni minime di una frase
-  lettureMax:      5,    // ripetizioni massime
+  lettureMin:      1,    // ripetizioni minime di una frase
+  lettureMax:      2,    // ripetizioni massime
   lettureFronte:   6,    // letture d'insieme che fanno avanzare il fronte
   attesaFronte:   15,    // ...ma non più spesso di così (secondi)
   registro:        0,    // trasporto d'insieme, in semitoni

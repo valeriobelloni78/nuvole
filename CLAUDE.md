@@ -446,8 +446,13 @@ progetto, perché dicono il perché di ciascuno:
   `-12 -12 0 0 12 12`).
 - **Ripetizione** (nata come «Insistenza») — quante volte una voce ripete la frase
   prima di lasciarla. È il comando più vicino allo spirito di *In C*, dove quanto restare
-  su una cellula è la sola vera decisione dell'esecutore. Il valore di partenza (20%)
-  riproduce esattamente il 2–5 di prima.
+  su una cellula è la sola vera decisione dell'esecutore. Il valore di partenza era 20%,
+  cioè il 2–5 di prima; **da novembre 2026 è 0%, cioè 1–2** (scelta di Valerio). L'insieme
+  parte così dal regime meno insistente: ogni voce lascia la frase dopo una o due letture
+  e ne ripesca un'altra nell'intorno del fronte, quindi le combinazioni si rinnovano in
+  fretta. Il fronte non ne risente — `avanzaFronte` è governato da `attesaFronte`, non
+  dalle letture — e la garanzia dell'archivio nemmeno, perché dipende da *Dispersione*.
+  Sotto il 7% la targa dice sempre «1–2»: è il gradino dell'arrotondamento, non un difetto.
 - **Scordatura** — un lievissimo disaccordo fra le voci, da zero a pochi centesimi di
   semitono: non stona, produce battimenti lenti fra note uguali suonate da voci diverse
   (l'effetto che in Rada fa il parziale a 2,01×). A cielo coperto sarebbe il più
