@@ -295,6 +295,53 @@ accesi due, la nuvola sceglie fra quei due. L'ultimo acceso non si può spegnere
   il polso *condiviso* — la griglia di battiti su cui tutte le frasi partono — che è
   un'altra cosa e regge l'intero impianto ritmico.
 
+## La soglia d'ingresso (novembre 2026)
+
+Sul modello del *gate* di Rada2. I browser vietano l'audio prima di un gesto esplicito
+dell'utente: invece di lasciare quel vincolo a carico dell'interruttore — una pagina che
+resta muta finché non si trova il comando giusto — lo si fa diventare il momento
+dell'ingresso. **Il clic che scopre lo strumento è lo stesso che accende il suono**, e
+l'interruttore d'ascolto da lì in poi serve a fermare.
+
+Tre elementi soli: la finestra in piccolo, la frase, il bottone.
+
+- **La finestra in piccolo non è un'immagine.** In questo progetto non ci sono file
+  esterni e non ne nasce uno qui: il vetrino è lo stesso `CampoNuvole`, disegnato dal vivo
+  nel loop del Cielo con le **stesse fasi di deriva**. Il cielo che si guarda di qua è,
+  puntino per puntino, quello che si trova entrando — e con `?cielo=<numero>` anche
+  l'anteprima è riproducibile.
+- **Il passo del vetrino è quello dell'app** (`PARAMS.passo`, letto in `resize`): stessi
+  puntini, stesso diametro, stessa spaziatura, solo meno numerosi. Un passo più fine era
+  stato provato (5 px): i raggi scendevano sotto il pixel e le nuvole sbiadivano in un
+  fantasma. Provati 5 · 6 · 7 · 9, scelto 9.
+- **Il `zoom`** (`Cielo.cols / Soglia.cols`, ~2,7) è indispensabile: il campo è funzione
+  della posizione **in pixel**, non dell'indice di colonna, quindi senza di esso il
+  vetrino mostrerebbe l'angolo in alto a sinistra del cielo ingrandito e una nuvola non
+  ci starebbe dentro.
+- **Due stati, non uno.** `visibile` chiude l'ingresso al secondo clic; `vivo` dice se il
+  vetrino va ancora disegnato e resta acceso per tutta la dissolvenza. Spegnendoli
+  insieme, il vetrino si svuotava di colpo e la soglia sfumava via con una finestra vuota
+  in mezzo.
+- **L'ingresso passa da `Pannello.ascolto.scrivi(true)`**, non da `Suono.avvia()`: così il
+  quadretto si riempie e la parola diventa ASCOLTO da sé. Chiamando il motore
+  direttamente, il suono partirebbe e il pannello continuerebbe a dire SILENZIO. Per
+  questo `Pannello.init` ora **conserva la maniglia** dell'interruttore d'ascolto, che
+  prima buttava via. E la chiamata resta **dentro** il gestore del clic: è quel gesto che
+  autorizza l'audio, spostarla dopo la dissolvenza la renderebbe inefficace.
+- **La tastiera si ascolta sul documento, e il bottone non riceve il fuoco all'arrivo** —
+  qui si diverge da Rada2 di proposito. Il fuoco di partenza accende un anello di messa a
+  fuoco appena la pagina si apre, che su un bordo già rettangolare si legge come una
+  doppia cornice, cioè come un errore di disegno, e che chi usa il mouse non si aspetta.
+  Così invece: Invio o spazio entrano subito da fermi, e chi naviga col Tab trova il
+  bottone al primo colpo, perché dietro la soglia è tutto `inert`. Quando il fuoco c'è, il
+  bordo proprio del bottone si ritira e resta **un anello solo**.
+- `inert` sulla `.stanza` finché la soglia è aperta, e sulla soglia dopo: la transizione
+  CSS non gira se la scheda passa in secondo piano proprio in quell'istante, e il bottone
+  resterebbe raggiungibile col Tab pur essendo invisibile.
+- La frase e il bottone stanno nel dizionario (`soglia.testo`, `soglia.entra`) nelle
+  quattro lingue. Il selettore di lingua è dietro la soglia e non si raggiunge da fuori:
+  la soglia parla la lingua che l'app ha rilevato.
+
 ## Il pannello — linguaggio visivo
 
 Rifatto sulle reference visuali fornite da Valerio (cartella `~/Downloads/ioreferences`,

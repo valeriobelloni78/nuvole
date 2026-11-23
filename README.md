@@ -4,6 +4,24 @@
 
 Questo repository contiene il **primo modulo — il cielo**: una **finestra** senza cornice, aperta nella stanza chiara, la cui superficie è una matrice fitta di puntini celesti posati direttamente sul cielo della pagina, senza fondo proprio, e segnata soltanto da un contorno bianco finissimo. I puntini del cielo sereno hanno esattamente il colore del cielo: ci sono, ma non si vedono. Si vedono solo quelli che le nuvole hanno sbiancato — la matrice appare unicamente dove c'è nuvola, e la nuvola è l'unica figura. Il motore sonoro verrà innestato su questo stesso campo in una fase successiva: la densità delle nuvole che attraversano la finestra è pensata per diventare la sorgente degli eventi generativi.
 
+## La soglia
+
+Si entra da una **soglia**: il cielo pieno, la finestra in piccolo, la frase, e una parola
+sola da toccare.
+
+> *Nuvole. Per quanto osservandole cerchiamo di coglierne la forma, loro sfuggono fluide e
+> un istante dopo sono già qualcos'altro*
+
+I browser vietano l'audio prima di un gesto esplicito di chi ascolta. Invece di lasciare
+quel vincolo a carico dell'interruttore — una pagina che resta muta finché non si trova il
+comando giusto — lo si è fatto diventare il momento dell'ingresso: **il clic che scopre lo
+strumento è lo stesso che accende il suono**. Si entra già in ascolto, e l'interruttore
+*Silenzio / Ascolto* resta dov'è, per fermare.
+
+La finestra in piccolo non è un'immagine: è lo stesso campo-nuvole, disegnato dal vivo con
+le stesse fasi di deriva, con gli stessi puntini e la stessa grana. Il cielo che si guarda
+di là è esattamente quello che si trova entrando.
+
 ## Controlli
 
 I comandi principali — *Cielo sereno* e *Vento*, *Volume*, *Tempo*, *Voci* e
@@ -115,7 +133,12 @@ strumenti e tutti i comandi.
 
 ## Uso
 
-Nessuna dipendenza, nessun build. Basta aprire `index.html` in un browser moderno, oppure pubblicarlo su GitHub Pages.
+Nessuna dipendenza, nessun build. Basta aprire `index.html` in un browser moderno, oppure
+pubblicarlo su GitHub Pages.
+
+Due parametri nell'indirizzo: `?lang=it|fr|en|ja` sceglie la lingua, `?cielo=<numero>`
+fissa il cielo — lo stesso numero dà sempre lo stesso cielo, sulla soglia e dentro, ed è
+così che si condivide o si torna su un cielo per misurarlo.
 
 ## Licenza
 

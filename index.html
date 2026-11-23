@@ -411,6 +411,62 @@
   .interruttore .stato { color: rgba(255, 255, 255, 0.6); }
   .interruttore.acceso .quadro { background: #ffffff; border-color: #ffffff; }
   .interruttore.acceso .stato { color: #ffffff; }
+
+  /* La soglia d'ingresso, sul modello di quella di Rada2.
+     I browser vietano l'audio prima di un gesto esplicito dell'utente. Invece
+     di lasciare quel vincolo a carico dell'interruttore — una pagina muta
+     finché non si trova il comando giusto — lo si fa diventare il momento
+     dell'ingresso: il clic che scopre lo strumento è lo stesso che accende il
+     suono. L'interruttore d'ascolto resta dov'è, e da lì in poi serve a fermare. */
+  .soglia {
+    position: fixed; inset: 0; z-index: 40;
+    background: #5e9bc9;                    /* lo stesso cielo della pagina */
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: clamp(22px, 4vh, 38px);
+    padding: 30px; text-align: center;
+    cursor: pointer;
+    transition: opacity .7s ease, visibility 0s .7s;
+  }
+  /* `visibility` oltre all'opacità: senza, il bottone resterebbe raggiungibile
+     col Tab pur essendo invisibile. Il ritardo di .7s la fa sparire a
+     dissolvenza finita. */
+  .soglia.via { opacity: 0; pointer-events: none; visibility: hidden; }
+
+  /* La finestra in piccolo. Non è un'immagine salvata — in questo progetto non
+     ci sono file esterni, e non ne nasce uno qui: è lo stesso campo-nuvole
+     disegnato dal vivo. Stesso contorno finissimo della finestra grande. */
+  .vetrina {
+    line-height: 0;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+  }
+  .vetrina canvas { display: block; }
+
+  .soglia p {
+    max-width: 46ch;
+    font-size: clamp(14px, 1.7vw, 17px);
+    line-height: 1.68;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .soglia .entra {
+    appearance: none; -webkit-appearance: none;
+    background: transparent; color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 0;
+    padding: 12px 32px; cursor: pointer;
+    transition: background .25s ease, color .25s ease, border-color .25s ease;
+  }
+  .soglia:hover .entra,
+  .soglia .entra:hover { background: #ffffff; color: #5e9bc9; border-color: #ffffff; }
+  /* Il fuoco: un anello solo. Il bordo proprio del bottone si ritira mentre
+     l'anello è lì, altrimenti due rettangoli concentrici a 4 px l'uno
+     dall'altro si leggono come una doppia cornice, cioè come un errore. */
+  .soglia .entra:focus-visible {
+    outline: 1px solid #ffffff; outline-offset: 4px;
+    border-color: transparent;
+  }
+  @media (prefers-reduced-motion: reduce) { .soglia { transition: none; } }
 </style>
 </head>
 <body>
@@ -597,6 +653,15 @@
 
   </div>
 
+  <!-- La soglia è una finestra modale vera, come in Rada2: se fosse un <div>
+       non prenderebbe fuoco e chi naviga da tastiera resterebbe chiuso fuori. -->
+  <div class="soglia" id="soglia" role="dialog" aria-modal="true"
+       aria-labelledby="sogliaTesto">
+    <div class="vetrina"><canvas id="cieloSoglia"></canvas></div>
+    <p id="sogliaTesto" data-i18n="soglia.testo">Nuvole. Per quanto osservandole cerchiamo di coglierne la forma, loro sfuggono fluide e un istante dopo sono già qualcos'altro</p>
+    <button class="entra tecnico" id="entra" type="button" data-i18n="soglia.entra">Entra</button>
+  </div>
+
 <script>
 "use strict";
 
@@ -630,6 +695,8 @@ const TESTI = {
 
   it: {
     "app.sigla": "53 frasi in Do",
+    "soglia.testo": "Nuvole. Per quanto osservandole cerchiamo di coglierne la forma, loro sfuggono fluide e un istante dopo sono già qualcos'altro",
+    "soglia.entra": "Entra",
     "ui.lingua": "Lingua",
     "ui.guida": "Guida",
     "ui.guidaAria": "Guida (si apre in una nuova scheda)",
@@ -687,6 +754,8 @@ const TESTI = {
 
   fr: {
     "app.sigla": "53 phrases en do",
+    "soglia.testo": "Nuvole. Nous avons beau les regarder pour en saisir la forme, elles s'échappent, fluides, et un instant plus tard elles sont déjà autre chose",
+    "soglia.entra": "Entrer",
     "ui.lingua": "Langue",
     "ui.guida": "Guide",
     "ui.guidaAria": "Guide (s'ouvre dans un nouvel onglet)",
@@ -744,6 +813,8 @@ const TESTI = {
 
   en: {
     "app.sigla": "53 phrases in C",
+    "soglia.testo": "Nuvole. However closely we watch them to catch their shape, they slip away, fluid, and an instant later they are already something else",
+    "soglia.entra": "Enter",
     "ui.lingua": "Language",
     "ui.guida": "Guide",
     "ui.guidaAria": "Guide (opens in a new tab)",
@@ -801,6 +872,8 @@ const TESTI = {
 
   ja: {
     "app.sigla": "ハ長調の53の楽句",
+    "soglia.testo": "Nuvole. かたちを捉えようとどれだけ見つめても、雲は流れるように逃げてゆき、次の瞬間にはもう別の何かになっている。",
+    "soglia.entra": "入る",
     "ui.lingua": "言語",
     "ui.guida": "ガイド",
     "ui.guidaAria": "ガイド（新しいタブで開きます）",
@@ -1082,6 +1155,7 @@ const Cielo = {
     this.phaseY += PARAMS.ventoY * k * dt;
     this.tempo  += dt;
     this.render();
+    if (Soglia.vivo) Soglia.render();       // il vetrino della soglia, stesse fasi
     requestAnimationFrame((ts2) => this.loop(ts2));
   },
 
@@ -1977,6 +2051,10 @@ const Pannello = {
     });
 
     /* ---- Suono ---- */
+    /* La maniglia si conserva: la soglia d'ingresso accende il suono passando
+       di qui, e non chiamando `Suono.avvia()` — così l'interruttore si trova
+       già su ASCOLTO quando la pagina si scopre. */
+    this.ascolto =
     this.interruttore("swAscolto", false, ["c.ascolto.off", "c.ascolto.on"], (on) => {
       if (on === Suono.attivo) return;
       if (on) Suono.avvia(); else Suono.ferma();
@@ -2164,8 +2242,144 @@ const Pannello = {
   },
 };
 
+
+/* ------------------------------------------------------------------ */
+/*  La soglia d'ingresso                                               */
+/* ------------------------------------------------------------------ */
+/* I browser vietano l'audio prima di un gesto esplicito dell'utente. Invece di
+   lasciare quel vincolo a carico dell'interruttore — una pagina che resta muta
+   finché non si trova il comando giusto — lo si fa diventare il momento
+   dell'ingresso: **il clic che scopre lo strumento è lo stesso che accende il
+   suono**. L'interruttore d'ascolto resta dov'è e da lì in poi serve a fermare.
+
+   La finestra in piccolo non è un'immagine: è lo stesso `CampoNuvole`,
+   disegnato dal vivo con le fasi di deriva del Cielo. Il cielo che si guarda
+   di qua è, puntino per puntino, quello che si trova entrando — e con
+   `?cielo=<numero>` anche l'anteprima è riproducibile. */
+const Soglia = {
+  /* Il passo è quello dell'app: i puntini del vetrino sono **gli stessi
+     puntini**, con lo stesso diametro e la stessa spaziatura — ce ne sono solo
+     di meno, perché la finestra è più piccola. Un passo più fine era stato
+     provato (5 px): i puntini scendevano sotto il pixel e le nuvole
+     sbiadivano in un fantasma. Qui invece si riconosce la stessa materia. */
+  passo: 9,
+  /* Due stati e non uno. `visibile` dice se si è ancora fuori — e chiude
+     l'ingresso al secondo clic. `vivo` dice se il vetrino va ancora disegnato,
+     e resta acceso per tutta la dissolvenza: spegnendolo insieme all'altro, il
+     vetrino si svuotava di colpo e la soglia sfumava via con una finestra
+     vuota in mezzo. */
+  visibile: true,
+  vivo: true,
+  daTastiera: false,
+
+  init() {
+    this.el = document.getElementById("soglia");
+    this.canvas = document.getElementById("cieloSoglia");
+    if (!this.el || !this.canvas) { this.visibile = this.vivo = false; return; }
+    this.ctx = this.canvas.getContext("2d");
+    this.resize();
+    window.addEventListener("resize", () => { if (this.vivo) this.resize(); });
+
+    this.el.addEventListener("click", () => this.entra());
+
+    /* La tastiera si ascolta sul documento e non sul bottone, e il bottone non
+       riceve il fuoco all'arrivo — come fa invece Rada2. Il fuoco di partenza
+       costa un anello di messa a fuoco acceso appena la pagina si apre, che su
+       un bordo già rettangolare sembra un difetto e che chi usa il mouse non
+       si aspetta. Così invece: Invio o spazio entrano subito da fermi, e chi
+       naviga col Tab trova il bottone al primo colpo, perché dietro la soglia
+       è tutto `inert` e non c'è altro da raggiungere. */
+    this.tasto = (ev) => {
+      if (!this.visibile) return;
+      if (ev.key === "Enter" || ev.key === " ") {
+        ev.preventDefault();
+        this.daTastiera = true;
+        this.entra();
+      }
+    };
+    document.addEventListener("keydown", this.tasto);
+
+    /* Finché la soglia è chiusa, tutto ciò che sta dietro è fuori gioco: senza
+       questo il Tab uscirebbe dalla soglia e andrebbe a dare fuoco a comandi
+       che nessuno può vedere. */
+    document.querySelector(".stanza").inert = true;
+  },
+
+  resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const cw = Math.round(Math.min(360, window.innerWidth * 0.72));
+    const ch = Math.round(cw * 0.62);          // le proporzioni della finestra
+    this.w = cw; this.h = ch;
+    this.canvas.style.width  = cw + "px";
+    this.canvas.style.height = ch + "px";
+    this.canvas.width  = Math.floor(cw * dpr);
+    this.canvas.height = Math.floor(ch * dpr);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    this.passo = PARAMS.passo;          // la grana la decide il pannello
+    this.cols = Math.floor((cw - this.passo) / this.passo) + 1;
+    this.rows = Math.floor((ch - this.passo) / this.passo) + 1;
+    this.offX = (cw - (this.cols - 1) * this.passo) / 2;
+    this.offY = (ch - (this.rows - 1) * this.passo) / 2;
+  },
+
+  /* Lo stesso disegno del Cielo, con due differenze. Il passo è più fine. E le
+     colonne del vetrino coprono **tutte** quelle della finestra grande
+     (`zoom`): senza, si vedrebbe l'angolo in alto a sinistra del cielo
+     ingrandito — il campo è funzione della posizione in pixel, non dell'indice
+     di colonna — e una nuvola non ci starebbe dentro. */
+  render() {
+    const ctx = this.ctx;
+    ctx.clearRect(0, 0, this.w, this.h);
+
+    const { celeste, nuvola, raggioBase, raggioNuvola } = PARAMS;
+    const dx = Cielo.phaseX, dy = Cielo.phaseY, tm = Cielo.tempo;
+    const zoom = Cielo.cols ? Cielo.cols / this.cols : 1;
+
+    for (let r = 0; r < this.rows; r++) {
+      const py = this.offY + r * this.passo;
+      for (let c = 0; c < this.cols; c++) {
+        const q = CampoNuvole.densita(c * zoom, r * zoom, dx, dy, tm);
+        const cr = Math.round(celeste.r + (nuvola.r - celeste.r) * q);
+        const cg = Math.round(celeste.g + (nuvola.g - celeste.g) * q);
+        const cb = Math.round(celeste.b + (nuvola.b - celeste.b) * q);
+        ctx.beginPath();
+        ctx.fillStyle = "rgb(" + cr + "," + cg + "," + cb + ")";
+        ctx.arc(this.offX + c * this.passo, py,
+                raggioBase + (raggioNuvola - raggioBase) * q, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  },
+
+  /* L'ingresso. Due scelte non ovvie:
+     · si passa da `Pannello.ascolto.scrivi(true)` e non da `Suono.avvia()`,
+       così il quadretto si riempie e la parola diventa ASCOLTO da sé. Chiamando
+       il motore direttamente, il suono partirebbe e il pannello continuerebbe
+       a dire SILENZIO;
+     · la chiamata resta **dentro** il gestore del clic, perché è quel gesto che
+       autorizza l'audio: spostarla dopo la dissolvenza la renderebbe inefficace.
+     Il fuoco si sposta solo se si è entrati da tastiera: chi ha usato il mouse
+     non se lo aspetta, e l'anello di messa a fuoco sarebbe rumore. */
+  entra() {
+    if (!this.visibile) return;
+    this.visibile = false;
+    this.el.classList.add("via");
+    this.el.inert = true;
+    document.removeEventListener("keydown", this.tasto);
+    // il vetrino continua a disegnare finché la soglia non è davvero sparita
+    setTimeout(() => { this.vivo = false; }, 800);
+    document.querySelector(".stanza").inert = false;
+    if (this.daTastiera) {
+      document.getElementById("swAscolto").focus({ preventScroll: true });
+    }
+    Pannello.ascolto.scrivi(true);
+  }
+};
+
 Cielo.init();
 Pannello.init();
+Soglia.init();
 </script>
 </body>
 </html>

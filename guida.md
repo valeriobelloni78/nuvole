@@ -161,7 +161,7 @@ Il pannello sta sotto la finestra, in due sezioni. Sopra di esso un righello mos
 
 | Comando | Glossa |
 |---|---|
-| Ascolto | accende e spegne il suono; il primo tocco crea il contesto audio, lo esigono i browser |
+| Ascolto | ferma il suono e lo riprende; il contesto audio è già nato entrando, come esigono i browser |
 | Strumenti | quali dei quattro timbri sono in campo |
 | Volume | l'ampiezza d'insieme |
 | Riverbero | la coda dell'ambiente |
