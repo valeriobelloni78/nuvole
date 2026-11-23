@@ -135,8 +135,17 @@ Due cose da ricordare quando si riporta un testo:
 ### La guida (`guida.html`)
 
 Pagina a sé, stessa testata e stesso linguaggio visivo dello strumento. Sei sezioni:
-cos'è, il cielo, il suono, l'arco (con i dieci tratti e una glossa ciascuno), gli
-strumenti, i comandi (tutti e diciassette, con una riga di spiegazione), i crediti.
+cos'è, **il suono, il cielo** (in quest'ordine da novembre 2026: prima che cosa si sente
+e perché, poi come è fatta l'immagine che lo comanda — scelta di Valerio, e la prosa
+regge, perché nessuno dei due blocchi rimanda all'altro), l'arco (con i dieci tratti e una
+glossa ciascuno), gli strumenti, i comandi (tutti e diciassette, con una riga di
+spiegazione), i crediti.
+
+I **codici a destra delle rubriche restano appiccicati alla loro sezione** — *Il suono* è
+M2 e *Il cielo* è M1 anche ora che si leggono in quest'ordine. Il codice dice quale modulo
+è, non in che ordine lo si legge, ed è lo stesso che si trova nel pannello, dove la
+sezione Cielo è M1 e la sezione Suono è M2. Rinumerarli qui li farebbe litigare con la
+pagina che il lettore ha sotto gli occhi.
 Gli elenchi sono costruiti in JS dai dizionari, così un comando nuovo si aggiunge in un
 posto solo. Il maiuscoletto tecnico sta sul termine (`dt`), **mai sulla glossa** (`dd`):
 una spiegazione in maiuscoletto spaziato non si legge.

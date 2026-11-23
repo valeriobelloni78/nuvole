@@ -49,20 +49,6 @@ Nuvole è una web-app di musica che gira interamente nel browser. Un cielo di pu
 
 ---
 
-## [rubrica cielo]
-
-**Titolo:** Il cielo
-
-## [cielo 1]
-
-La finestra non contiene nuvole disegnate: contiene un campo continuo di rumore, interrogato in ogni punto di una matrice fitta. Dove il campo supera una soglia c'è nuvola, e il puntino sbianca e cresce; sotto quella soglia il puntino ha esattamente il colore del cielo, e perciò non si vede. La matrice c'è tutta, sempre — appare soltanto dove la nuvola la scopre.
-
-## [cielo 2]
-
-Il campo non si muove: si sposta il punto da cui lo si guarda, ed è il vento. Una seconda scala, molto più lenta, decide dove il cielo si addensa e dove resta limpido. Per questo le nuvole non si ripetono mai: nascono, attraversano e si sciolgono ai bordi.
-
----
-
 ## [rubrica suono]
 
 **Titolo:** Il suono
@@ -77,6 +63,20 @@ Questa è l'idea alla base della composizione *In C* di Terry Riley (1964), e qu
 
 La finestra è divisa in bande verticali immaginarie, una per voce: quando una nuvola entra in una banda, quella voce si attiva, prende una delle frasi disponibili in quel momento e la ripete. Poiché le bande sono attraversate in momenti diversi e per durate diverse, le sovrapposizioni si formano e si sciolgono come le nuvole che le hanno chiamate.
 
+
+---
+
+## [rubrica cielo]
+
+**Titolo:** Il cielo
+
+## [cielo 1]
+
+La finestra non contiene nuvole disegnate: contiene un campo continuo di rumore, interrogato in ogni punto di una matrice fitta. Dove il campo supera una soglia c'è nuvola, e il puntino sbianca e cresce; sotto quella soglia il puntino ha esattamente il colore del cielo, e perciò non si vede. La matrice c'è tutta, sempre — appare soltanto dove la nuvola la scopre.
+
+## [cielo 2]
+
+Il campo non si muove: si sposta il punto da cui lo si guarda, ed è il vento. Una seconda scala, molto più lenta, decide dove il cielo si addensa e dove resta limpido. Per questo le nuvole non si ripetono mai: nascono, attraversano e si sciolgono ai bordi.
 
 ---
 

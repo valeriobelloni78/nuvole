@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Nuvole · carosello</title>
+<!--
+  Generatore delle immagini del carosello. Una tavola per volta: ?n=1 … ?n=4.
+
+  Quattro tavole, e due soli registri:
+    n=1  la finestra e nient'altro — un rettangolo di nuvole in 4:5, esattamente
+         il formato della tavola, con il contorno bianco finissimo dell'app;
+    n=2-4 il testo e nient'altro, bianco, centrato nel cielo.
+
+  Le nuvole non sono un'immagine ritagliata dall'app: il campo qui sotto è
+  COPIATO DI PESO da index.html (PARAMS + CampoNuvole), così la tavola mostra
+  nuvole vere di Nuvole. Se si tocca il campo nell'app, questo file va
+  riallineato — altrimenti l'immagine mostra un cielo che non esiste più.
+
+  Le tavole si scattano con `./scatta.sh`.
+-->
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body {
+    background: #5e9bc9;
+    color: #ffffff;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .tavola { position: relative; width: 1080px; height: 1350px; }
+
+  /* ---- La tavola della finestra -------------------------------------
+     Il vetro è 1000x1250, cioè 4:5 al pixel come la tavola che lo contiene:
+     i margini non sono uniformi (40 di fianco, 50 sopra e sotto) proprio
+     perché la proporzione resti quella e non si avvicini soltanto. */
+  .vetro {
+    position: absolute; left: 40px; top: 50px;
+    width: 1000px; height: 1250px;
+    line-height: 0;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+  }
+  .vetro canvas { display: block; }
+
+  /* ---- Le tavole del testo ------------------------------------------
+     Centrato nel cielo, senza marchio e senza piede: il testo è l'unica
+     cosa in pagina. La misura è più corta della tavola — una riga lunga
+     900 px non si segue — e il blocco resta centrato. */
+  .testo {
+    position: absolute; inset: 0;
+    padding: 96px;
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.96);
+  }
+  .testo p { max-width: 800px; }
+  .testo p + p { margin-top: 1em; }
+  .testo em { font-style: italic; }
+</style>
+</head>
+<body>
+<div class="tavola" id="tavola"></div>
+
+<script>
+"use strict";
+
+const PARAMS = {
+  // Griglia
+  passo:        9,      // distanza fra i puntini (px, coordinate CSS)
+  passoRif:     22,     // passo di riferimento: le scale del rumore e la
+                        // velocita' del vento sono tarate su questo, e vengono
+                        // riportate al passo reale, cosi' infittire la matrice
+                        // non rimpicciolisce le nuvole ne' le rallenta.
+  raggioBase:   1.1,    // raggio del puntino di cielo sereno (invisibile)
+  raggioNuvola: 2.6,    // raggio del puntino dentro la nuvola: cresce, perche'
+                        // ora la nuvola e' la figura e non il vuoto
+
+  // I due colori del puntino: cielo sereno -> nuvola.
+  // ATTENZIONE: `celeste` deve restare identico al fondo della pagina (#5e9bc9),
+  // altrimenti la matrice del cielo sereno riaffiora. Il canvas non ha fondo
+  // proprio: i puntini stanno direttamente sul cielo della stanza, e si vedono
+  // solo quelli che la nuvola ha sbiancato.
+  celeste: { r: 94, g: 155, b: 201 },
+  nuvola:  { r: 255, g: 255, b: 255 },
+
+  // Campo-nuvole
+  scalaForma:   0.075,  // dettaglio delle nuvole
+  scalaMassa:   0.020,  // scala della copertura d'insieme
+  soglia:       0.150,  // sotto questa densità: cielo sereno  (<- "cielo sereno")
+  ampiezza:     0.065,  // ampiezza della transizione sereno -> nuvola
+
+  // Deriva (vento)
+  ventoX:       0.9,    // velocità orizzontale               (<- "vento")
+  ventoY:       0.16,   // lieve deriva verticale
+  morphMassa:   0.012,  // lentezza con cui la copertura muta
+
+  glow:         false,  // su fondo chiaro un alone bianco non aggiunge nulla
+};
+
+function fattoreGriglia() { return PARAMS.passo / PARAMS.passoRif; }
+
+/* ------------------------------------------------------------------ */
+/*  Rumore: value-noise 2D + fBm                                       */
+/* ------------------------------------------------------------------ */
+function hash2(x, y) {
+  let n = (x * 374761393 + y * 668265263) | 0;
+  n = (n ^ (n >> 13)) | 0;
+  n = (n * 1274126177) | 0;
+  n = (n ^ (n >> 16)) >>> 0;
+  return n / 4294967295;
+}
+function smooth(t) { return t * t * (3 - 2 * t); }
+
+function valueNoise(x, y) {
+  const xi = Math.floor(x), yi = Math.floor(y);
+  const xf = x - xi, yf = y - yi;
+  const tl = hash2(xi,     yi);
+  const tr = hash2(xi + 1, yi);
+  const bl = hash2(xi,     yi + 1);
+  const br = hash2(xi + 1, yi + 1);
+  const u = smooth(xf), v = smooth(yf);
+  const top = tl + (tr - tl) * u;
+  const bot = bl + (br - bl) * u;
+  return top + (bot - top) * v;
+}
+
+function fbm(x, y) {
+  let sum = 0, amp = 0.5, freq = 1, norm = 0;
+  for (let i = 0; i < 4; i++) {
+    sum  += amp * valueNoise(x * freq, y * freq);
+    norm += amp;
+    amp  *= 0.5;
+    freq *= 2;
+  }
+  return sum / norm;
+}
+
+function smoothstep(a, b, x) {
+  const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Campo-nuvole                                                       */
+/* ------------------------------------------------------------------ */
+const CampoNuvole = {
+  // dx, dy: fase di deriva accumulata (non tempo assoluto, così il vento
+  // ne cambia il ritmo e non fa saltare le nuvole); tm: tempo per la muta.
+  densita(col, row, dx, dy, tm) {
+    const k = fattoreGriglia();
+    const sForma = PARAMS.scalaForma * k;
+    const sMassa = PARAMS.scalaMassa * k;
+    const forma = fbm(
+      (col - dx) * sForma,
+      (row - dy) * sForma
+    );
+    const massa = fbm(
+      (col - dx * 0.35) * sMassa + 100,
+      (row) * sMassa + tm * PARAMS.morphMassa + 100
+    );
+
+    const densita = forma * (0.35 + massa * 0.95);
+    return smoothstep(PARAMS.soglia, PARAMS.soglia + PARAMS.ampiezza, densita);
+  }
+};
+
+
+/* ------------------------------------------------------------------ */
+/*  Le quattro tavole                                                  */
+/* ------------------------------------------------------------------ */
+/* La prima è la finestra: `seme` è lo stesso di `?cielo=` nell'app, scelto
+   misurando — su 600 semi — copertura fra il 26 e il 38 per cento e nuvola
+   presente in tutti e nove i settori della tavola, perché un cielo tutto da
+   una parte, su un'immagine grande come questa, si legge come un errore.
+   Le altre tre portano il testo: `misura` è il corpo, `righe` l'interlinea. */
+const TAVOLE = [
+  { seme: 487 },
+
+  { misura: 34, righe: 1.62, testo: [
+    "Ho sviluppato questo sistema sonoro partendo da una pratica molto nota ai distratti e a tutti quelli che vivono «con la testa tra le nuvole»: la pratica del <em>Cloudspotting</em>.",
+    "Guardare le nuvole, indugiare con lo sguardo in alto, verso elevazioni meno moderate dei soliti pensieri, in cerca di compagnia tra le soffici distese di vapori.",
+    "Il nimbologo (come lo chiamava Fosco Maraini) è il nomade di spirito che adora perdersi tra le cremose correnti dell’arco celeste, in cerca di nulla se non lasciare che i moti dell’animo vengano accarezzati da lontani arcipelaghi bianchi."
+  ]},
+
+  { misura: 35, righe: 1.62, testo: [
+    "Ritenendomi esperto (se non altro per il conteggio dei pomeriggi passati ad affinare questa antica arte della distrazione) ho deciso di associare delle frasi musicali a questo lento gioco di vapori.",
+    "Ho immaginato lo sguardo al cielo delimitato dalla cornice di una finestra e ho associato il movimento delle nuvole allo scorrere di uno spartito, e da questa idea è nata <em>Nuvole</em>.",
+    "<em>Nuvole</em> è uno spartito che evolve e cambia sempre, proprio come il cielo fuori dalla nostra finestra preferita."
+  ]},
+
+  { misura: 36, righe: 1.62, testo: [
+    "Le nuvole creano percorsi sempre diversi e anche i nostri stati d’animo cambiano con il loro scorrere, come isole di un mare calmo ci trasmettono un contrappunto lento e sontuoso fatto di modulazioni sentimentali profonde e armoniche, il loro divenire è una progressione continua ma impercettibile.",
+    "Per quanto osservandole cerchiamo di coglierne la forma, loro sfuggono fluide e un istante dopo sono già qualcos’altro."
+  ]}
+];
+/* La grana della tavola è più larga di quella dell'app (16 px contro 9), e i
+   raggi la seguono: un'immagine da 1080 px vista su un telefono è rimpicciolita
+   quasi tre volte, e alla grana dell'app i puntini vi si impastano. Così invece
+   arrivano all'occhio della stessa misura con cui si vedono sullo schermo. */
+const PASSO = 16;
+
+function disegna(seme) {
+  const scatola = document.getElementById("vetro");
+  const canvas = document.getElementById("cielo");
+  const cw = scatola.clientWidth, ch = scatola.clientHeight;
+  canvas.style.width = cw + "px";
+  canvas.style.height = ch + "px";
+  canvas.width = cw; canvas.height = ch;
+  const ctx = canvas.getContext("2d");
+
+  // lo stesso seme di `?cielo=`, con gli stessi tre moltiplicatori irrazionali
+  const n = Math.abs(seme) * 997;
+  const dx = (n * 0.7919) % 4000, dy = (n * 0.3571) % 4000, tm = (n * 1.6180) % 20000;
+
+  const cols = Math.floor((cw - PASSO) / PASSO) + 1;
+  const rows = Math.floor((ch - PASSO) / PASSO) + 1;
+  const offX = (cw - (cols - 1) * PASSO) / 2;
+  const offY = (ch - (rows - 1) * PASSO) / 2;
+  const k = PASSO / PARAMS.passo;
+  const rBase = PARAMS.raggioBase * k, rNuv = PARAMS.raggioNuvola * k;
+  const { celeste, nuvola } = PARAMS;
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      // il campo è funzione della posizione in pixel: si campiona alla grana
+      // dell'app, altrimenti si vedrebbe un angolo di cielo ingrandito
+      const q = CampoNuvole.densita(c * k, r * k, dx, dy, tm);
+      const cr = Math.round(celeste.r + (nuvola.r - celeste.r) * q);
+      const cg = Math.round(celeste.g + (nuvola.g - celeste.g) * q);
+      const cb = Math.round(celeste.b + (nuvola.b - celeste.b) * q);
+      ctx.beginPath();
+      ctx.fillStyle = "rgb(" + cr + "," + cg + "," + cb + ")";
+      ctx.arc(offX + c * PASSO, offY + r * PASSO,
+              rBase + (rNuv - rBase) * q, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+
+(function () {
+  let n = 1;
+  try { n = parseInt(new URLSearchParams(location.search).get("n"), 10) || 1; } catch (e) {}
+  n = Math.min(TAVOLE.length, Math.max(1, n));
+  const t = TAVOLE[n - 1];
+  const tavola = document.getElementById("tavola");
+
+  if (t.seme !== undefined) {
+    // `?seme=` prova un altro cielo senza toccare il file: serve a sceglierlo
+    let seme = t.seme;
+    try {
+      const s = parseInt(new URLSearchParams(location.search).get("seme"), 10);
+      if (Number.isFinite(s)) seme = s;
+    } catch (e) {}
+    tavola.innerHTML = '<div class="vetro" id="vetro"><canvas id="cielo"></canvas></div>';
+    // il disegno dopo il layout: il vetro deve avere già la sua altezza
+    requestAnimationFrame(() => disegna(seme));
+    return;
+  }
+
+  const testo = document.createElement("div");
+  testo.className = "testo";
+  testo.style.fontSize = t.misura + "px";
+  testo.style.lineHeight = t.righe;
+  testo.innerHTML = t.testo.map((p) => "<p>" + p + "</p>").join("");
+  tavola.appendChild(testo);
+})();
+</script>
+</body>
+</html>
