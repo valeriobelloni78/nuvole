@@ -6,11 +6,12 @@ Questo repository contiene il **primo modulo — il cielo**: una **finestra** se
 
 ## La soglia
 
-Si entra da una **soglia**: il cielo pieno, la finestra in piccolo, la frase, e una parola
+Si entra da una **soglia**: il cielo pieno e, incolonnati sulla larghezza della finestra,
+il marchio con accanto il punto che respira, la finestra in piccolo, la frase, e una parola
 sola da toccare.
 
-> *Nuvole. Per quanto osservandole cerchiamo di coglierne la forma, loro sfuggono fluide e
-> un istante dopo sono già qualcos'altro*
+> *Per quanto osservandole cerchiamo di coglierne la forma, loro sfuggono fluide e un
+> istante dopo sono già qualcos'altro*
 
 I browser vietano l'audio prima di un gesto esplicito di chi ascolta. Invece di lasciare
 quel vincolo a carico dell'interruttore — una pagina che resta muta finché non si trova il

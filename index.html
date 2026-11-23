@@ -104,7 +104,8 @@
     50%      { opacity: 1;    transform: scale(1.15); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .marchio .punto { animation: none; opacity: 0.85; }
+    .marchio .punto,
+    .soglia .insegna .punto { animation: none; opacity: 0.85; }
   }
   .sigla { color: rgba(255, 255, 255, 0.7); }
   html[lang="ja"] .tecnico { letter-spacing: 0.08em; }
@@ -421,12 +422,29 @@
   .soglia {
     position: fixed; inset: 0; z-index: 40;
     background: #5e9bc9;                    /* lo stesso cielo della pagina */
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: clamp(22px, 4vh, 38px);
-    padding: 30px; text-align: center;
+    display: flex; align-items: center; justify-content: center;
+    padding: 30px;
     cursor: pointer;
     transition: opacity .7s ease, visibility 0s .7s;
+  }
+  /* Tutto incolonnato sulla larghezza della finestra: il marchio e il punto
+     sopra, la frase e il bottone sotto, e i quattro bordi verticali in
+     colonna. È la stessa griglia della pagina, dove testata, vetro e pannello
+     condividono un unico asse a sinistra. La larghezza la posa `Soglia.resize`
+     dal vivo, perché coincida al pixel con quella del vetro. */
+  .soglia .colonna {
+    display: flex; flex-direction: column; align-items: flex-start;
+    gap: clamp(14px, 2.6vh, 22px);
+  }
+  /* Marchio a sinistra, punto a destra: la testata della pagina, in piccolo. */
+  .soglia .insegna {
+    width: 100%;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .soglia .insegna .punto {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #ffffff;
+    animation: respiro 5.45s ease-in-out infinite;
   }
   /* `visibility` oltre all'opacità: senza, il bottone resterebbe raggiungibile
      col Tab pur essendo invisibile. Il ritardo di .7s la fa sparire a
@@ -442,23 +460,31 @@
   }
   .vetrina canvas { display: block; }
 
+  /* La frase occupa esattamente la colonna, quindi va a capo sui bordi del
+     vetro. Allineata a sinistra e non giustificata: tre o quattro righe
+     giustificate in una misura così stretta si aprirebbero in canali bianchi. */
   .soglia p {
-    max-width: 46ch;
-    font-size: clamp(14px, 1.7vw, 17px);
+    width: 100%;
+    font-size: clamp(13px, 1.5vw, 15px);
     line-height: 1.68;
     font-weight: 300;
     color: rgba(255, 255, 255, 0.95);
   }
 
+  /* Contorno bianco, fondo celeste, scritta bianca — e così resta anche sotto
+     il puntatore: il passaggio del mouse porta i due bianchi da 0.8 a pieni e
+     non rovescia il bottone. L'inversione era di Rada2, ma lì il bottone sta su
+     carta; qui il fondo è il cielo, e un rettangolo bianco pieno in mezzo al
+     cielo pesa più di tutto il resto della soglia messo insieme. */
   .soglia .entra {
     appearance: none; -webkit-appearance: none;
-    background: transparent; color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 0;
-    padding: 12px 32px; cursor: pointer;
-    transition: background .25s ease, color .25s ease, border-color .25s ease;
+    background: transparent; color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 0;
+    padding: 12px 30px; cursor: pointer;
+    transition: color .25s ease, border-color .25s ease;
   }
   .soglia:hover .entra,
-  .soglia .entra:hover { background: #ffffff; color: #5e9bc9; border-color: #ffffff; }
+  .soglia .entra:hover { color: #ffffff; border-color: #ffffff; }
   /* Il fuoco: un anello solo. Il bordo proprio del bottone si ritira mentre
      l'anello è lì, altrimenti due rettangoli concentrici a 4 px l'uno
      dall'altro si leggono come una doppia cornice, cioè come un errore. */
@@ -657,9 +683,15 @@
        non prenderebbe fuoco e chi naviga da tastiera resterebbe chiuso fuori. -->
   <div class="soglia" id="soglia" role="dialog" aria-modal="true"
        aria-labelledby="sogliaTesto">
-    <div class="vetrina"><canvas id="cieloSoglia"></canvas></div>
-    <p id="sogliaTesto" data-i18n="soglia.testo">Nuvole. Per quanto osservandole cerchiamo di coglierne la forma, loro sfuggono fluide e un istante dopo sono già qualcos'altro</p>
-    <button class="entra tecnico" id="entra" type="button" data-i18n="soglia.entra">Entra</button>
+    <div class="colonna" id="sogliaColonna">
+      <div class="insegna">
+        <span class="marchio">Nuvole</span>
+        <span class="punto" aria-hidden="true"></span>
+      </div>
+      <div class="vetrina"><canvas id="cieloSoglia"></canvas></div>
+      <p id="sogliaTesto" data-i18n="soglia.testo">Per quanto osservandole cerchiamo di coglierne la forma, loro sfuggono fluide e un istante dopo sono già qualcos'altro</p>
+      <button class="entra tecnico" id="entra" type="button" data-i18n="soglia.entra">Entra</button>
+    </div>
   </div>
 
 <script>
@@ -695,7 +727,7 @@ const TESTI = {
 
   it: {
     "app.sigla": "53 frasi in Do",
-    "soglia.testo": "Nuvole. Per quanto osservandole cerchiamo di coglierne la forma, loro sfuggono fluide e un istante dopo sono già qualcos'altro",
+    "soglia.testo": "Per quanto osservandole cerchiamo di coglierne la forma, loro sfuggono fluide e un istante dopo sono già qualcos'altro",
     "soglia.entra": "Entra",
     "ui.lingua": "Lingua",
     "ui.guida": "Guida",
@@ -754,7 +786,7 @@ const TESTI = {
 
   fr: {
     "app.sigla": "53 phrases en do",
-    "soglia.testo": "Nuvole. Nous avons beau les regarder pour en saisir la forme, elles s'échappent, fluides, et un instant plus tard elles sont déjà autre chose",
+    "soglia.testo": "Nous avons beau les regarder pour en saisir la forme, elles s'échappent, fluides, et un instant plus tard elles sont déjà autre chose",
     "soglia.entra": "Entrer",
     "ui.lingua": "Langue",
     "ui.guida": "Guide",
@@ -813,7 +845,7 @@ const TESTI = {
 
   en: {
     "app.sigla": "53 phrases in C",
-    "soglia.testo": "Nuvole. However closely we watch them to catch their shape, they slip away, fluid, and an instant later they are already something else",
+    "soglia.testo": "However closely we watch them to catch their shape, they slip away, fluid, and an instant later they are already something else",
     "soglia.entra": "Enter",
     "ui.lingua": "Language",
     "ui.guida": "Guide",
@@ -872,7 +904,7 @@ const TESTI = {
 
   ja: {
     "app.sigla": "ハ長調の53の楽句",
-    "soglia.testo": "Nuvole. かたちを捉えようとどれだけ見つめても、雲は流れるように逃げてゆき、次の瞬間にはもう別の何かになっている。",
+    "soglia.testo": "かたちを捉えようとどれだけ見つめても、雲は流れるように逃げてゆき、次の瞬間にはもう別の何かになっている。",
     "soglia.entra": "入る",
     "ui.lingua": "言語",
     "ui.guida": "ガイド",
@@ -2274,6 +2306,7 @@ const Soglia = {
 
   init() {
     this.el = document.getElementById("soglia");
+    this.colonna = document.getElementById("sogliaColonna");
     this.canvas = document.getElementById("cieloSoglia");
     if (!this.el || !this.canvas) { this.visibile = this.vivo = false; return; }
     this.ctx = this.canvas.getContext("2d");
@@ -2307,8 +2340,16 @@ const Soglia = {
 
   resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const cw = Math.round(Math.min(360, window.innerWidth * 0.72));
+    /* La misura si prende dallo spazio che la soglia ha davvero, meno il suo
+       margine di 30 px per lato, e meno i 2 px del contorno del vetro: andando
+       a naso su `innerWidth` la colonna può uscire dallo schermo sui telefoni
+       stretti, e per due pixel la cosa non si nota in prova ma si vede. */
+    const spazio = (this.el.clientWidth || window.innerWidth) - 60 - 2;
+    const cw = Math.round(Math.max(180, Math.min(420, spazio)));
     const ch = Math.round(cw * 0.62);          // le proporzioni della finestra
+    /* +2: il vetro porta un contorno di 1 px per lato, e la colonna deve
+       allinearsi al bordo esterno, non al canvas. */
+    if (this.colonna) this.colonna.style.width = (cw + 2) + "px";
     this.w = cw; this.h = ch;
     this.canvas.style.width  = cw + "px";
     this.canvas.style.height = ch + "px";

@@ -303,7 +303,28 @@ resta muta finché non si trova il comando giusto — lo si fa diventare il mome
 dell'ingresso. **Il clic che scopre lo strumento è lo stesso che accende il suono**, e
 l'interruttore d'ascolto da lì in poi serve a fermare.
 
-Tre elementi soli: la finestra in piccolo, la frase, il bottone.
+**La disposizione** (ritocco di novembre 2026) è una colonna sola, larga quanto la
+finestra: il marchio *Nuvole* a sinistra e il punto che respira a destra, poi il vetro, poi
+la frase, poi il bottone. È la testata della pagina in piccolo, e i quattro elementi
+condividono il bordo sinistro — verificato: stesso `left` per tutti e quattro, e stesso
+`right` fra il vetro e la frase.
+
+- La larghezza della colonna la posa `Soglia.resize` dal vivo (`colonna.style.width`),
+  perché coincida **al pixel** con il bordo esterno del vetro: in CSS si sarebbe dovuta
+  ripetere la stessa espressione, e un arrotondamento diverso avrebbe sfalsato i bordi.
+  La misura si prende dallo spazio che la soglia ha davvero (`el.clientWidth − 60 − 2`,
+  cioè meno il suo margine e meno il contorno del vetro) e non da `innerWidth`: così non
+  esce dallo schermo sui telefoni stretti. Verificata da 320 px in su.
+- La frase ha perso il «Nuvole.» iniziale in tutt'e quattro le lingue: il nome ora sta
+  sopra, nel marchio, e ripeterlo a due centimetri di distanza si notava.
+- Il bottone resta **contorno bianco, fondo celeste, scritta bianca** anche sotto il
+  puntatore: il passaggio del mouse porta i due bianchi da 0.8 a pieni e non rovescia il
+  rettangolo. L'inversione viene da Rada2, ma lì il bottone sta su carta; qui il fondo è il
+  cielo, e un rettangolo bianco pieno in mezzo al cielo pesa più di tutta la soglia messa
+  insieme.
+- Il punto della soglia è un elemento a sé (`.soglia .insegna .punto`, 6 px) e non il
+  `.marchio .punto` della pagina, che è inline e attaccato alla parola. Stessa animazione
+  `respiro` da 5,45 s, e si ferma anche lui con `prefers-reduced-motion`.
 
 - **La finestra in piccolo non è un'immagine.** In questo progetto non ci sono file
   esterni e non ne nasce uno qui: il vetrino è lo stesso `CampoNuvole`, disegnato dal vivo
